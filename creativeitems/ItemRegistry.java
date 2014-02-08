@@ -1,8 +1,8 @@
 package hinasch.mods.creativeitems;
 
+import hinasch.lib.HSLibs;
+import hinasch.lib.PropertyCustom;
 import hinasch.mods.creativeitems.item.ItemCreativeSpade;
-import hinasch.mods.creativeitems.lib.HSLibs;
-import hinasch.mods.creativeitems.lib.PropertyCustom;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.EnumToolMaterial;
 import net.minecraft.item.Item;

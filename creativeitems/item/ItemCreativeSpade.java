@@ -1,11 +1,11 @@
 package hinasch.mods.creativeitems.item;
 
-import hinasch.mods.creativeitems.lib.FileObject;
-import hinasch.mods.creativeitems.lib.HSLibs;
-import hinasch.mods.creativeitems.lib.PairID;
-import hinasch.mods.creativeitems.lib.ScanHelper;
-import hinasch.mods.creativeitems.lib.UtilNBT;
-import hinasch.mods.creativeitems.lib.XYZPos;
+import hinasch.lib.FileObject;
+import hinasch.lib.HSLibs;
+import hinasch.lib.PairID;
+import hinasch.lib.ScanHelper;
+import hinasch.lib.UtilNBT;
+import hinasch.lib.XYZPos;
 
 import java.util.ArrayList;
 import java.util.List;
