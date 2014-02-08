@@ -23,6 +23,14 @@ public class PropertyCustom {
 		
 	}
 	
+	public void setCategoriesAll(String par1){
+		int len = this.propNames.length;
+		this.propCategories = new String[len];
+		for(int i=0;i<len;i++){
+			this.propCategories[i] = par1;
+		}
+	}
+	
 	public void setValues(Object[] par1){
 		this.propValues = par1;
 	}
