@@ -1,4 +1,4 @@
-package hinasch.mods.creativeitems.lib;
+package hinasch.mods.unlsaga.lib;
 
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;

@@ -1,4 +1,4 @@
-package hinasch.mods.creativeitems.lib;
+package hinasch.mods.unlsaga.lib;
 
 import java.lang.reflect.Field;
 import java.util.Random;
@@ -19,7 +19,11 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
+import net.minecraftforge.common.IExtendedEntityProperties;
 import net.minecraftforge.oredict.OreDictionary;
+
+import com.google.common.base.Optional;
+
 import cpw.mods.fml.common.registry.LanguageRegistry;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
@@ -39,13 +43,21 @@ public class HSLibs {
 		if(entity==null)return false;
 		String clsname = entity.getClass().getSimpleName();
 		if(clsname.equals("LMM_EntityLittleMaidAvatar")){
-			HSLibs.log(0, "entity is LMMAVATAR");
+			HSLibs.log("entity is LMMAVATAR",true);
 			return true;
 		}
-		HSLibs.log(0, "entity is not LMMAVATAR");
-		HSLibs.log(0, clsname);
+		HSLibs.log("entity is not LMMAVATAR",true);
+		HSLibs.log(clsname,true);
 		return false;
 	}
+
+	public static Optional<IExtendedEntityProperties> getExtendedData(String key,Entity target){
+		if(target.getExtendedProperties(key)!=null){
+			return Optional.of(target.getExtendedProperties(key));
+		}
+		return Optional.absent();
+	}
+	
 
 	public static boolean isEntityLittleMaidAndFortune(EntityLiving entity){
 		if(isEntityLittleMaidAvatar(entity)){
@@ -182,6 +194,8 @@ public class HSLibs {
         }
         return newxyz;
     }
+    
+    
 	public static synchronized HSLibs getInstance(){
 		if (instance == null) {
 			instance = new HSLibs();
@@ -195,9 +209,11 @@ public class HSLibs {
 		}
 	}
 
-	public static void log(int par1,String par2){
-		System.out.println("int:"+par1);
-		System.out.println("string:"+par2);
+	public static void log(String par1,boolean debug){
+		if(debug){
+			System.out.println(par1);
+
+		}
 	}
 
 	public static void dropItem(World world,ItemStack itemstack,double x,double y,double z){

@@ -1,4 +1,4 @@
-package hinasch.mods.creativeitems.lib;
+package hinasch.mods.unlsaga.lib;
 
 import net.minecraftforge.common.Configuration;
 import net.minecraftforge.common.Property;
