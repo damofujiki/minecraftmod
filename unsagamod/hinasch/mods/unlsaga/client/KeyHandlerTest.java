@@ -1,4 +1,4 @@
-package hinasch.mods.unlsaga.lib;
+package hinasch.mods.unlsaga.client;
 
 import hinasch.mods.unlsaga.DebugUnsaga;
 import hinasch.mods.unlsaga.Unsaga;
@@ -81,7 +81,7 @@ public class KeyHandlerTest extends KeyHandler{
 	       }
 	      if(kb.keyCode == mkey){
 
-	    	  
+	    	   
 	      }
 	      if(kb.keyCode == kammakey && tickEnd){
 	    	  

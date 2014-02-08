@@ -1,5 +1,6 @@
 package hinasch.mods.unlsaga.network;
 
+import hinasch.lib.HSLibs;
 import hinasch.mods.unlsaga.DebugUnsaga;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.gui.GuiEquipment;
@@ -7,7 +8,6 @@ import hinasch.mods.unlsaga.client.gui.GuiSmithUnsaga;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
 import hinasch.mods.unlsaga.inventory.ContainerEquipment;
 import hinasch.mods.unlsaga.inventory.ContainerSmithUnsaga;
-import hinasch.mods.unlsaga.lib.HSLibs;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.NpcMerchant;
 import net.minecraft.entity.player.EntityPlayer;

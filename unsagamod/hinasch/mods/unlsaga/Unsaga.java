@@ -1,5 +1,6 @@
 package hinasch.mods.unlsaga;
 
+import hinasch.lib.BWrapper;
 import hinasch.mods.unlsaga.core.event.EventInitEnemyWeapon;
 import hinasch.mods.unlsaga.core.event.EventInteractVillager;
 import hinasch.mods.unlsaga.core.event.EventUnsagaToolTip;
@@ -11,7 +12,6 @@ import hinasch.mods.unlsaga.core.init.UnsagaBlocks;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.entity.EntityArrowUnsaga;
 import hinasch.mods.unlsaga.entity.EntityBarrett;
-import hinasch.mods.unlsaga.lib.BWrapper;
 import hinasch.mods.unlsaga.misc.CreativeTabsUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.smith.MaterialLibrary;

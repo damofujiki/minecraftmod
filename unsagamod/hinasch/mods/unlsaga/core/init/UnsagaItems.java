@@ -1,5 +1,6 @@
 package hinasch.mods.unlsaga.core.init;
 
+import hinasch.lib.HSLibs;
 import hinasch.mods.tsukiyotake.lib.PropertyCustom;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.item.ItemAccessory;
@@ -12,7 +13,6 @@ import hinasch.mods.unlsaga.item.weapon.ItemGunUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemSpearUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemStaffUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemSwordUnsaga;
-import hinasch.mods.unlsaga.lib.HSLibs;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.MaterialPair;

@@ -1,9 +1,9 @@
 package hinasch.mods.unlsaga.core.init;
 
+import hinasch.lib.HSLibs;
 import hinasch.mods.tsukiyotake.lib.PropertyCustom;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.block.BlockChestUnsaga;
-import hinasch.mods.unlsaga.lib.HSLibs;
 import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsaga;
 import net.minecraft.block.Block;
 import net.minecraft.tileentity.TileEntity;

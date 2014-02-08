@@ -11,7 +11,6 @@ import hinasch.mods.unlsaga.client.render.equipment.RenderItemSpear;
 import hinasch.mods.unlsaga.client.render.equipment.RenderItemWeapon;
 import hinasch.mods.unlsaga.entity.EntityArrowUnsaga;
 import hinasch.mods.unlsaga.entity.EntityBarrett;
-import hinasch.mods.unlsaga.lib.KeyHandlerTest;
 import hinasch.mods.unlsaga.network.CommonProxy;
 import net.minecraftforge.client.MinecraftForgeClient;
 

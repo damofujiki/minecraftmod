@@ -1,12 +1,12 @@
 package hinasch.mods.unlsaga.network;
 
+import hinasch.lib.HSLibs;
+import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
+import hinasch.mods.unlsaga.client.KeyHandlerTest;
 import hinasch.mods.unlsaga.core.event.EventInteractVillager;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
 import hinasch.mods.unlsaga.inventory.ContainerSmithUnsaga;
-import hinasch.mods.unlsaga.lib.HSLibs;
-import hinasch.mods.unlsaga.lib.KeyHandlerTest;
-import hinasch.mods.unlsaga.lib.XYZPos;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;

@@ -1,8 +1,8 @@
 package hinasch.mods.unlsaga.core.event;
 
+import hinasch.lib.HSLibs;
+import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.lib.HSLibs;
-import hinasch.mods.unlsaga.lib.XYZPos;
 import hinasch.mods.unlsaga.network.PacketHandler;
 
 import java.io.DataOutputStream;
