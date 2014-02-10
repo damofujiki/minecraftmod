@@ -33,7 +33,7 @@ public class ItemSwordUnsaga extends ItemSword implements IUnsagaWeapon{
 		this.helper = new HelperUnsagaWeapon(this.unsMaterial,this.itemIcon,this.iconMap);
 		Unsaga.proxy.registerSpecialRenderer(this.itemID);
 		UnsagaItems.putItemMap(this.itemID,EnumUnsagaWeapon.SWORD.toString()+"."+mat.name);
-		UnsagaItems.registerValidTool(EnumUnsagaWeapon.SWORD, mat, this.itemID);
+		//UnsagaItems.registerValidTool(EnumUnsagaWeapon.SWORD, mat, this.itemID);
 		// TODO 自動生成されたコンストラクター・スタブ
 	}
 

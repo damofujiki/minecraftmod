@@ -6,6 +6,7 @@ import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.KeyHandlerTest;
 import hinasch.mods.unlsaga.core.event.EventInteractVillager;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
+import hinasch.mods.unlsaga.inventory.ContainerBartering;
 import hinasch.mods.unlsaga.inventory.ContainerSmithUnsaga;
 
 import java.io.ByteArrayOutputStream;
@@ -34,6 +35,7 @@ public class PacketHandler implements IPacketHandler{
 	public static final int OPEN_EQUIPMENT = 0x10;
 	public static final int OPEN_SMITH = 0x11;
 	public static final int GUI_FORGE = 0x12;
+	public static final int GUI_BARTERING_BUTTON = 0x13;
 	@Override
 	public void onPacketData(INetworkManager manager,
 			Packet250CustomPayload packet, Player player) {
@@ -66,6 +68,16 @@ public class PacketHandler implements IPacketHandler{
 					Unsaga.debug("コンテナ開いてます");
 					((ContainerSmithUnsaga)container).readPacketData(data);
 					((ContainerSmithUnsaga)container).onPacketData();
+				}
+			}
+			if(id==GUI_BARTERING_BUTTON){
+				Container container = ((EntityPlayerMP)player).openContainer;
+				if(container != null && container instanceof ContainerBartering)
+				{
+					//UnsagaCore.debuglib.addChatMessage("okok");
+					Unsaga.debug("コンテナ開いてます");
+					((ContainerBartering)container).readPacketData(data);
+					((ContainerBartering)container).onPacketData();
 				}
 			}
 
@@ -105,7 +117,18 @@ public class PacketHandler implements IPacketHandler{
 				
 
 			}
-			
+			if(id==Unsaga.GuiBartering){
+				int villagerid = data.readInt();
+				EntityPlayerMP ep = (EntityPlayerMP)player;
+				EntityVillager villager = (EntityVillager) ep.worldObj.getEntityByID(villagerid);
+				if(HSLibs.getExtendedData(ExtendedPlayerData.key,ep).isPresent()){
+					((ExtendedPlayerData)HSLibs.getExtendedData(ExtendedPlayerData.key, ep).get()).setMerchant(villager);
+					XYZPos pos = XYZPos.entityPosToXYZ(ep);
+					FMLNetworkHandler.openGui((EntityPlayer) player, Unsaga.instance, Unsaga.GuiBartering, ep.worldObj,pos.x,pos.y,pos.z);
+				}
+				
+
+			}
 		}
 	}
 	
@@ -152,6 +175,39 @@ public class PacketHandler implements IPacketHandler{
 		DataOutputStream dos = new DataOutputStream(bos);
 
 		ContainerSmithUnsaga.writePacketData(dos,id,category);
+
+		Packet250CustomPayload packet = new Packet250CustomPayload();
+		packet.channel = "unsagamod"; // ここでチャンネルを設定する
+		packet.data    = bos.toByteArray();
+		packet.length  = bos.size();
+		packet.isChunkDataPacket = false;
+
+		return packet;
+	}
+
+
+	public static Packet getPacket(EventInteractVillager eventInteractVillager,
+			byte guiBartering, EntityVillager villager) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(bos);
+
+		EventInteractVillager.writePacketData(dos,guiBartering,villager);
+
+		Packet250CustomPayload packet = new Packet250CustomPayload();
+		packet.channel = "unsagamod_gui"; // ここでチャンネルを設定する
+		packet.data    = bos.toByteArray();
+		packet.length  = bos.size();
+		packet.isChunkDataPacket = false;
+
+		return packet;
+	}
+
+
+	public static Packet getPacket(ContainerBartering containerBartering, int id) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(bos);
+
+		ContainerBartering.writePacketData(dos,(byte)id);
 
 		Packet250CustomPayload packet = new Packet250CustomPayload();
 		packet.channel = "unsagamod"; // ここでチャンネルを設定する

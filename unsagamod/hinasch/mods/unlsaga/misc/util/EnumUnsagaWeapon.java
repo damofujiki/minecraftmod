@@ -16,6 +16,7 @@ public enum EnumUnsagaWeapon {
 	
 	public static final HashSet<String> weaponList = toString(Sets.immutableEnumSet(SWORD,STAFF,SPEAR,BOW,AXE));
 	public static final HashSet<String> armorList = toString(Sets.immutableEnumSet(HELMET,LEGGINS,ARMOR,BOOTS));
+	public static final HashSet<String> merchandiseList = toString(Sets.immutableEnumSet(SWORD,STAFF,SPEAR,BOW,AXE,ARMOR,HELMET,LEGGINS,BOOTS,ACCESSORY));
 	public static final ArrayList<EnumUnsagaWeapon> toolArray = Lists.newArrayList(SWORD,STAFF,SPEAR,BOW,AXE,ACCESSORY);
 	
 	public static HashSet<String> toString(Set<EnumUnsagaWeapon> set){

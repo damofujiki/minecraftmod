@@ -4,7 +4,7 @@ import hinasch.lib.UtilNBT;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.MaterialList;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
-import hinasch.mods.unlsaga.item.ItemAccessory;
+import hinasch.mods.unlsaga.item.etc.ItemAccessory;
 import hinasch.mods.unlsaga.item.weapon.ItemBowUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemStaffUnsaga;
 

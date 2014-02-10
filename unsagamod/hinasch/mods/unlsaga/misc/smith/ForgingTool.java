@@ -12,6 +12,7 @@ import java.util.Random;
 
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.MathHelper;
 
 import com.google.common.base.Optional;
 
@@ -42,7 +43,7 @@ public class ForgingTool {
 	}
 	public ItemStack getForgedItemStack(){
 		ItemStack newstack = UnsagaItems.getItem(this.categoryForge, this.materialForged, 1, this.damageForged);
-		HelperUnsagaWeapon.initWeapon(newstack, this.materialForged.name, this.materialForged.weight);
+		HelperUnsagaWeapon.initWeapon(newstack, this.materialForged.name, this.weightForged);
 		if(this.newenchantMap.isPresent()){
 			EnchantmentHelper.setEnchantments(newenchantMap.get(), newstack);
 		}
@@ -54,13 +55,28 @@ public class ForgingTool {
 		return newstack;
 	}
 	
+	public void calcForgedWeight(){
+		int forged = 0;
+		int baseweight = this.base.getWeight();
+		int subweight = this.sub.getWeight();
+		forged = subweight - baseweight;
+		Unsaga.debug(forged+":sub:"+subweight+"baseweight:"+baseweight);
+		this.weightForged = baseweight += MathHelper.clamp_int(forged, -2, +2);
+		this.weightForged = MathHelper.clamp_int(this.weightForged, 0, 20);
+	}
 
-	
+//	public static int getWeight(ItemStack is){
+//		if(UtilNBT.hasKey(is, "weight")){
+//			return  HelperUnsagaWeapon.getCurrentWeight(is);
+//		}
+//		return HelperUnsagaWeapon.getMaterial(is).weight;
+//	}
+//	
 	public void decideForgedMaterial(){
 		Optional<UnsagaMaterial> transformed = MaterialTransform.drawTransformed(baseMaterial, subMaterial, rand);
 		if(transformed.isPresent()){
 			this.materialForged = transformed.get();
-			if(!UnsagaItems.isValidItemMaterial(this.categoryForge, this.materialForged)){
+			if(!UnsagaItems.isValidItemForMaterial(this.categoryForge, this.materialForged)){
 				this.materialForged = this.baseMaterial;
 			}
 		}else{

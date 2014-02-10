@@ -1,8 +1,9 @@
 package hinasch.mods.unlsaga.misc.smith;
 
+import hinasch.lib.UtilNBT;
 import hinasch.mods.unlsaga.core.init.NoFuncItemList;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
-import hinasch.mods.unlsaga.item.ItemIngotsUnsaga;
+import hinasch.mods.unlsaga.item.etc.ItemIngotsUnsaga;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.IUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.NoFuncItem;
@@ -39,6 +40,17 @@ public class MaterialInfo {
 			return Optional.of(info.damage);
 		}
 		return Optional.absent();
+	}
+	
+	public int getWeight(){
+		if(UtilNBT.hasKey(this.is, "weight")){
+			return HelperUnsagaWeapon.getCurrentWeight(this.is);
+			
+		}
+		if(this.getMaterial().isPresent()){
+			return this.getMaterial().get().weight;
+		}
+		return 0;
 	}
 	
 	public Optional<UnsagaMaterial> getMaterial(){

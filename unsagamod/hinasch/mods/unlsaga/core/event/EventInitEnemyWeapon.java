@@ -2,6 +2,7 @@ package hinasch.mods.unlsaga.core.event;
 
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
+import hinasch.mods.unlsaga.core.init.UnsagaItems.EnumSelecterItem;
 import hinasch.mods.unlsaga.item.weapon.ItemBowUnsaga;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.ai.EntityAIArrowAttack;
@@ -27,7 +28,7 @@ public class EventInitEnemyWeapon {
 		if(e.entityLiving instanceof EntityZombie){
 			EntityZombie zombi = (EntityZombie)e.entityLiving;
 			if(zombi.getHeldItem()==null && e.world.rand.nextInt(3)>0){
-				ItemStack weapon = UnsagaItems.getRandomWeapon(e.world.rand,this.figurePlayerLV(e.world, zombi),false);
+				ItemStack weapon = UnsagaItems.getRandomWeapon(e.world.rand,this.figurePlayerLV(e.world, zombi),EnumSelecterItem.WEAPONONLY);
 				zombi.setCurrentItemOrArmor(0, weapon);
 			}
 		}
@@ -41,13 +42,13 @@ public class EventInitEnemyWeapon {
 				aiArrowAttack = new EntityAIArrowAttack(ske, 1.0D, 20, 60, 15.0F);
 				
 				
-				weapon = UnsagaItems.getRandomWeapon(e.world.rand,this.figurePlayerLV(e.world, ske),true);
+				weapon = UnsagaItems.getRandomWeapon(e.world.rand,this.figurePlayerLV(e.world, ske),EnumSelecterItem.BOWONLY);
 				
 				ske.setCurrentItemOrArmor(0, weapon);
 				ske.tasks.addTask(4, aiArrowAttack);
 				break;
 			case 1: //wither ske
-				weapon = UnsagaItems.getRandomWeapon(e.world.rand,this.figurePlayerLV(e.world, ske),false);
+				weapon = UnsagaItems.getRandomWeapon(e.world.rand,this.figurePlayerLV(e.world, ske),EnumSelecterItem.WEAPONONLY);
 				ske.setCurrentItemOrArmor(0, weapon);
 				break;
 			}

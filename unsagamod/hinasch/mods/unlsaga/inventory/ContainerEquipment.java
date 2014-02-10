@@ -11,11 +11,13 @@ public class ContainerEquipment extends Container{
 
 	protected EntityPlayer player;
 	protected InventoryEquipment invEquipment;
+
 	
 	public ContainerEquipment(InventoryPlayer par1InventoryPlayer, EntityPlayer ep)
 	{
 		this.player = ep;
 		this.invEquipment = new InventoryEquipment(ep);
+
 		if(ep.getExtendedProperties("unsaga.equipment")!=null){
 			ExtendedPlayerData data = (ExtendedPlayerData) ep.getExtendedProperties("unsaga.equipment");
 			

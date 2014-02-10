@@ -21,7 +21,7 @@ public class MaterialTransform {
 	public final UnsagaMaterial transformto;
 	public final int probability;
 	
-	public MaterialTransform(UnsagaMaterial m1,UnsagaMaterial m2,UnsagaMaterial tr,int prob){
+	protected MaterialTransform(UnsagaMaterial m1,UnsagaMaterial m2,UnsagaMaterial tr,int prob){
 		this.required = new HashMap();
 		if(m1==m2){
 			this.required.put(m1, 2);
@@ -78,19 +78,7 @@ public class MaterialTransform {
 		return false;
 	}
 	
-	protected static Multiset<UnsagaMaterial> unpack(Multiset<UnsagaMaterial> input){
-		Multiset<UnsagaMaterial> newset = HashMultiset.create();
-		for(Iterator<UnsagaMaterial> ite = input.iterator();ite.hasNext();){
-			UnsagaMaterial material = ite.next();
-			newset.add(material);
-			if(material.hasSubMaterials()){
-				for(Iterator<UnsagaMaterial> ite2 = material.getSubMaterials().values().iterator();ite2.hasNext();){
-					newset.add(ite2.next());
-				}
-			}
-		}
-		return newset;
-	}
+
 	
 	static{
 		store = new HashSet();

@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.misc.smith;
 
 import hinasch.mods.unlsaga.core.init.MaterialList;
+import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 
 import java.util.HashSet;
@@ -18,7 +19,7 @@ public class MaterialLibrary {
 
 	
 	protected static HashSet<MaterialLibrary> smithItemsSet = new HashSet();
-	protected static enum EnumLibraryKey {TOOLMATERIAL,ITEM,BLOCK,STRING,ITEMSTACK};
+	public static enum EnumLibraryKey {TOOLMATERIAL,ITEM,BLOCK,STRING,ITEMSTACK};
 	public Optional<Integer> itemid = Optional.absent();
 	public Optional<Integer> itemmeta = Optional.absent();
 	public Optional<String> oreid = Optional.absent();
@@ -60,6 +61,7 @@ public class MaterialLibrary {
 		smithItemsSet.add(new MaterialLibrary(Block.stone,MaterialList.stone,5));
 		smithItemsSet.add(new MaterialLibrary(Item.feather,MaterialList.feather,3));
 		smithItemsSet.add(new MaterialLibrary(Item.bone,MaterialList.bone,5));
+		smithItemsSet.add(new MaterialLibrary(UnsagaItems.itemMusket,MaterialList.iron,200));
 	}
 	
 	protected MaterialLibrary(Object par1,UnsagaMaterial material,int damage){

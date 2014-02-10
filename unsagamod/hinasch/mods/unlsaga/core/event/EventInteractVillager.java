@@ -36,29 +36,44 @@ public class EventInteractVillager {
 						ExtendedPlayerData data = (ExtendedPlayerData) HSLibs.getExtendedData(ExtendedPlayerData.key, e.entityPlayer).get();
 						data.setMerchant(villager);
 						//e.entityPlayer.openGui(Unsaga.instance, Unsaga.GuiSmith, ep.worldObj, xyz.x, xyz.y, xyz.z);
-						PacketDispatcher.sendPacketToServer(PacketHandler.getPacket(this,villager));
+						PacketDispatcher.sendPacketToServer(PacketHandler.getPacket(this,(byte)Unsaga.GuiSmith,villager));
 					}
 
 				}
 				if(profession==0 || profession==4){ //農家か肉屋
 					villager.setCustomer(e.entityPlayer);
-					if(HSLibs.getExtendedData(ExtendedPlayerData.key, e.entityPlayer).isPresent()){
+					if(HSLibs.getExtendedData(ExtendedPlayerData.key, ep).isPresent()){
 						ExtendedPlayerData data = (ExtendedPlayerData) HSLibs.getExtendedData(ExtendedPlayerData.key, e.entityPlayer).get();
 						data.setMerchant(villager);
 						//e.entityPlayer.openGui(Unsaga.instance, Unsaga.GuiBartering, e.entityPlayer.worldObj, xyz.x, xyz.y, xyz.z);
+						XYZPos pos = XYZPos.entityPosToXYZ(ep);
+						PacketDispatcher.sendPacketToServer(PacketHandler.getPacket(this,(byte)Unsaga.GuiBartering,villager));
 					}
 				}
 			}
 		}
 	}
 
+	@Deprecated
 	public static void writePacketData(DataOutputStream dos,
 			EntityVillager villager) {
 		try {
 			dos.writeByte((byte)Unsaga.GuiSmith);
 			dos.writeInt((int)villager.entityId);
 		} catch (IOException e) {
-			// TODO 自動生成された catch ブロック
+			
+			e.printStackTrace();
+		}
+		
+	}
+
+	public static void writePacketData(DataOutputStream dos, byte guinumber,
+			EntityVillager villager) {
+		try {
+			dos.writeByte((byte)guinumber);
+			dos.writeInt((int)villager.entityId);
+		} catch (IOException e) {
+			
 			e.printStackTrace();
 		}
 		

@@ -3,10 +3,10 @@ package hinasch.mods.unlsaga.core.init;
 import hinasch.lib.HSLibs;
 import hinasch.mods.tsukiyotake.lib.PropertyCustom;
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.item.ItemAccessory;
-import hinasch.mods.unlsaga.item.ItemArmorUnsaga;
-import hinasch.mods.unlsaga.item.ItemBarrett;
-import hinasch.mods.unlsaga.item.ItemIngotsUnsaga;
+import hinasch.mods.unlsaga.item.etc.ItemAccessory;
+import hinasch.mods.unlsaga.item.etc.ItemArmorUnsaga;
+import hinasch.mods.unlsaga.item.etc.ItemBarrett;
+import hinasch.mods.unlsaga.item.etc.ItemIngotsUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemAxeUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemBowUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemGunUnsaga;
@@ -82,6 +82,7 @@ public class UnsagaItems {
 	
 	public static Multimap<EnumUnsagaWeapon,MaterialPair> validMaterialMap = ArrayListMultimap.create();
 
+	public static enum EnumSelecterItem {BOWONLY,WEAPONONLY,MERCHANDISE};
 	public static void loadConfig(Configuration config){
 		PropertyCustom prop = new PropertyCustom(new String[]{"itemIDs.Swords","itemIDs.Axes","itemIDs.Staffs"
 				,"itemIDs.Spears","itemIDs.Bows","itemIDs.Accessories","itemIDs.Armors","itemID.Ingots","itemID.Barrett"
@@ -344,7 +345,7 @@ public class UnsagaItems {
 
 	}
 	
-	public static boolean isValidItemMaterial(EnumUnsagaWeapon category,UnsagaMaterial material){
+	public static boolean isValidItemForMaterial(EnumUnsagaWeapon category,UnsagaMaterial material){
 		String key = category.toString() + "." + material.name;
 		if(itemMap.containsKey(key)){
 			return true;
@@ -359,7 +360,7 @@ public class UnsagaItems {
 		return false;
 	}
 
-	public static ItemStack getRandomWeapon(Random rand, int rank,boolean bowOnly){
+	public static ItemStack getRandomWeapon(Random rand, int rank,EnumSelecterItem selecter){
 		//if(keyExcept==null){
 		//hashSet<String> keyExcept = new HashSet();
 		boolean flag = true;
@@ -369,22 +370,39 @@ public class UnsagaItems {
 			String keys[] = key.split("\\.");
 			flag = true;
 
-			if(!bowOnly){
-				if(MaterialList.getMaterial(keys[1]).rank>rank){
+			if(selecter==EnumSelecterItem.WEAPONONLY){
+				if(EnumUnsagaWeapon.weaponList.contains(keys[0])){
+					flag = true;
+				}else{
 					flag = false;
 				}
-				if(keys[0].equals(EnumUnsagaWeapon.BOW.toString())){
-					flag = false;
-				}
-				if(EnumUnsagaWeapon.armorList.contains(keys[0])){
-					flag = false;
-				}
+
+
+//				if(keys[0].equals(EnumUnsagaWeapon.BOW.toString())){
+//					flag = false;
+//				}
+//				if(EnumUnsagaWeapon.armorList.contains(keys[0])){
+//					flag = false;
+//				}
+//				if(keys[0].equals(EnumUnsagaWeapon.ACCESSORY.toString())){
+//					flag = false;
+//				}
 			}
 
-			if(bowOnly){
+			if(selecter==EnumSelecterItem.BOWONLY){
 				if(!keys[0].equals(EnumUnsagaWeapon.BOW.toString())){
 					flag = false;
 				}
+			}
+			if(selecter==EnumSelecterItem.MERCHANDISE){
+				if(EnumUnsagaWeapon.merchandiseList.contains(keys[0])){
+					flag = true;
+				}else{
+					flag = false;
+				}
+			}
+			if(MaterialList.getMaterial(keys[1]).rank>rank){
+				flag = false;
 			}
 			if(flag){
 				keyExcept.add(key);
@@ -414,6 +432,7 @@ public class UnsagaItems {
 		return new ItemStack(Item.swordStone.itemID,1,0);
 	}
 	
+	@Deprecated
 	public static void registerValidTool(EnumUnsagaWeapon category,UnsagaMaterial material,int itemid){
 		if(material.hasSubMaterials()){
 			for(Iterator<UnsagaMaterial> ite=material.getSubMaterials().values().iterator();ite.hasNext();){

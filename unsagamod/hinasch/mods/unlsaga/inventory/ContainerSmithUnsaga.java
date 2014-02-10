@@ -158,7 +158,7 @@ public class ContainerSmithUnsaga extends Container{
 				baseItemInfo = new MaterialInfo(this.inventorySmith.getBaseItem());
 				if(baseItemInfo.getMaterial().isPresent()){
 					UnsagaMaterial material = baseItemInfo.getMaterial().get();
-					if(UnsagaItems.isValidItemMaterial(category, material)){
+					if(UnsagaItems.isValidItemForMaterial(category, material)){
 						Unsaga.debug("ベースおｋです");
 						flagcount +=1;
 					}
@@ -171,19 +171,31 @@ public class ContainerSmithUnsaga extends Container{
 					flagcount += 1;
 				}
 			}
-			
-			if(flagcount>=3){
+			if(this.inventorySmith.getForgedItemStack()==null){
+				flagcount += 1;
+			}
+			if(flagcount>=4){
 				ForgingTool newforge = new ForgingTool(category,baseItemInfo, subItemInfo,this.worldobj.rand);
 				newforge.decideForgedMaterial();
 				newforge.calcForgedDamage();
-				newforge.prepareTransplantEnchant(EnumPayValues.LOW);
+				newforge.prepareTransplantEnchant(this.getPaymentValue());
+				newforge.calcForgedWeight();
 				ItemStack newstack = newforge.getForgedItemStack();
 				this.inventorySmith.setInventorySlotContents(iFORGED, newstack);
+				this.inventorySmith.decrStackSize(iBASE, 1);
+				this.inventorySmith.decrStackSize(iMATERIAL, 1);
+				this.inventorySmith.decrStackSize(iPAYMENT, 1);
 			}
 		}
 
 	}
 
+	public EnumPayValues getPaymentValue(){
+		if(this.inventorySmith.getPayment()!=null){
+			return ValidPayment.getValueFromItemStack(this.inventorySmith.getPayment());
+		}
+		return null;
+	}
 
 	public void readPacketData(ByteArrayDataInput data)
 	{

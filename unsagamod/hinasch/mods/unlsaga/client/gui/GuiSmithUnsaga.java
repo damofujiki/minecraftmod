@@ -4,10 +4,6 @@ import hinasch.mods.unlsaga.DebugUnsaga;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.inventory.ContainerSmithUnsaga;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -54,26 +50,7 @@ public class GuiSmithUnsaga extends GuiContainer{
 	}
 	
 
-    protected void drawTip(String str,int par2, int par3)
-    {
-//        List list = par1ItemStack.getTooltip(this.mc.thePlayer, this.mc.gameSettings.advancedItemTooltips);
-//
-//        for (int k = 0; k < list.size(); ++k)
-//        {
-//            if (k == 0)
-//            {
-//                list.set(k, "\u00a7" + Integer.toHexString(par1ItemStack.getRarity().rarityColor) + (String)list.get(k));
-//            }
-//            else
-//            {
-//                list.set(k, EnumChatFormatting.GRAY + (String)list.get(k));
-//            }
-//        }
 
-    	List<String> list = new ArrayList();
-    	list.add(str);
-        drawHoveringText(list, par2, par3, (font == null ? fontRenderer : font));
-    }
 
 	@Override
 	public void initGui()

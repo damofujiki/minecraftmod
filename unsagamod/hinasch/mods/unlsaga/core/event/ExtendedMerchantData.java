@@ -14,7 +14,10 @@ import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 public class ExtendedMerchantData implements IExtendedEntityProperties{
 
 	protected ItemStack[] merchantInventory = new ItemStack[10];
+	protected boolean initMerchandice = false;
+	public long recentPurchaseDate; 
 	public static String VILLAGER = "unsaga.villager";
+	
 	@ForgeSubscribe
 	public void attachDataEvent(EntityConstructing e){
 	
@@ -28,12 +31,23 @@ public class ExtendedMerchantData implements IExtendedEntityProperties{
 		return this.merchantInventory[par1];
 	}
 	
+	public void setMerchantInventory(int par1,ItemStack is){
+		this.merchantInventory[par1] = is;
+	}
+	
+	public boolean hasMerchandiceInitialized(){
+		return this.initMerchandice;
+	}
+	
+	public void markMerchandiceInitialized(boolean par1){
+		this.initMerchandice = par1;
+	}
 	@Override
 	public void saveNBTData(NBTTagCompound compound) {
 		// TODO 自動生成されたメソッド・スタブ
 		NBTTagList tagList = new NBTTagList();
 		//Unsaga.debug("nbtへセーブ");
-		for(int i=0;i<10;i++){
+		for(int i=0;i<9;i++){
 			if(this.merchantInventory[i]!=null){
                 NBTTagCompound nbttagcompound1 = new NBTTagCompound();
                 nbttagcompound1.setByte("Slot", (byte)i);
@@ -42,13 +56,16 @@ public class ExtendedMerchantData implements IExtendedEntityProperties{
 			}
 		}
 		
-		compound.setTag("Items", tagList);
+		compound.setTag("Bartering.Items", tagList);
+		compound.setLong("Bartering.recentPurchase", this.recentPurchaseDate);
+		
+		compound.setBoolean("initialized", initMerchandice);
 	}
 
 	@Override
 	public void loadNBTData(NBTTagCompound compound) {
 		Unsaga.debug("nbtから読み込み");
-        NBTTagList nbttaglist = compound.getTagList("Items");
+        NBTTagList nbttaglist = compound.getTagList("Bartering.Items");
         this.merchantInventory = new ItemStack[10];
         for (int i = 0; i < nbttaglist.tagCount(); ++i)
         {
@@ -61,6 +78,8 @@ public class ExtendedMerchantData implements IExtendedEntityProperties{
             }
         }
 		
+        this.initMerchandice = compound.getBoolean("initialized");
+        this.recentPurchaseDate = compound.getLong("Bartering.recentPurchase");
 	}
 
 	@Override

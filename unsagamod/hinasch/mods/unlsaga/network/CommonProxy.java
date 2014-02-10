@@ -3,9 +3,11 @@ package hinasch.mods.unlsaga.network;
 import hinasch.lib.HSLibs;
 import hinasch.mods.unlsaga.DebugUnsaga;
 import hinasch.mods.unlsaga.Unsaga;
+import hinasch.mods.unlsaga.client.gui.GuiBartering;
 import hinasch.mods.unlsaga.client.gui.GuiEquipment;
 import hinasch.mods.unlsaga.client.gui.GuiSmithUnsaga;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
+import hinasch.mods.unlsaga.inventory.ContainerBartering;
 import hinasch.mods.unlsaga.inventory.ContainerEquipment;
 import hinasch.mods.unlsaga.inventory.ContainerSmithUnsaga;
 import net.minecraft.client.Minecraft;
@@ -89,6 +91,20 @@ public class CommonProxy implements IGuiHandler{
 				
 			}
 		}
+		if(ID==Unsaga.GuiBartering){
+			if(player.openContainer == player.inventoryContainer){
+				if(HSLibs.getExtendedData(ExtendedPlayerData.key, player).isPresent()){
+					ExtendedPlayerData data = (ExtendedPlayerData)HSLibs.getExtendedData(ExtendedPlayerData.key, player).get();
+					if(data.getMerchant().isPresent()){
+						Unsaga.debug("Container呼ばれてる");
+						Unsaga.debug(data.getMerchant().get());
+						return new ContainerBartering(world,player,data.getMerchant().get());
+					}
+					
+				}
+				
+			}
+		}
 		return null;
 	}
 
@@ -109,16 +125,16 @@ public class CommonProxy implements IGuiHandler{
 		}
 		if(ID==Unsaga.GuiSmith){
 			if(Minecraft.getMinecraft().currentScreen==null){
-//				if(HSLibs.getExtendedData(ExtendedPlayerData.key, player).isPresent()){
-//					ExtendedPlayerData data = (ExtendedPlayerData)HSLibs.getExtendedData(ExtendedPlayerData.key, player).get();
-//					Unsaga.debug("GUI呼ばれてる");
 
-						//Unsaga.debug(data.getMerchant().get());
 						return new GuiSmithUnsaga(new NpcMerchant(player), world, player);
-					
-					
-//				}
-				
+
+			}
+		}
+		if(ID==Unsaga.GuiBartering){
+			if(Minecraft.getMinecraft().currentScreen==null){
+
+						return new GuiBartering(new NpcMerchant(player), world, player);
+
 			}
 		}
 		return null;

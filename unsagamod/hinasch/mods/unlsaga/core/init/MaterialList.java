@@ -40,7 +40,7 @@ public class MaterialList {
 	public static final UnsagaMaterial steel1 = steels.addSubMaterial(new UnsagaMaterial("steel1",5,7,"Steel","鋼"));
 	public static final UnsagaMaterial steel2 = steels.addSubMaterial(new UnsagaMaterial("steel2",5,8,"Steel","鋼"));
 	
-	public static final UnsagaMaterial obsidian = new UnsagaMaterial("obsidian",8,3,"Obsidian","黒曜石");
+	public static final UnsagaMaterial obsidian = new UnsagaMaterial("obsidian",8,7,"Obsidian","黒曜石");
 	
 	public static final UnsagaMaterial bestial = new UnsagaMaterial("bestial",3,4,"Bestial","獣石");
 	public static final UnsagaMaterial topaz = bestial.addSubMaterial(new UnsagaMaterial("topaz",3,4,"Topaz","黄龍石"));

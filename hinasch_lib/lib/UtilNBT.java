@@ -37,6 +37,12 @@ public class UtilNBT {
 		return false;
 	}
 	
+	public static void removeTag(ItemStack is,String key){
+		Preconditions.checkNotNull(is);
+		NBTTagCompound nbt = is.getTagCompound();
+		nbt.removeTag(key);
+		return;
+	}
 	public static void setFreeTag(ItemStack is,String key,int val){
 		Preconditions.checkNotNull(is);
 		initNBTTag(is);

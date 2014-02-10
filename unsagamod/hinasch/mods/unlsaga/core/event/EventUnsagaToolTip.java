@@ -1,8 +1,10 @@
 package hinasch.mods.unlsaga.core.event;
 
+import hinasch.mods.unlsaga.client.gui.GuiBartering;
 import hinasch.mods.unlsaga.client.gui.GuiSmithUnsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.misc.bartering.MerchandiseInfo;
 import hinasch.mods.unlsaga.misc.smith.MaterialInfo;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import net.minecraft.client.Minecraft;
@@ -16,6 +18,10 @@ public class EventUnsagaToolTip {
 	
 	@ForgeSubscribe
 	public void toolTipEvent(ItemTooltipEvent event){
+		if(Minecraft.getMinecraft().currentScreen instanceof GuiBartering){
+			this.bartering(event);
+			return;
+		}
 		if(!(Minecraft.getMinecraft().currentScreen instanceof GuiSmithUnsaga))return;
 		GuiSmithUnsaga guismith = (GuiSmithUnsaga)Minecraft.getMinecraft().currentScreen;
 		int currentcategory = guismith.getCurrentCategory();
@@ -30,7 +36,7 @@ public class EventUnsagaToolTip {
 				}else{
 					event.toolTip.add("Valid Material:"+material.headerEn);
 				}
-				if(UnsagaItems.isValidItemMaterial(EnumUnsagaWeapon.toolArray.get(currentcategory), material)){
+				if(UnsagaItems.isValidItemForMaterial(EnumUnsagaWeapon.toolArray.get(currentcategory), material)){
 					if(Minecraft.getMinecraft().gameSettings.language.equals("ja_JP")){
 						event.toolTip.add("ベース素材可："+EnumUnsagaWeapon.toolArray.get(currentcategory));
 					}else{
@@ -42,6 +48,22 @@ public class EventUnsagaToolTip {
 			//MaterialLibrary info = MaterialLibrary.findInfo(event.itemStack).get();
 
 		}
+		
+	}
+
+	protected void bartering(ItemTooltipEvent event) {
+		// TODO 自動生成されたメソッド・スタブ
+		if(MerchandiseInfo.hasBuyPriceTag(event.itemStack)){
+			MerchandiseInfo merchandiseInfo = new MerchandiseInfo(event.itemStack);
+			event.toolTip.add("Cost:"+merchandiseInfo.getBuyPriceTag());
+		}else{
+			if(MerchandiseInfo.isPossibleToSell(event.itemStack)){
+				MerchandiseInfo merchandiseInfo = new MerchandiseInfo(event.itemStack);
+				event.toolTip.add("Sell Price:"+merchandiseInfo.getPrice());
+			}
+
+		}
+		
 		
 	}
 }

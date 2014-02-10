@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.misc.smith;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
@@ -33,6 +34,17 @@ public class ValidPayment {
 		this.key = par1;
 		this.value = par3;
 		validPayList.add(this);
+	}
+	
+	public static EnumPayValues getValueFromItemStack(ItemStack is){
+		EnumPayValues enumpay = null;
+		for(Iterator<ValidPayment> ite = validPayList.iterator();ite.hasNext();){
+			ValidPayment pay = ite.next();
+			if(pay.compare(is)){
+				enumpay = pay.value;
+			}
+		}
+		return enumpay;
 	}
 	
 	public boolean compare(ItemStack is){
