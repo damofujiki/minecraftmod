@@ -24,8 +24,8 @@ public class ContainerEquipment extends Container{
 			this.invEquipment.setInventorySlotContents(0, data.getItemStack(0));
 			this.invEquipment.setInventorySlotContents(1, data.getItemStack(1));
 		}
-		this.addSlotToContainer(new Slot(this.invEquipment, 0, 28, 53-(18*2))); //Base Material
-		this.addSlotToContainer(new Slot(this.invEquipment, 1, 28+(18*2)-8, 53-(18*2))); //Material2
+		this.addSlotToContainer(new SlotAccessory(this.invEquipment, 0, 28, 53-(18*2))); //Base Material
+		this.addSlotToContainer(new SlotAccessory(this.invEquipment, 1, 28+(18*2)-8, 53-(18*2))); //Material2
 		//this.addSlotToContainer(new SlotMerchantResult(par1InventoryPlayer.player, par2IMerchant, this.merchantInventory, 2, 120, 53));
 		int i;
 

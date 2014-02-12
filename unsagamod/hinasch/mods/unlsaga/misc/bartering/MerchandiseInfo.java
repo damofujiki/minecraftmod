@@ -2,6 +2,7 @@ package hinasch.mods.unlsaga.misc.bartering;
 
 import hinasch.lib.HSLibs;
 import hinasch.lib.UtilNBT;
+import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.MaterialList;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaItems.EnumSelecterItem;
@@ -115,8 +116,20 @@ public class MerchandiseInfo {
 			
 		}
 
-		if(MerchandiseLibrary.findPrice(is).isPresent()){
-			price = MerchandiseLibrary.findPrice(is).get();
+		if(Unsaga.merchandiseFactory.findPrice(is).isPresent()){
+			price = Unsaga.merchandiseFactory.findPrice(is).get();
+		}
+		if(is.getItem() instanceof ItemSword){
+			String str = ((ItemSword)is.getItem()).getToolMaterialName();
+			if(Unsaga.merchandiseFactory.findPrice(str).isPresent()){
+				price = Unsaga.merchandiseFactory.findPrice(str).get();
+			}
+		}
+		if(is.getItem() instanceof ItemTool){
+			String str = ((ItemTool)is.getItem()).getToolMaterialName();
+			if(Unsaga.merchandiseFactory.findPrice(str).isPresent()){
+				price = Unsaga.merchandiseFactory.findPrice(str).get();
+			}
 		}
 		if(is.stackSize>1){
 			price *= is.stackSize;
@@ -140,7 +153,7 @@ public class MerchandiseInfo {
 	public static boolean isPossibleToSell(ItemStack is){
 		MaterialInfo info = new MaterialInfo(is);
 		if(info.getMaterial().isPresent())return true;
-		if(MerchandiseLibrary.findPrice(is).isPresent())return true;
+		if(Unsaga.merchandiseFactory.findPrice(is).isPresent())return true;
 		return false;
 	}
 	

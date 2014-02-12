@@ -3,6 +3,7 @@ package hinasch.mods.unlsaga.misc.ability;
 public class Ability {
 
 	
+	public final int number;
 	protected final String name;
 	protected final String nameJP;
 	
@@ -11,6 +12,7 @@ public class Ability {
 	public Ability(int num,String par1,String par2){
 		name = par1;
 		nameJP = par2;
+		this.number = num;
 		
 		AbilityRegistry.abilityMap.put(num, this);
 		
@@ -27,8 +29,20 @@ public class Ability {
 		return nameJP;
 	}
 	
+	public String getName(String lang){
+		if(lang.equals("ja_JP")){
+			return this.getName(1);
+		}
+		return this.getName(0);
+	}
+	
 	//use Heal Ability
 	public int getHealPoint(){
 		return this.healPoint;
+	}
+	
+	@Override
+	public String toString(){
+		return String.valueOf(this.number)+":"+name;
 	}
 }

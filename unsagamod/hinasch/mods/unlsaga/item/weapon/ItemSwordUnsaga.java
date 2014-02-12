@@ -3,6 +3,10 @@ package hinasch.mods.unlsaga.item.weapon;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
+import hinasch.mods.unlsaga.misc.ability.IGainAbility;
+import hinasch.mods.unlsaga.misc.ability.skill.HelperSkill;
+import hinasch.mods.unlsaga.misc.ability.skill.SkillSword;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
@@ -12,6 +16,7 @@ import java.util.List;
 
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.EnumToolMaterial;
@@ -19,7 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.util.Icon;
 
-public class ItemSwordUnsaga extends ItemSword implements IUnsagaMaterial{
+public class ItemSwordUnsaga extends ItemSword implements IUnsagaMaterial,IGainAbility{
 
 	public final UnsagaMaterial unsMaterial;
 	protected final HashMap<String,Icon> iconMap = new HashMap();
@@ -53,6 +58,19 @@ public class ItemSwordUnsaga extends ItemSword implements IUnsagaMaterial{
         return this.icons[1];
     }
 	
+	@Override
+    public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
+    {
+		HelperSkill helper = new HelperSkill(stack,player);
+		if(helper.hasAbility(AbilityRegistry.vandalize)){
+			SkillSword vandalize = new SkillSword();
+			vandalize.doVandelize(player, entity, player.worldObj, stack);
+			stack.damageItem(AbilityRegistry.vandalize.damageWeapon, player);
+			player.addExhaustion(0.5F);
+		}
+        return false;
+    }
+    
 	@Override
     public int getColorFromItemStack(ItemStack par1ItemStack, int par2)
     {
@@ -119,5 +137,26 @@ public class ItemSwordUnsaga extends ItemSword implements IUnsagaMaterial{
 	public EnumUnsagaWeapon getCategory() {
 		// TODO 自動生成されたメソッド・スタブ
 		return EnumUnsagaWeapon.SWORD;
+	}
+
+
+	@Override
+	public void gainAbility(ItemStack is) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+
+	@Override
+	public void gainAbilityWithChance(ItemStack is) {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+
+	@Override
+	public int getMaxAbility() {
+		// TODO 自動生成されたメソッド・スタブ
+		return 1;
 	}
 }

@@ -3,6 +3,8 @@ package hinasch.mods.unlsaga.core.event;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
+import hinasch.mods.unlsaga.misc.ability.HelperAbility;
+import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
 
@@ -37,6 +39,10 @@ public class TickHandlerUnsaga implements ITickHandler{
 						amountHeal += ar.getInheritHealAmount(im.getCategory(), material, AbilityRegistry.healUps);
 						amountHeal += ar.getInheritHealAmount(im.getCategory(), material, AbilityRegistry.healDowns);
 					}
+					if(pdata.getItemStack(i).getItem() instanceof IGainAbility){
+						HelperAbility helper = new HelperAbility(pdata.getItemStack(i),entityPlayer);
+						amountHeal += helper.getHealAmount();
+					}
 				}
 			}
 		}
@@ -49,6 +55,10 @@ public class TickHandlerUnsaga implements ITickHandler{
 					//Unsaga.debug(material.headerEn+":"+im.getCategory());
 					amountHeal += ar.getInheritHealAmount(im.getCategory(), material, AbilityRegistry.healUps);
 					amountHeal += ar.getInheritHealAmount(im.getCategory(), material, AbilityRegistry.healDowns);
+				}
+				if(armorstack.getItem() instanceof IGainAbility){
+					HelperAbility helper = new HelperAbility(armorstack,entityPlayer);
+					amountHeal += helper.getHealAmount();
 				}
 			}
 		}

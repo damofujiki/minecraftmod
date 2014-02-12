@@ -1,6 +1,9 @@
 package hinasch.mods.unlsaga;
 
 import hinasch.lib.BWrapper;
+import hinasch.lib.HSLibs;
+import hinasch.mods.unlsaga.core.event.EventGainAbilityOnDeath;
+import hinasch.mods.unlsaga.core.event.EventGainSkillOnAttack;
 import hinasch.mods.unlsaga.core.event.EventInitEnemyWeapon;
 import hinasch.mods.unlsaga.core.event.EventInteractVillager;
 import hinasch.mods.unlsaga.core.event.EventUnsagaToolTip;
@@ -15,6 +18,7 @@ import hinasch.mods.unlsaga.entity.EntityArrowUnsaga;
 import hinasch.mods.unlsaga.entity.EntityBarrett;
 import hinasch.mods.unlsaga.misc.CreativeTabsUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
+import hinasch.mods.unlsaga.misc.bartering.MerchandiseLibrary;
 import hinasch.mods.unlsaga.misc.smith.MaterialLibrary;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.network.CommonProxy;
@@ -23,7 +27,6 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.MinecraftForge;
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -51,6 +54,9 @@ public class Unsaga {
 	
 	public static AbilityRegistry abilityRegistry;
 	public static CreativeTabs tabUnsaga;
+	
+	public static MaterialLibrary materialFactory = new MaterialLibrary();
+	public static MerchandiseLibrary merchandiseFactory = new MerchandiseLibrary();
 	
 	//基本情報のロード、イベントのレジスターなど
 	@EventHandler
@@ -87,12 +93,14 @@ public class Unsaga {
 		//DwarvenItem.configure(config);
 		//DwarvenEnchantment.configure(config);
 		
-		MinecraftForge.EVENT_BUS.register(new EventInitEnemyWeapon());
-		MinecraftForge.EVENT_BUS.register(new EventInteractVillager());
-		MinecraftForge.EVENT_BUS.register(new ExtendedPlayerData());
-		MinecraftForge.EVENT_BUS.register(new ExtendedMerchantData());
-		MinecraftForge.EVENT_BUS.register(new EventUnsagaToolTip());
+		HSLibs.registerEvent(new EventInitEnemyWeapon());
+		HSLibs.registerEvent(new EventInteractVillager());
+		HSLibs.registerEvent(new ExtendedPlayerData());
+		HSLibs.registerEvent(new ExtendedMerchantData());
+		HSLibs.registerEvent(new EventUnsagaToolTip());
 		TickRegistry.registerTickHandler(new TickHandlerUnsaga(), Side.SERVER);
+		HSLibs.registerEvent(new EventGainAbilityOnDeath());
+		HSLibs.registerEvent(new EventGainSkillOnAttack());
 		//(new ForgeEventRegistry()).registerEvent();
 		
 		//NetworkRegistry.instance().registerGuiHandler(instance, proxy);
@@ -108,7 +116,7 @@ public class Unsaga {
 	@EventHandler
 	public void init(FMLInitializationEvent event)
 	{
-		MaterialLibrary.init();
+		//MaterialLibrary.init();
 		Translation.load();
 		NoFuncItemList.setLocalizeAndOreDict();
 		UnsagaBlocks.setLocalize();

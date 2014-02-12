@@ -2,8 +2,12 @@ package hinasch.mods.unlsaga.misc.ability;
 
 import hinasch.mods.unlsaga.core.init.MaterialList;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.misc.ability.skill.Skill;
+import hinasch.mods.unlsaga.misc.ability.skill.Skill.EnumDamageUnsaga;
+import hinasch.mods.unlsaga.misc.ability.skill.SkillSword;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,6 +21,8 @@ import com.google.common.collect.Sets;
 public class AbilityRegistry {
 
 	public static HashMap<Integer,Ability> abilityMap = new HashMap();
+	
+	protected SkillSword skillSword = new SkillSword();
 	
 	protected HashMap<String,List<Ability>> normalAbilityMap;
 	protected HashMap<String,List<Ability>> inheritAbilityMap;
@@ -52,6 +58,14 @@ public class AbilityRegistry {
 	public static final Ability dummy = new Ability(27,"","");
 	public static final Ability forbidden = new Ability(28,"Spell Forbidden","禁行術");
 	public static final Ability supportForbidden = new Ability(29,"Support Forbidden","禁行サポート");
+	
+	public static final Skill Bopeep = new Skill(100,"Bopeep","変幻自在",20,6,EnumDamageUnsaga.SWORD,5);
+	public static final Skill slash = new Skill(101,"Slash","払い抜け",5,3,EnumDamageUnsaga.SWORD,3);
+	public static final Skill smash = new Skill(102,"Bear Slash","ベアクラッシュ",15,3,EnumDamageUnsaga.SWORD,8);
+	public static final Skill roundabout = new Skill(103,"Roundabout","転",0,0,EnumDamageUnsaga.SWORD,6);
+	public static final Skill rearBlade = new Skill(104,"Rear Blade","追突剣",0,0,EnumDamageUnsaga.SWORDPUNCH,8);
+	public static final Skill gust = new Skill(105,"Gust","逆風の太刀",0,0,EnumDamageUnsaga.SWORD,5);
+	public static final Skill vandalize = new Skill(106,"Vandalize","ヴァンダライズ",0,0,EnumDamageUnsaga.SWORD,15);
 	
 	public static final HashSet<Ability> healDowns = Sets.newHashSet(healDown5,healDown10,healDown15,healDown20,healDown25);
 	public static final HashSet<Ability> healUps = Sets.newHashSet(healUp5,healUp10);
@@ -104,10 +118,29 @@ public class AbilityRegistry {
 		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.lazuli,Lists.newArrayList(healUp5,wood));
 		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.meteorite,Lists.newArrayList(healUp5,supportFire,supportEarth,supportMetal));
 		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.angelite,Lists.newArrayList(healUp10,supportWood,forbidden));
+		this.registerSkill();
+	}
+	
+	public void registerSkill(){
+		//vandalize.setMethod(skillSword.getClass().getMethod("doVandelize", parameterTypes));
+		addSkill(EnumUnsagaWeapon.SWORD,true,newSkillList(vandalize,smash));
+	}
+	
+	public static List<Ability> newSkillList(Skill... skills){
+		List<Ability> newlist = new ArrayList();
+		for(Skill skill:skills){
+			newlist.add((Ability)skill);
+		}
+		return newlist;
 	}
 	
 	public void addAbility(EnumUnsagaWeapon category,UnsagaMaterial material,List<Ability> abilityList){
 		this.normalAbilityMap.put(category.toString()+"."+material.name,abilityList);
+	}
+	
+	public void addSkill(EnumUnsagaWeapon category,boolean heavy,List<Ability> abilityList){
+		String keyweight = (heavy ? "HEAVY" : "LIGHT");
+		this.normalAbilityMap.put(category.toString()+"."+keyweight,abilityList);
 	}
 	
 	public void addInheritAbility(EnumUnsagaWeapon category,UnsagaMaterial material,List<Ability> abilityList){
@@ -118,6 +151,16 @@ public class AbilityRegistry {
 		if(!this.normalAbilityMap.isEmpty()){
 			if(this.normalAbilityMap.get(category.toString()+"."+material.name)!=null){
 				return Optional.of(this.normalAbilityMap.get(category.toString()+"."+material.name));
+			}
+		}
+		return Optional.absent();
+	}
+	
+	public Optional<List<Ability>> getSkillList(EnumUnsagaWeapon category,boolean heavy){
+		String keyweight = (heavy ? "HEAVY" : "LIGHT");
+		if(!this.normalAbilityMap.isEmpty()){
+			if(this.normalAbilityMap.get(category.toString()+"."+keyweight)!=null){
+				return Optional.of(this.normalAbilityMap.get(category.toString()+"."+keyweight));
 			}
 		}
 		return Optional.absent();
@@ -180,5 +223,27 @@ public class AbilityRegistry {
 			return healpoint;
 		}
 		return 0;
+	}
+	
+
+	
+	public Ability getAbilityFromInt(int par1){
+		return this.abilityMap.get(par1);
+	}
+	
+	public static List<Integer> exchangeToInt(List<Ability> input){
+		List<Integer> output = new ArrayList();
+		for(Ability ab:input){
+			output.add(ab.number);
+		}
+		return output;
+	}
+	
+	public List<Ability> exchangeToAbilities(List<Integer> input){
+		List<Ability> output = new ArrayList();
+		for(Integer i:input){
+			output.add(this.getAbilityFromInt(i));
+		}
+		return output;
 	}
 }

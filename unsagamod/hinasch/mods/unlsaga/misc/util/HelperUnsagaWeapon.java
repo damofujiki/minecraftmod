@@ -9,6 +9,7 @@ import hinasch.mods.unlsaga.item.weapon.ItemBowUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemStaffUnsaga;
 import hinasch.mods.unlsaga.misc.ability.Ability;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
+import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 
 import java.util.Iterator;
 import java.util.List;
@@ -129,8 +130,9 @@ public class HelperUnsagaWeapon {
     }
     
     public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
+    	String lang = Minecraft.getMinecraft().gameSettings.language;
 		if(par1ItemStack!=null){
-			if(Minecraft.getMinecraft().gameSettings.language.equals("ja_JP")){
+			if(lang.equals("ja_JP")){
 				par3List.add(this.getMaterial(par1ItemStack).jpName);
 			}else{
 				par3List.add(this.getMaterial(par1ItemStack).headerEn);
@@ -150,13 +152,17 @@ public class HelperUnsagaWeapon {
 				String str = "";
 				for(Iterator<Ability> ite=ar.getInheritAbilities(this.category, this.materialItem).get().iterator();ite.hasNext();){
 					Ability abi = ite.next();
-					if(Minecraft.getMinecraft().gameSettings.language.equals("ja_JP")){
-						str = str + abi.getName(1);
-					}else{
-						str = str + abi.getName(0);
-					}
+					str = str + abi.getName(lang);
 				}
 				par3List.add(str);
+			}
+			if(HelperAbility.canGainAbility(par1ItemStack)){
+				HelperAbility helperab = new HelperAbility(par1ItemStack,par2EntityPlayer);
+				if(helperab.getGainedAbilities().isPresent()){
+					for(Ability abi:helperab.getGainedAbilities().get()){
+						par3List.add(abi.getName(lang));
+					}
+				}
 			}
 		}
     }

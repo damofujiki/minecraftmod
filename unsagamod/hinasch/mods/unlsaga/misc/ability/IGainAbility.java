@@ -7,4 +7,6 @@ public interface IGainAbility {
 	public void gainAbility(ItemStack is);
 	public void gainAbilityWithChance(ItemStack is);
 	public int getMaxAbility();
+	
+
 }

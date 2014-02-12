@@ -1,9 +1,9 @@
 package hinasch.mods.unlsaga.misc.translation;
 
-import java.util.Arrays;
+import hinasch.mods.unlsaga.Unsaga;
+
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 import net.minecraft.client.Minecraft;
 import cpw.mods.fml.relauncher.Side;
@@ -13,13 +13,20 @@ public class Translation {
 
 	protected static HashMap<String,String> langMap;
 	
+//	public String strEN;
+//	public String strJP;
+//	
+//	public Translation(String en,String jp){
+//		this.strEN = en;
+//		this.strJP = jp;
+//	}
 	@SideOnly(Side.CLIENT)
 	public static String trJP(String strkey){
 		if(strkey==null || strkey.equals(""))return "";
 		String language;
 		language = Minecraft.getMinecraft().gameSettings.language;
 		if(language.equals("ja_JP")){
-			if(langMap.get(strkey)!=null){
+			if(langMap.get(strkey.toLowerCase())!=null){
 				return langMap.get(strkey.toLowerCase());
 			}else{
 				return strkey;
@@ -29,20 +36,33 @@ public class Translation {
 		return strkey;
 	}
 	
+	public static String translation(String str){
+		String newstr = str;
+		for(Iterator<String> ite=langMap.keySet().iterator();ite.hasNext();){
+			String eng = ite.next();
+			Unsaga.debug(eng);
+			if(newstr.toLowerCase().contains(eng)){
+				newstr = newstr.replace(eng, trJP(eng));
+			}
+			
+
+		}
+		return newstr;
+	}
+	
 	@SideOnly(Side.CLIENT)
 	public static boolean isJapanese(){
 		String language = Minecraft.getMinecraft().gameSettings.language;
 		return language.equals("ja_JP") ? true : false;
 	}
 	
+	public static String getLang(){
+		return Minecraft.getMinecraft().gameSettings.language;
+	}
+	
 	public static void load(){
 		langMap = new HashMap();
-		List<String> slist = Arrays.asList("debris","廃石","iron","鉄");
-		
-		for(Iterator<String> ite=slist.iterator();ite.hasNext();){
-			String etext = ite.next();
-			String jtext = ite.next();
-			langMap.put(etext, jtext);
-		}
+		langMap.put("gained ability:", "のアビリティを解放した！");
+		langMap.put("gained skill:", "を閃いた！");
 	}
 }

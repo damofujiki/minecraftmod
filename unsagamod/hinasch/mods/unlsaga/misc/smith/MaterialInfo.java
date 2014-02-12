@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.misc.smith;
 
 import hinasch.lib.UtilNBT;
+import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.NoFuncItemList;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.item.etc.ItemIngotsUnsaga;
@@ -36,8 +37,8 @@ public class MaterialInfo {
 			NoFuncItem nofunc = NoFuncItemList.getDataFromMeta(this.is.getItemDamage());
 			return Optional.of(nofunc.forgedamage);
 		}
-		if(MaterialLibrary.findInfo(this.is).isPresent()){
-			MaterialLibrary info = MaterialLibrary.findInfo(this.is).get();
+		if(Unsaga.materialFactory.findInfo(this.is).isPresent()){
+			MaterialLibraryBook info = (MaterialLibraryBook) Unsaga.materialFactory.findInfo(this.is).get();
 			return Optional.of(info.damage);
 		}
 		return Optional.absent();
@@ -78,19 +79,19 @@ public class MaterialInfo {
 			material = nofunc.associated;
 		}
 		if(item instanceof ItemTool && material==null){
-			if(MaterialLibrary.findEnumInfo(((ItemTool)item).getToolMaterialName()).isPresent()){
-				MaterialLibrary info = MaterialLibrary.findEnumInfo(((ItemTool)item).getToolMaterialName()).get();
+			if(Unsaga.materialFactory.findEnumInfo(((ItemTool)item).getToolMaterialName()).isPresent()){
+				MaterialLibraryBook info = (MaterialLibraryBook) Unsaga.materialFactory.findEnumInfo(((ItemTool)item).getToolMaterialName()).get();
 				material = info.material;
 			}
 		}
 		if(item instanceof ItemSword && material==null){
-			if(MaterialLibrary.findEnumInfo(((ItemSword)item).getToolMaterialName()).isPresent()){
-				MaterialLibrary info = MaterialLibrary.findEnumInfo(((ItemSword)item).getToolMaterialName()).get();
+			if(Unsaga.materialFactory.findEnumInfo(((ItemSword)item).getToolMaterialName()).isPresent()){
+				MaterialLibraryBook info = (MaterialLibraryBook) Unsaga.materialFactory.findEnumInfo(((ItemSword)item).getToolMaterialName()).get();
 				material = info.material;
 			}
 		}
-		if(MaterialLibrary.findInfo(this.is).isPresent() && material==null){
-			MaterialLibrary info = MaterialLibrary.findInfo(this.is).get();
+		if(Unsaga.materialFactory.findInfo(this.is).isPresent() && material==null){
+			MaterialLibraryBook info = (MaterialLibraryBook) Unsaga.materialFactory.findInfo(this.is).get();
 			material = info.material;
 		}
 		if(material==null)return Optional.absent();

@@ -15,6 +15,7 @@ import hinasch.mods.unlsaga.network.PacketHandler;
 import java.io.DataOutputStream;
 import java.util.Iterator;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
@@ -175,6 +176,7 @@ public class ContainerSmithUnsaga extends Container{
 				flagcount += 1;
 			}
 			if(flagcount>=4){
+				this.worldobj.playSoundAtEntity((Entity) this.theMerchant, "random.anvil_use", 1.0F, 1.0F);
 				ForgingTool newforge = new ForgingTool(category,baseItemInfo, subItemInfo,this.worldobj.rand);
 				newforge.decideForgedMaterial();
 				newforge.calcForgedDamage();

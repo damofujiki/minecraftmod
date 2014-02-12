@@ -6,8 +6,11 @@ import java.util.Random;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.INpc;
 import net.minecraft.entity.item.EntityItem;
+import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -20,6 +23,7 @@ import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.google.common.base.Optional;
@@ -39,7 +43,7 @@ public class HSLibs {
 		return;
 	}
 
-	public static boolean isEntityLittleMaidAvatar(EntityLiving entity){
+	public static boolean isEntityLittleMaidAvatar(EntityLivingBase entity){
 		if(entity==null)return false;
 		String clsname = entity.getClass().getSimpleName();
 		if(clsname.equals("LMM_EntityLittleMaidAvatar")){
@@ -68,7 +72,7 @@ public class HSLibs {
 		return false;
 	}
 
-	public static EntityLiving getLMMFromAvatar(EntityLiving entity){
+	public static EntityLiving getLMMFromAvatar(EntityLivingBase entity){
 		if(entity==null)return null;
 		//avatarが渡される
 		if(isEntityLittleMaidAvatar(entity)){
@@ -317,5 +321,24 @@ public class HSLibs {
                 par0World.spawnParticle("happyVillager", (double)((float)par1 + itemRand.nextFloat()), (double)par2 + (double)itemRand.nextFloat() * 1.0f, (double)((float)par3 + itemRand.nextFloat()), d0, d1, d2);
             }
         }
+    }
+    
+    public static void registerEvent(Object par1){
+    	MinecraftForge.EVENT_BUS.register(par1);
+    }
+    
+    public static boolean isEnemy(EntityLivingBase en){
+    	if(en instanceof IMob || en instanceof EntityMob){
+    		return true;
+    	}
+    	return false;
+    }
+    
+    public static boolean isEnemy(EntityPlayer ep,EntityLivingBase en){
+    	if(ep == en)return false;
+    	if(en instanceof IMob || en instanceof EntityMob){
+    		return true;
+    	}
+    	return false;
     }
 }

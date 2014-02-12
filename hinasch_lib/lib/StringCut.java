@@ -1,6 +1,9 @@
 package hinasch.lib;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
 public class StringCut {
 	public static ArrayList strapOffInt(String par1){
@@ -49,5 +52,14 @@ public class StringCut {
 		}
 		return arraylist;
 	}
+
+	public static List<Integer> strListToIntList(Collection<String> input){
+		List<Integer> intlist = new ArrayList();
+		for(Iterator<String> ite=input.iterator();ite.hasNext();){
+			intlist.add(Integer.parseInt(ite.next()));
+		}
+		return intlist;
+	}
+	
 
 }

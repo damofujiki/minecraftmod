@@ -8,12 +8,14 @@ import hinasch.mods.unlsaga.core.event.EventInteractVillager;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
 import hinasch.mods.unlsaga.inventory.ContainerBartering;
 import hinasch.mods.unlsaga.inventory.ContainerSmithUnsaga;
+import hinasch.mods.unlsaga.misc.translation.Translation;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.entity.EntityClientPlayerMP;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
@@ -36,6 +38,7 @@ public class PacketHandler implements IPacketHandler{
 	public static final int OPEN_SMITH = 0x11;
 	public static final int GUI_FORGE = 0x12;
 	public static final int GUI_BARTERING_BUTTON = 0x13;
+	public static final int MESSAGE = 0x02;
 	@Override
 	public void onPacketData(INetworkManager manager,
 			Packet250CustomPayload packet, Player player) {
@@ -47,14 +50,16 @@ public class PacketHandler implements IPacketHandler{
 			int id = data.readInt();
 			Unsaga.debug(id+":パケット番号");
 			if(id==PLAY_SOUND){
-				if(player instanceof EntityPlayerMP){
-					int entityId = data.readInt();
+				if(player instanceof EntityClientPlayerMP){
+					int soundnumber = data.readInt();
 					EntityClientPlayerMP ep = (EntityClientPlayerMP)player;
-					Entity ent = ep.worldObj.getEntityByID(entityId);
-					if(ent!=null){
-						//ep.worldObj.playSoundAtEntity(ent, "mob.blaze.hit", 1.5F, 1.0F / (ep.getRNG().nextFloat() * 0.4F + 1.2F));
-						ent.playSound("mob.blaze.hit", 1.5F, 1.0F / (ep.getRNG().nextFloat() * 0.4F + 1.2F));
-					}
+					//Entity ent = ep.worldObj.getEntityByID(entityId);
+//					if(ent!=null){
+//						//ep.worldObj.playSoundAtEntity(ent, "mob.blaze.hit", 1.5F, 1.0F / (ep.getRNG().nextFloat() * 0.4F + 1.2F));
+//						ent.playSound("mob.blaze.hit", 1.5F, 1.0F / (ep.getRNG().nextFloat() * 0.4F + 1.2F));
+//					}
+					XYZPos po = XYZPos.entityPosToXYZ(ep);
+					ep.worldObj.playAuxSFX(soundnumber, po.x, po.y, po.z, 0);
 				}
 			}
 			if(id==GUI_FORGE){
@@ -79,6 +84,18 @@ public class PacketHandler implements IPacketHandler{
 					((ContainerBartering)container).readPacketData(data);
 					((ContainerBartering)container).onPacketData();
 				}
+			}
+			if(id==MESSAGE){
+				String message = data.readUTF();
+				int number = (int)data.readInt();
+				String lang = Minecraft.getMinecraft().gameSettings.language;
+				EntityClientPlayerMP ep = (EntityClientPlayerMP)player;
+				if(Translation.isJapanese()){
+					ep.addChatMessage(Unsaga.abilityRegistry.getAbilityFromInt(number).getName(lang)+Translation.translation(message));
+				}else{
+					ep.addChatMessage(Translation.translation(message)+Unsaga.abilityRegistry.getAbilityFromInt(number).getName(lang));
+				}
+				
 			}
 
 		}
@@ -208,6 +225,65 @@ public class PacketHandler implements IPacketHandler{
 		DataOutputStream dos = new DataOutputStream(bos);
 
 		ContainerBartering.writePacketData(dos,(byte)id);
+
+		Packet250CustomPayload packet = new Packet250CustomPayload();
+		packet.channel = "unsagamod"; // ここでチャンネルを設定する
+		packet.data    = bos.toByteArray();
+		packet.length  = bos.size();
+		packet.isChunkDataPacket = false;
+
+		return packet;
+	}
+
+
+	public static Packet getMessagePacket(String string,int number) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(bos);
+
+		try {
+			dos.writeInt(MESSAGE);
+			dos.writeUTF((String)string);
+			dos.writeInt((int)number);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+
+		Packet250CustomPayload packet = new Packet250CustomPayload();
+		packet.channel = "unsagamod"; // ここでチャンネルを設定する
+		packet.data    = bos.toByteArray();
+		packet.length  = bos.size();
+		packet.isChunkDataPacket = false;
+
+		return packet;
+	}
+
+
+	protected static void writeMessagePacket(DataOutputStream dos, String string,int number) {
+		try {
+			dos.writeInt(MESSAGE);
+			dos.writeUTF((String)string);
+			dos.writeInt((int)number);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		
+	}
+
+
+	public static Packet getSoundPacket(int i) {
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DataOutputStream dos = new DataOutputStream(bos);
+
+		try {
+			dos.writeInt(PLAY_SOUND);
+			dos.writeInt(i);
+		} catch (IOException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		
 
 		Packet250CustomPayload packet = new Packet250CustomPayload();
 		packet.channel = "unsagamod"; // ここでチャンネルを設定する

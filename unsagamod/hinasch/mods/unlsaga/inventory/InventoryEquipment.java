@@ -52,6 +52,7 @@ public class InventoryEquipment implements IInventory{
 
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
+
 		this.theInventory[i] = itemstack;
 		
         if (itemstack != null && itemstack.stackSize > this.getInventoryStackLimit())

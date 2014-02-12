@@ -1,6 +1,8 @@
 package hinasch.lib;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class CSVText {
 
@@ -108,5 +110,42 @@ public class CSVText {
 			return 0;
 		}
 		return 1;
+	}
+	
+	public static String listToCSV(List<String> input){
+		StringBuilder strbuilder = new StringBuilder();
+		for(Iterator<String> ite=input.iterator();ite.hasNext();){
+			if(ite.hasNext()){
+				strbuilder.append(ite.next()).append(",");
+			}else{
+				strbuilder.append(ite.next());
+			}
+		}
+		return new String(strbuilder);
+	}
+	
+	
+	public static String intListToCSV(List<Integer> input){
+		StringBuilder strbuilder = new StringBuilder();
+		for(Iterator<Integer> ite=input.iterator();ite.hasNext();){
+			if(ite.hasNext()){
+				strbuilder.append(ite.next()).append(",");
+			}else{
+				strbuilder.append(ite.next());
+			}
+		}
+		return new String(strbuilder);
+	}
+	
+	public static List<Integer> csvToIntList(String str){
+		String[] strs = str.split(",");
+		List<Integer> output = new ArrayList();
+		if(strs.length==0){
+			return null;
+		}
+		for(String s:strs){
+			output.add(Integer.valueOf(s));
+		}
+		return output;
 	}
 }

@@ -76,7 +76,7 @@ public class ItemAccessory extends Item implements IGainAbility,IUnsagaMaterial{
 	@Override
 	public int getMaxAbility() {
 		// TODO 自動生成されたメソッド・スタブ
-		return 0;
+		return 2;
 	}
 
 	@Override
