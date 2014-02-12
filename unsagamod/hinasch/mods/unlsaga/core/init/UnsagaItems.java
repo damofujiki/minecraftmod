@@ -210,7 +210,7 @@ public class UnsagaItems {
 		noParticles = Lists.newArrayList("metal");
 		for(int i=0;i<sets.size();i++){
 			UnsagaMaterial uns = MaterialList.getMaterial(sets.get(i));
-			itemBows[i] = new ItemBowUnsaga(itemIDsBows+i,uns).setUnlocalizedName("unsaga.staff."+uns.name).setCreativeTab(Unsaga.tabUnsaga)
+			itemBows[i] = new ItemBowUnsaga(itemIDsBows+i,uns).setUnlocalizedName("unsaga.bows."+uns.name).setCreativeTab(Unsaga.tabUnsaga)
 					.setMaxDamage(uns.getToolMaterial().getMaxUses()+320);
 			particle = getParticle(noParticles,uns);
 			header = uns.headerEn;

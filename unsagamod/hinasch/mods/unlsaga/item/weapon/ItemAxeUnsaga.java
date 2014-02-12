@@ -5,7 +5,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
-import hinasch.mods.unlsaga.misc.util.IUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,7 +18,7 @@ import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 
-public class ItemAxeUnsaga extends ItemAxe implements IUnsagaWeapon{
+public class ItemAxeUnsaga extends ItemAxe implements IUnsagaMaterial{
 
 	public final UnsagaMaterial unsMaterial;
 	protected final HashMap<String,Icon> iconMap = new HashMap();
@@ -29,7 +29,7 @@ public class ItemAxeUnsaga extends ItemAxe implements IUnsagaWeapon{
 		super(par1, par2EnumToolMaterial);
 		this.unsMaterial = mat;
 		this.icons = new Icon[2];
-		this.helper = new HelperUnsagaWeapon(this.unsMaterial,this.itemIcon,this.iconMap);
+		this.helper = new HelperUnsagaWeapon(this.unsMaterial,this.itemIcon,EnumUnsagaWeapon.AXE);
 		Unsaga.proxy.registerSpecialRenderer(this.itemID);
 		UnsagaItems.putItemMap(this.itemID,EnumUnsagaWeapon.AXE.toString()+"."+mat.name);
 		//UnsagaItems.registerValidTool(EnumUnsagaWeapon.SPEAR, mat, this.itemID);
@@ -76,4 +76,10 @@ public class ItemAxeUnsaga extends ItemAxe implements IUnsagaWeapon{
     	helper.getSubItems(par1, par2CreativeTabs, par3List);
         
     }
+    
+	@Override
+	public EnumUnsagaWeapon getCategory() {
+		// TODO 自動生成されたメソッド・スタブ
+		return EnumUnsagaWeapon.AXE;
+	}
 }

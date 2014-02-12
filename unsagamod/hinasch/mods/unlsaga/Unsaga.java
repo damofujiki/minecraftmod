@@ -6,6 +6,7 @@ import hinasch.mods.unlsaga.core.event.EventInteractVillager;
 import hinasch.mods.unlsaga.core.event.EventUnsagaToolTip;
 import hinasch.mods.unlsaga.core.event.ExtendedMerchantData;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
+import hinasch.mods.unlsaga.core.event.TickHandlerUnsaga;
 import hinasch.mods.unlsaga.core.init.MaterialList;
 import hinasch.mods.unlsaga.core.init.NoFuncItemList;
 import hinasch.mods.unlsaga.core.init.UnsagaBlocks;
@@ -32,6 +33,8 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkMod;
 import cpw.mods.fml.common.network.NetworkRegistry;
 import cpw.mods.fml.common.registry.EntityRegistry;
+import cpw.mods.fml.common.registry.TickRegistry;
+import cpw.mods.fml.relauncher.Side;
 
 @Mod(modid = "Unsaga", name = "Unsaga Mod", dependencies = "required-after:Forge@[7.0,);required-after:FML@[5.0.5,)")
 @NetworkMod(channels = { "unsagamod","unsagamod_gui" }, versionBounds = "[5.2,)", clientSideRequired = true, serverSideRequired = false, packetHandler = PacketHandler.class)
@@ -61,7 +64,7 @@ public class Unsaga {
 		debug.setFalse();
 		checkLoadedMods();
 		MaterialList.init();
-		NoFuncItemList.load();
+
 		tabUnsaga = new CreativeTabsUnsaga("tabUnsaga");
 		abilityRegistry = new AbilityRegistry();
 		
@@ -72,6 +75,7 @@ public class Unsaga {
 		UnsagaItems.loadConfig(config);
 		UnsagaItems.register();
 		
+		NoFuncItemList.load();
 		
 		config.save();
 		
@@ -88,6 +92,7 @@ public class Unsaga {
 		MinecraftForge.EVENT_BUS.register(new ExtendedPlayerData());
 		MinecraftForge.EVENT_BUS.register(new ExtendedMerchantData());
 		MinecraftForge.EVENT_BUS.register(new EventUnsagaToolTip());
+		TickRegistry.registerTickHandler(new TickHandlerUnsaga(), Side.SERVER);
 		//(new ForgeEventRegistry()).registerEvent();
 		
 		//NetworkRegistry.instance().registerGuiHandler(instance, proxy);

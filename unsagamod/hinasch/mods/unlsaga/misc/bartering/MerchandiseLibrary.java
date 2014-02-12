@@ -95,8 +95,11 @@ public class MerchandiseLibrary {
 		sellSet.add(new MerchandiseLibrary(Item.redstone,100));
 		sellSet.add(new MerchandiseLibrary(Item.rottenFlesh,5));
 		sellSet.add(new MerchandiseLibrary(Item.fishRaw,100));
-		sellSet.add(new MerchandiseLibrary(Item.enderPearl,1200));
-		sellSet.add(new MerchandiseLibrary(Item.emerald,1500));
+		sellSet.add(new MerchandiseLibrary(Item.enderPearl,1500));
+		sellSet.add(new MerchandiseLibrary(Item.emerald,2500));
 		sellSet.add(new MerchandiseLibrary(Item.goldNugget,100));
+		sellSet.add(new MerchandiseLibrary(Item.silk,10));
+		sellSet.add(new MerchandiseLibrary(Item.feather,100));
+		sellSet.add(new MerchandiseLibrary(Item.diamond,5000));
 	}
 }

@@ -4,9 +4,11 @@ import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 
 import java.util.HashMap;
 
+import net.minecraft.block.Block;
 import net.minecraft.item.EnumArmorMaterial;
 import net.minecraft.item.EnumToolMaterial;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.EnumHelper;
 
 import com.google.common.base.Optional;
@@ -102,11 +104,7 @@ public class MaterialList {
 		corundums.setArmorMaterial(addNewArmorMaterial("corundum",20, new int[]{3, 7, 6, 3}, 18));
 		bestial.setToolMaterial(addNewToolMaterial(bestial.name,1, 131, 4.0F, 1.0F, 15));
 		bestial.setArmorMaterial(EnumArmorMaterial.IRON);
-		carnelian.setSpecialName(EnumUnsagaWeapon.ARMOR, "*,朱雀石の鎧");
-		topaz.setSpecialName(EnumUnsagaWeapon.ARMOR, "*,黄龍石の鎧");
-		opal.setSpecialName(EnumUnsagaWeapon.ARMOR, "*,白虎石の鎧");
-		lazuli.setSpecialName(EnumUnsagaWeapon.ARMOR, "*,蒼龍石の鎧");
-		ravenite.setSpecialName(EnumUnsagaWeapon.ARMOR, "*,玄武石の鎧");
+
 		steels.setToolMaterial(addNewToolMaterial(steels.name,2, 500, 7.0F, 3.0F, 16));
 		steels.setBowModifier(2);
 		damascus.setToolMaterial(addNewToolMaterial(damascus.name,3, 1400, 8.0F, 4.0F, 14));
@@ -116,11 +114,33 @@ public class MaterialList {
 		obsidian.setToolMaterial(addNewToolMaterial(obsidian.name,1, 1000, 4.0F, 1.0F, 2));
 		obsidian.setSpecialArmorTexture(EnumUnsagaWeapon.HELMET, "mask", "armor2");
 		lead.setToolMaterial(addNewToolMaterial(lead.name,2, 350, 6.0F, 2.0F, 5));
-		lazuli.relateVanillaItem(Item.dyePowder.itemID, 4);
-		quartz.relateVanillaItem(Item.netherQuartz.itemID, 0);
 
 		setIcons();
 		setRenderColor();
+		setItemAssociated();
+		setSpecialName();
+	}
+	
+	protected static void setSpecialName(){
+		carnelian.setSpecialName(EnumUnsagaWeapon.ARMOR, "*,朱雀石の鎧");
+		topaz.setSpecialName(EnumUnsagaWeapon.ARMOR, "*,黄龍石の鎧");
+		opal.setSpecialName(EnumUnsagaWeapon.ARMOR, "*,白虎石の鎧");
+		lazuli.setSpecialName(EnumUnsagaWeapon.ARMOR, "*,蒼龍石の鎧");
+		ravenite.setSpecialName(EnumUnsagaWeapon.ARMOR, "*,玄武石の鎧");
+		meteorite.setSpecialName(EnumUnsagaWeapon.BOOTS, "Star Boots,星辰の石靴");
+		meteoricIron.setSpecialName(EnumUnsagaWeapon.BOOTS, "Cosmic Leggins,コスモレガース");
+		meteoricIron.setSpecialName(EnumUnsagaWeapon.HELMET, "Cosmic Helmet,コスモヘルム");
+		silver.setSpecialName(EnumUnsagaWeapon.HELMET, "Silver Ring,シルバーリング");
+		silver.setSpecialName(EnumUnsagaWeapon.BOOTS, "Silver Boots,シルバーブーツ");
+	}
+	
+	protected static void setItemAssociated(){
+		lazuli.associate(new ItemStack(Item.dyePowder,1,4));
+		quartz.associate(new ItemStack(Item.netherQuartz,1));
+		fur.associate(new ItemStack(Item.leather,1));
+		bone.associate(new ItemStack(Item.bone,1));
+		obsidian.associate(new ItemStack(Block.obsidian,1));
+		silk.associate(new ItemStack(Item.silk,1));
 	}
 	
 	protected static void setRenderColor(){

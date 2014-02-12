@@ -5,9 +5,10 @@ import hinasch.mods.unlsaga.core.init.NoFuncItemList;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.item.etc.ItemIngotsUnsaga;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
-import hinasch.mods.unlsaga.misc.util.IUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
 import hinasch.mods.unlsaga.misc.util.NoFuncItem;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
@@ -53,10 +54,20 @@ public class MaterialInfo {
 		return 0;
 	}
 	
+	public boolean isValidMaterial(){
+		if(this.is.getItem() instanceof ItemArmor){
+			return false;
+		}
+		if(this.getMaterial().isPresent()){
+			return true;
+		}
+		return false;
+	}
+	
 	public Optional<UnsagaMaterial> getMaterial(){
 		Item item = (Item)this.is.getItem();
 		UnsagaMaterial material = null;
-		if(item instanceof IUnsagaWeapon){
+		if(item instanceof IUnsagaMaterial){
 			material = HelperUnsagaWeapon.getMaterial(this.is);
 		}
 		if(item instanceof ItemSword && material==null){

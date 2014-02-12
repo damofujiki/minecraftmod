@@ -89,5 +89,13 @@ public class ExtendedPlayerData implements IExtendedEntityProperties{
 		// TODO 自動生成されたメソッド・スタブ
 		
 	}
+	
+	public static Optional<ExtendedPlayerData> getData(EntityPlayer ep){
+		ExtendedPlayerData data = (ExtendedPlayerData)ep.getExtendedProperties(key);
+		if(data!=null){
+			return Optional.of(data);
+		}
+		return Optional.absent();
+	}
 
 }

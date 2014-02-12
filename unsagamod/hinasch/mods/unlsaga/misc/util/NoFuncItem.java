@@ -1,6 +1,8 @@
 package hinasch.mods.unlsaga.misc.util;
 
+import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import net.minecraft.item.ItemStack;
 
 public class NoFuncItem {
 	
@@ -25,7 +27,7 @@ public class NoFuncItem {
 	public NoFuncItem(String par1,String par2,String par3,String par4,int par5,UnsagaMaterial material,int meta,int damage){
 		this(par1,par2,par3,par4,par5,material);
 		this.forgedamage = damage;
-		material.linkToItem(meta);
+		material.associate(new ItemStack(UnsagaItems.itemNoFunc.itemID,1,meta));
 	}
 	
 

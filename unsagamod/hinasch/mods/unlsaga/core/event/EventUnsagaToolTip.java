@@ -27,9 +27,9 @@ public class EventUnsagaToolTip {
 		int currentcategory = guismith.getCurrentCategory();
 		ItemStack is = event.itemStack;
 		info = new MaterialInfo(event.itemStack);
-		if(info.getMaterial().isPresent()){
+		if(info.isValidMaterial()){
 			
-			if(info.getMaterial().isPresent()){
+			//if(info.getMaterial().isPresent()){
 				UnsagaMaterial material = info.getMaterial().get();
 				if(Minecraft.getMinecraft().gameSettings.language.equals("ja_JP")){
 					event.toolTip.add("素材使用可："+material.headerJp);
@@ -44,7 +44,7 @@ public class EventUnsagaToolTip {
 					}
 					
 				}
-			}
+			//}
 			//MaterialLibrary info = MaterialLibrary.findInfo(event.itemStack).get();
 
 		}

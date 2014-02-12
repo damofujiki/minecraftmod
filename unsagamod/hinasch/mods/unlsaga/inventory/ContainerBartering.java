@@ -1,5 +1,6 @@
 package hinasch.mods.unlsaga.inventory;
 
+import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.bartering.MerchandiseInfo;
 import hinasch.mods.unlsaga.network.PacketHandler;
@@ -7,11 +8,13 @@ import hinasch.mods.unlsaga.network.PacketHandler;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.ItemStack;
+import net.minecraft.village.Village;
 import net.minecraft.world.World;
 
 import com.google.common.io.ByteArrayDataInput;
@@ -159,6 +162,14 @@ public class ContainerBartering extends Container{
 					this.theCustomer.dropPlayerItem(bought);
 				}
 				this.invMerchant.decrStackSize(this.id+10, this.invMerchant.getMerchandise(id).stackSize);
+				if(!this.worldobj.isRemote){
+					XYZPos xyz = XYZPos.entityPosToXYZ((Entity) this.theMerchant);
+					Village village = this.worldobj.villageCollectionObj.findNearestVillage(xyz.x, xyz.y, xyz.z, 32);
+					if(village!=null){
+						village.setReputationForPlayer(this.theCustomer.getCommandSenderName(), +1);
+					}
+					
+				}
 				Unsaga.debug(this.worldobj.getTotalWorldTime());
 				this.cleanBarteringInv();
 			}

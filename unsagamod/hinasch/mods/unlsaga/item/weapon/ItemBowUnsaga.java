@@ -7,7 +7,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.entity.EntityArrowUnsaga;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
-import hinasch.mods.unlsaga.misc.util.IUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
 
 import java.util.List;
 
@@ -28,7 +28,7 @@ import net.minecraftforge.event.entity.player.ArrowNockEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemBowUnsaga extends ItemBow implements IUnsagaWeapon
+public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial
 {
     public static final String[] bowPullIconNameArray = new String[] {"pull0", "pull1", "pull2"};
     @SideOnly(Side.CLIENT)
@@ -41,7 +41,7 @@ public class ItemBowUnsaga extends ItemBow implements IUnsagaWeapon
         super(par1);
         this.maxStackSize = 1;
         this.material = material;
-        this.helper = new HelperUnsagaWeapon(this.material, this.itemIcon, null);
+        this.helper = new HelperUnsagaWeapon(this.material, this.itemIcon, EnumUnsagaWeapon.BOW);
 		Unsaga.proxy.registerSpecialRenderer(this.itemID);
         UnsagaItems.putItemMap(this.itemID,EnumUnsagaWeapon.BOW.toString()+"."+material.name);
         //UnsagaItems.registerValidTool(EnumUnsagaWeapon.SPEAR, mat, this.itemID);
@@ -249,4 +249,10 @@ public class ItemBowUnsaga extends ItemBow implements IUnsagaWeapon
     {
         return this.iconArray[par1];
     }
+    
+	@Override
+	public EnumUnsagaWeapon getCategory() {
+		// TODO 自動生成されたメソッド・スタブ
+		return EnumUnsagaWeapon.BOW;
+	}
 }

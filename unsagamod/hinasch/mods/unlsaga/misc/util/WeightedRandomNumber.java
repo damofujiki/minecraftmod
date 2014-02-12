@@ -4,7 +4,7 @@ import net.minecraft.util.WeightedRandomItem;
 
 public class WeightedRandomNumber extends WeightedRandomItem{
 
-	public int number;
+	public final int number;
 	
 	public WeightedRandomNumber(int weight,int num) {
 		super(weight);

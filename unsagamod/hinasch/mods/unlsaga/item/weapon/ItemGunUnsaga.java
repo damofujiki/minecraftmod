@@ -5,7 +5,8 @@ import hinasch.mods.bunaforest.lib.UtilNBT;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.entity.EntityBarrett;
-import hinasch.mods.unlsaga.misc.util.IUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
@@ -18,7 +19,7 @@ import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
 
-public class ItemGunUnsaga extends ItemBow implements IUnsagaWeapon{
+public class ItemGunUnsaga extends ItemBow implements IUnsagaMaterial{
 
 	private String iconname;
 
@@ -301,5 +302,9 @@ public class ItemGunUnsaga extends ItemBow implements IUnsagaWeapon{
 			
 		}
 	
-
+	@Override
+	public EnumUnsagaWeapon getCategory() {
+		// TODO 自動生成されたメソッド・スタブ
+		return null;
+	}
 }

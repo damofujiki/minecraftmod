@@ -9,6 +9,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.smith.MaterialInfo;
 import hinasch.mods.unlsaga.misc.util.WeightedRandomNumber;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class MerchandiseInfo {
 	
 	protected ItemStack is;
 	protected MaterialInfo info;
+	protected static WeightedRandomNumber[] wr;
 	
 	protected static final String PRICE_TAG = "Bartering.Price";
 	public MerchandiseInfo(ItemStack is){
@@ -38,17 +40,27 @@ public class MerchandiseInfo {
 		return getPrice(this.is);
 	}
 	
+	public static ItemStack getRandomMaterialItemStack(Random rand){
+		ArrayList<ItemStack> itemstackList = new ArrayList();
+		for(Iterator<UnsagaMaterial> ite=MaterialList.allMaterialMap.values().iterator();ite.hasNext();){
+			UnsagaMaterial mate = ite.next();
+			if(mate.getAssociatedItem().isPresent()){
+				itemstackList.add(mate.getAssociatedItem().get());
+			}
+		}
+		return itemstackList.get(rand.nextInt(itemstackList.size()));
+	}
+	
 	public static ItemStack getRandomMerchandise(Random rand){
+		if(rand.nextInt(3)<=1){
+			return getRandomMaterialItemStack(rand);
+		}
 		ItemStack ms = UnsagaItems.getRandomWeapon(rand, 5, EnumSelecterItem.MERCHANDISE);
 		if(rand.nextInt(6)<=1){
-			WeightedRandomNumber[] wr = new WeightedRandomNumber[4];
-			for(int i=0;i<4;i++){
-				int itemWeight = (wr.length -i)*(wr.length -i);
-				wr[i] = new WeightedRandomNumber(itemWeight,i+1);
-			}
 			WeightedRandomNumber wrs = (WeightedRandomNumber) WeightedRandom.getRandomItem(rand, wr);
-			
+
 			EnchantmentHelper.addRandomEnchantment(rand, ms, wrs.number);
+			//EnchantmentData enchant = new EnchantmentData(Enchantment.fortune,1);
 		}
 		return ms;
 	}
@@ -98,7 +110,9 @@ public class MerchandiseInfo {
 			}
 			maxlv += 1;
 			int enchantmentvalue = (int)((float)price*0.5F*(float)maxlv);
+			enchantmentvalue *= enchantmap.size();
 			price += enchantmentvalue;
+			
 		}
 
 		if(MerchandiseLibrary.findPrice(is).isPresent()){
@@ -132,5 +146,13 @@ public class MerchandiseInfo {
 	
 	public static void removePriceTag(ItemStack is){
 		UtilNBT.removeTag(is, PRICE_TAG);
+	}
+	
+	static{
+		wr = new WeightedRandomNumber[20];
+		for(int i=0;i<20;i++){
+			int itemWeight = (wr.length -i)*(wr.length -i);
+			wr[i] = new WeightedRandomNumber(itemWeight,i+1);
+		}
 	}
 }

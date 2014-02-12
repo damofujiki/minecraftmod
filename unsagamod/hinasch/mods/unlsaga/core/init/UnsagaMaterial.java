@@ -1,5 +1,6 @@
 package hinasch.mods.unlsaga.core.init;
 
+import hinasch.lib.PairID;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 
@@ -11,6 +12,7 @@ import java.util.Random;
 
 import net.minecraft.item.EnumArmorMaterial;
 import net.minecraft.item.EnumToolMaterial;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import com.google.common.base.Optional;
@@ -30,7 +32,7 @@ public class UnsagaMaterial {
 	public String name;
 	protected UnsagaMaterial parentMaterial;
 	public int rank;
-	protected Integer[] relatedVanillaItem;
+	protected PairID associatedItem;
 	protected Optional<Integer> renderColor = Optional.absent();
 	
 	
@@ -116,11 +118,11 @@ public class UnsagaMaterial {
 		return this;
 	}
 	
-	public ItemStack getRelatedVanillaItem(){
-		if(this.isRelatedVanillaItem){
-			return new ItemStack(this.relatedVanillaItem[0],1,this.relatedVanillaItem[1]);
+	public Optional<ItemStack> getAssociatedItem(){
+		if(this.associatedItem!=null){
+			return Optional.of(new ItemStack(this.associatedItem.id,1,this.associatedItem.metadata));
 		}
-		return null;
+		return Optional.absent();
 	}
 	
 	public Optional<Integer> getRenderColor() {
@@ -206,11 +208,11 @@ public class UnsagaMaterial {
 		this.itemMeta = Optional.of(meta);
 	}
 	
-	public void relateVanillaItem(int id,int meta){
-		this.relatedVanillaItem = new Integer[2];
-		this.relatedVanillaItem[0] = id;
-		this.relatedVanillaItem[1] = meta;
-		this.isRelatedVanillaItem = true;
+	public void associate(ItemStack is){
+		Item item = (Item)is.getItem();
+		this.associatedItem = new PairID();
+		this.associatedItem.id = item.itemID;
+		this.associatedItem.metadata = is.getItemDamage();
 	}
 	
 	public UnsagaMaterial setArmorMaterial(EnumArmorMaterial par1){

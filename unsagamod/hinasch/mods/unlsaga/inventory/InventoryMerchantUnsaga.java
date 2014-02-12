@@ -68,7 +68,7 @@ public class InventoryMerchantUnsaga implements IInventory{
 	public void changeMerchandiseStock(Random rand){
 		for(int i=0;i<9;++i){
 			ItemStack mis = MerchandiseInfo.getRandomMerchandise(rand);
-			MerchandiseInfo.setBuyPriceTag(mis,MerchandiseInfo.getPrice(mis)*2);
+			MerchandiseInfo.setBuyPriceTag(mis,MerchandiseInfo.getPrice(mis)*3);
 			this.setMerchandise(i, mis);
 
 		}

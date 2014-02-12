@@ -6,7 +6,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
-import hinasch.mods.unlsaga.misc.util.IUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
 
 import java.util.List;
 
@@ -16,7 +16,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
-public class ItemAccessory extends Item implements IGainAbility,IUnsagaWeapon{
+public class ItemAccessory extends Item implements IGainAbility,IUnsagaMaterial{
 
 	protected UnsagaMaterial material;
 	protected String defaultIcon;
@@ -28,7 +28,7 @@ public class ItemAccessory extends Item implements IGainAbility,IUnsagaWeapon{
         this.maxStackSize = 1;
 		this.setMaxDamage(par2.getToolMaterial().getMaxUses());
 		this.defaultIcon = "ring";
-		this.helper = new HelperUnsagaWeapon(this.material,this.itemIcon, null);
+		this.helper = new HelperUnsagaWeapon(this.material,this.itemIcon, EnumUnsagaWeapon.ACCESSORY);
 		// TODO 自動生成されたコンストラクター・スタブ
 		UnsagaItems.putItemMap(this.itemID, EnumUnsagaWeapon.ACCESSORY.toString()+"."+material.name);
 	}
@@ -77,5 +77,11 @@ public class ItemAccessory extends Item implements IGainAbility,IUnsagaWeapon{
 	public int getMaxAbility() {
 		// TODO 自動生成されたメソッド・スタブ
 		return 0;
+	}
+
+	@Override
+	public EnumUnsagaWeapon getCategory() {
+		// TODO 自動生成されたメソッド・スタブ
+		return EnumUnsagaWeapon.ACCESSORY;
 	}
 }

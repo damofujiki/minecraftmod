@@ -7,8 +7,9 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.item.etc.ItemAccessory;
 import hinasch.mods.unlsaga.item.weapon.ItemBowUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemStaffUnsaga;
+import hinasch.mods.unlsaga.misc.ability.Ability;
+import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,11 +24,13 @@ public class HelperUnsagaWeapon {
 	
 	protected UnsagaMaterial materialItem;
 	protected Icon itemIcon;
-	protected HashMap<String,Icon> iconMap;
+	//protected HashMap<String,Icon> iconMap;
+	protected AbilityRegistry ar = Unsaga.abilityRegistry;
+	protected EnumUnsagaWeapon category;
 	
-	public HelperUnsagaWeapon(UnsagaMaterial materialItem,Icon itemIcon,HashMap<String,Icon> iconMap){
+	public HelperUnsagaWeapon(UnsagaMaterial materialItem,Icon itemIcon,EnumUnsagaWeapon category){
 		this.materialItem = materialItem;
-		this.iconMap = iconMap;
+		this.category = category;
 		this.itemIcon = itemIcon;
 	}
 
@@ -92,16 +95,7 @@ public class HelperUnsagaWeapon {
     }
     
 
-    public Icon getIconIndex(ItemStack par1ItemStack,Icon defa)
-    {
-        UnsagaMaterial mat = getMaterial(par1ItemStack);
-        if(!iconMap.isEmpty()){
-        	if(iconMap.containsKey(mat.name)){
-        		return iconMap.get(mat.name);
-        	}
-        }
-        return defa;
-    }
+
     
     public static UnsagaMaterial getMaterial(ItemStack is){
     	if(UtilNBT.hasKey(is, "material")){
@@ -151,6 +145,18 @@ public class HelperUnsagaWeapon {
 				}else{
 					par3List.add("W:Light");
 				}
+			}
+			if(ar.getInheritAbilities(this.category, this.materialItem).isPresent()){
+				String str = "";
+				for(Iterator<Ability> ite=ar.getInheritAbilities(this.category, this.materialItem).get().iterator();ite.hasNext();){
+					Ability abi = ite.next();
+					if(Minecraft.getMinecraft().gameSettings.language.equals("ja_JP")){
+						str = str + abi.getName(1);
+					}else{
+						str = str + abi.getName(0);
+					}
+				}
+				par3List.add(str);
 			}
 		}
     }

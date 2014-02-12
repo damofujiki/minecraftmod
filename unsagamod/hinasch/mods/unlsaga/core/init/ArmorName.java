@@ -48,6 +48,7 @@ public class ArmorName {
 		armors.put(MaterialList.diamond, "Diamond Crown,金剛石の頭冠");
 		armors.put(MaterialList.damascus, "Black Armor,ブラックチェイル");
 		
+		legs.put(MaterialList.fur, "Leather Boots,ブーツ");
 		legs.put(MaterialList.cloth, "Socks,ソックス");
 		legs.put(MaterialList.categorywood, "Wood Boots,木ぐつ");
 		legs.put(MaterialList.leathers, "Leather Boots,ブーツ");

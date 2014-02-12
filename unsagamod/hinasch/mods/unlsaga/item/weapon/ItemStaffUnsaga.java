@@ -5,7 +5,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
-import hinasch.mods.unlsaga.misc.util.IUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
 
 import java.util.List;
 
@@ -23,7 +23,7 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
-public class ItemStaffUnsaga extends ItemSword implements IUnsagaWeapon{
+public class ItemStaffUnsaga extends ItemSword implements IUnsagaMaterial{
 
 	public final UnsagaMaterial unsMaterial;
 	public final EnumToolMaterial toolMaterial;
@@ -36,7 +36,7 @@ public class ItemStaffUnsaga extends ItemSword implements IUnsagaWeapon{
 		super(par1, par2EnumToolMaterial);
 		this.unsMaterial = uns;
 		this.icons = new Icon[2];
-		this.helper = new HelperUnsagaWeapon(uns, itemIcon, null);
+		this.helper = new HelperUnsagaWeapon(uns, itemIcon, EnumUnsagaWeapon.STAFF);
 		this.toolMaterial = par2EnumToolMaterial;
 		this.efficiencyOnProperMaterial = par2EnumToolMaterial.getEfficiencyOnProperMaterial();
 		Unsaga.proxy.registerSpecialRenderer(this.itemID);
@@ -135,4 +135,10 @@ public class ItemStaffUnsaga extends ItemSword implements IUnsagaWeapon{
     {
         return par2Block != null && (par2Block.blockMaterial == Material.iron || par2Block.blockMaterial == Material.anvil || par2Block.blockMaterial == Material.rock) ? this.efficiencyOnProperMaterial : super.getStrVsBlock(par1ItemStack, par2Block);
     }
+    
+	@Override
+	public EnumUnsagaWeapon getCategory() {
+		// TODO 自動生成されたメソッド・スタブ
+		return EnumUnsagaWeapon.STAFF;
+	}
 }

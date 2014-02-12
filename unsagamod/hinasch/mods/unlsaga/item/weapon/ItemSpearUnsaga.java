@@ -6,7 +6,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.IExtendedReach;
-import hinasch.mods.unlsaga.misc.util.IUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
 import hinasch.mods.unlsaga.misc.util.UtilItem;
 
 import java.util.HashMap;
@@ -26,7 +26,7 @@ import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
-public class ItemSpearUnsaga extends ItemSword implements IUnsagaWeapon,IExtendedReach {
+public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExtendedReach {
 
 	public final UnsagaMaterial unsMaterial;
 	protected final HashMap<String,Icon> iconMap = new HashMap();
@@ -37,7 +37,7 @@ public class ItemSpearUnsaga extends ItemSword implements IUnsagaWeapon,IExtende
 		super(par1, par2EnumToolMaterial);
 		this.unsMaterial = material;
 		this.icons = new Icon[2];
-		this.helper = new HelperUnsagaWeapon(this.unsMaterial,this.itemIcon,this.iconMap);
+		this.helper = new HelperUnsagaWeapon(this.unsMaterial,this.itemIcon,EnumUnsagaWeapon.SPEAR);
 		Unsaga.proxy.registerSpearRenderer(this.itemID);
 		UnsagaItems.putItemMap(this.itemID,EnumUnsagaWeapon.SPEAR.toString()+"."+material.name);
 		//UnsagaItems.registerValidTool(EnumUnsagaWeapon.SPEAR, mat, this.itemID);
@@ -148,4 +148,10 @@ public class ItemSpearUnsaga extends ItemSword implements IUnsagaWeapon,IExtende
         par1ItemStack.damageItem(2, par3EntityLivingBase);
         return true;
     }
+	
+	@Override
+	public EnumUnsagaWeapon getCategory() {
+		// TODO 自動生成されたメソッド・スタブ
+		return EnumUnsagaWeapon.SPEAR;
+	}
 }

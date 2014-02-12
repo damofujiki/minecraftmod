@@ -8,6 +8,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
-public class ItemArmorUnsaga extends ItemArmor{
+public class ItemArmorUnsaga extends ItemArmor implements IUnsagaMaterial{
 
 	//必要なのかよくわからない
 	public static int getRenderIndex(UnsagaMaterial mat){
@@ -55,7 +56,7 @@ public class ItemArmorUnsaga extends ItemArmor{
 		this.armorTextureFiles = new String[2];
 		this.armorTextureFiles[0] = path+getArmorTextureFilename(material)+".png";
 		this.armorTextureFiles[1] = path+getArmorTextureFilename(material)+"2.png";
-		this.helper = new HelperUnsagaWeapon(material, this.itemIcon, null);
+		this.helper = new HelperUnsagaWeapon(material, this.itemIcon, armorType);
 		if(this.material == MaterialList.crocodileLeather){
 			modelBiped = new ModelArmorColored(1.001F);
 		}else{
@@ -202,4 +203,11 @@ public class ItemArmorUnsaga extends ItemArmor{
     {
         return false;
     }
+	
+	@Override
+	public EnumUnsagaWeapon getCategory() {
+		// TODO 自動生成されたメソッド・スタブ
+		return this.armorType;
+	}
+
 }
