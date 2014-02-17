@@ -45,10 +45,10 @@ public class UnsagaItems {
 
 	public static int itemIDBarrett;
 	public static int itemIDGun;
-	public static int itemMagicTabletID;
+	public static int itemIDMagicTablet;
 	public static int itemSpellBookID;
 	public static int itemToolsHSID;
-	public static int itemIngotsUnsagaID;
+	public static int itemIDIngotsUnsaga;
 
 	public static Item itemMagicTablet;
 	public static Item itemSpellBook;
@@ -101,9 +101,10 @@ public class UnsagaItems {
 		itemIDsBows = prop.getProp(4).getInt();
 		itemIDsAccessories = prop.getProp(5).getInt();
 		itemIDsArmors = prop.getProp(6).getInt();
-		itemIngotsUnsagaID = prop.getProp(7).getInt();
+		itemIDIngotsUnsaga = prop.getProp(7).getInt();
 		itemIDBarrett = prop.getProp(8).getInt();
 		itemIDGun = prop.getProp(9).getInt();
+
 	}
 
 	public static void register(){
@@ -290,7 +291,7 @@ public class UnsagaItems {
 				HSLibs.langSet(armorname.getAcsName(uns).get(0), armorname.getAcsName(uns).get(1), itemAccessories[i]);
 			}
 		}
-		itemNoFunc = new ItemIngotsUnsaga(itemIngotsUnsagaID).setUnlocalizedName("unsaga.nofuncitem").setCreativeTab(Unsaga.tabUnsaga);
+		itemNoFunc = new ItemIngotsUnsaga(itemIDIngotsUnsaga).setUnlocalizedName("unsaga.nofuncitem").setCreativeTab(Unsaga.tabUnsaga);
 
 		itemBarrett = new ItemBarrett(itemIDBarrett,"gunpowder").setUnlocalizedName("unsaga.barrett").setCreativeTab(Unsaga.tabUnsaga);
 		itemMusket = new ItemGunUnsaga(itemIDGun,"musket").setUnlocalizedName("unsaga.musket").setCreativeTab(Unsaga.tabUnsaga);

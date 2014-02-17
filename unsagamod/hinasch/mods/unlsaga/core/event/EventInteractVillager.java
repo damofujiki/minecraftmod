@@ -3,11 +3,17 @@ package hinasch.mods.unlsaga.core.event;
 import hinasch.lib.HSLibs;
 import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
+import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
+import hinasch.mods.unlsaga.misc.ability.HelperAbility;
+import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
+import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
+import hinasch.mods.unlsaga.misc.debuff.LivingStateTarget;
 import hinasch.mods.unlsaga.network.PacketHandler;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.ForgeSubscribe;
@@ -18,6 +24,8 @@ public class EventInteractVillager {
 
 	@ForgeSubscribe
 	public void onPlayerInteractsVillager(EntityInteractEvent e){
+		onPlayerTargetting(e);
+		
 		if(e.target instanceof EntityVillager){
 			Unsaga.debug("ターゲットは村人");
 			EntityPlayer ep =(EntityPlayer)e.entityPlayer;
@@ -54,6 +62,21 @@ public class EventInteractVillager {
 		}
 	}
 
+	public void onPlayerTargetting(EntityInteractEvent e){
+		if(e.target!=null){
+			if(e.entityPlayer.getHeldItem()==null)return;
+			if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.skyDrive, e.entityPlayer.getHeldItem()) && 
+					e.entityPlayer.isSneaking()){
+				if(e.target instanceof EntityLivingBase && !e.entityPlayer.worldObj.isRemote){
+					EntityLivingBase el = (EntityLivingBase)e.target;
+					LivingStateTarget state = new LivingStateTarget(DebuffRegistry.weaponTarget,30,el.entityId);
+					LivingDebuff.addLivingDebuff(e.entityPlayer, state);
+					e.entityPlayer.addChatMessage("Set Target To "+e.target.getEntityName());
+				}
+			}
+		}
+	}
+	
 	@Deprecated
 	public static void writePacketData(DataOutputStream dos,
 			EntityVillager villager) {

@@ -1,6 +1,6 @@
 package hinasch.lib;
 
-import hinasch.lib.Library.EnumSelecter;
+import hinasch.lib.Library.EnumSelector;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,12 +14,13 @@ import com.google.common.base.Optional;
 public class LibraryFactory {
 
 	public HashSet<Library> libSet = new HashSet();
+
 	
 	public Optional<Library> findFromClass(Class input){
 		Optional<Library> info = Optional.absent();
 		for(Iterator<Library> ite=libSet.iterator();ite.hasNext();){
 			Library currentpage = ite.next();
-			if(currentpage.key==EnumSelecter._CLASS){
+			if(currentpage.key==EnumSelector._CLASS){
 				if(currentpage.classstore.get()==input){
 					info = Optional.of(currentpage);
 				}
@@ -33,12 +34,12 @@ public class LibraryFactory {
 		Optional<Library> info = Optional.absent();
 		for(Iterator<Library> ite=libSet.iterator();ite.hasNext();){
 			Library currentpage = ite.next();
-			if(currentpage.key==EnumSelecter.TOOLMATERIAL){
+			if(currentpage.key==EnumSelector.TOOLMATERIAL){
 				if(currentpage.enumtool.get().toString().equals(input)){
 					info = Optional.of(currentpage);
 				}
 			}
-			if(currentpage.key==EnumSelecter.ARMORMATERIAL){
+			if(currentpage.key==EnumSelector.ARMORMATERIAL){
 				if(currentpage.enumarmor.get().toString().equals(input)){
 					info = Optional.of(currentpage);
 				}
@@ -52,12 +53,19 @@ public class LibraryFactory {
 		Item item = (Item)input.getItem();
 		for(Iterator<Library> ite=libSet.iterator();ite.hasNext();){
 			Library currentpage = ite.next();
-			if(currentpage.key==EnumSelecter.ITEMSTACK){
-				if(currentpage.idmeta.get().id==item.itemID && currentpage.idmeta.get().metadata==input.getItemDamage()){
-					info = Optional.of(currentpage);
+			if(currentpage.key==EnumSelector.ITEMSTACK){
+				if(currentpage.isAllMedadata){
+					if(currentpage.idmeta.get().id==item.itemID){
+						info = Optional.of(currentpage);
+					}
+				}else{
+					if(currentpage.idmeta.get().id==item.itemID && currentpage.idmeta.get().metadata==input.getItemDamage()){
+						info = Optional.of(currentpage);
+					}
 				}
+
 			}
-			if(currentpage.key==EnumSelecter.STRING && !info.isPresent()){
+			if(currentpage.key==EnumSelector.STRING && !info.isPresent()){
 				String baseoreid = OreDictionary.getOreName(OreDictionary.getOreID(input));
 				//Unsaga.debug(baseoreid);
 				if(baseoreid.equals(currentpage.orekey.get())){

@@ -32,4 +32,13 @@ public class PairID {
 		this.metadata = world.getBlockMetadata(x, y, z);
 		
 	}
+	
+	public boolean equals(PairID pairid){
+		if(this.id==pairid.id){
+			if(this.metadata==pairid.metadata){
+				return true;
+			}
+		}
+		return false;
+	}
 }

@@ -1,8 +1,15 @@
 package hinasch.mods.unlsaga.item.weapon;
 
+
+import hinasch.lib.UtilNBT;
+import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
+import hinasch.mods.unlsaga.misc.ability.HelperAbility;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillSpear;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.IExtendedReach;
@@ -32,6 +39,11 @@ public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExten
 	protected final HashMap<String,Icon> iconMap = new HashMap();
 	protected final HelperUnsagaWeapon helper;
 	protected Icon[] icons;
+	
+	
+	protected final static String KEYisAiming = "unsaga.isAiming";
+	protected final int SETAIMING = 0x01;
+	protected final int NEUTRAL = 0x00;
 	
 	public ItemSpearUnsaga(int par1, EnumToolMaterial par2EnumToolMaterial,UnsagaMaterial material) {
 		super(par1, par2EnumToolMaterial);
@@ -84,13 +96,82 @@ public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExten
         
     }
     
-    @Override
-    public EnumAction getItemUseAction(ItemStack par1ItemStack)
-    {
-    	
-        return EnumAction.none;
-    }
-    
+	@Override
+	public int getMaxItemUseDuration(ItemStack par1ItemStack)
+	{
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.acupuncture, par1ItemStack)){
+			return 160000;
+		}
+		return 72000;
+	}
+	
+	@Override
+	public EnumAction getItemUseAction(ItemStack par1ItemStack)
+	{
+		if(this.isAiming(par1ItemStack)){
+			return EnumAction.bow;
+		}
+
+		return EnumAction.none;
+
+	}
+	
+	public boolean isAiming(ItemStack par1ItemStack){
+		if(UtilNBT.hasKey(par1ItemStack, KEYisAiming)){
+			return UtilNBT.readFreeTagBool(par1ItemStack, KEYisAiming);
+		}
+		return false;
+	}
+
+	@Override
+	public void onPlayerStoppedUsing(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer, int par4)
+	{
+		int ac = 20;
+		int j = this.getMaxItemUseDuration(par1ItemStack) - par4;
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.aiming, par1ItemStack) || 
+				HelperAbility.hasAbilityFromItemStack(AbilityRegistry.acupuncture, par1ItemStack)){
+			SkillSpear sp = new SkillSpear();
+			sp.doAiming(par2World, par3EntityPlayer, par1ItemStack, j, this.getReach());
+		}
+	}
+	
+	
+	@Override
+	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
+	{
+		super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
+
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.swing, par1ItemStack) && par3EntityPlayer.isSneaking()){
+			SkillSpear sp = new SkillSpear();
+			sp.doSwing(par2World, par3EntityPlayer, par1ItemStack);
+		}
+		if (HelperAbility.hasAbilityFromItemStack(AbilityRegistry.aiming, par1ItemStack) && par3EntityPlayer.isSneaking())
+		{
+			UtilNBT.setFreeTag(par1ItemStack, KEYisAiming, true);
+
+		}
+		if (HelperAbility.hasAbilityFromItemStack(AbilityRegistry.acupuncture, par1ItemStack) && par3EntityPlayer.isSneaking())
+		{
+			UtilNBT.setFreeTag(par1ItemStack, KEYisAiming, true);
+
+		}
+
+		return par1ItemStack;
+	}
+	
+	@Override
+	public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
+	{
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.grassHopper, par1ItemStack)){
+			SkillEffectHelper helper = new SkillEffectHelper(par3World,par2EntityPlayer,AbilityRegistry.grassHopper,par1ItemStack);
+
+			helper.setUsePoint(new XYZPos(par4,par5,par6));
+			helper.doSkill();
+
+		}
+		return false;
+	}
+	
 	@Override
 	public void onUpdate(ItemStack par1ItemStack, World par2World, Entity par3Entity, int par4, boolean par5) {
 		if(par3Entity!=null){
@@ -100,32 +181,11 @@ public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExten
 					if(ep.swingProgressInt==1){
 						ItemStack is = ep.getCurrentEquippedItem();
 						if((is!=null) && (is.getItem() instanceof IExtendedReach)){
-							float reach = ((IExtendedReach) is.getItem()).getReach();
-							MovingObjectPosition mop = UtilItem.getMouseOver();
-							if(mop!=null){
-								if(mop.entityHit!=null){
-									//System.out.println(mop);
-									float dis = ep.getDistanceToEntity(mop.entityHit);
-									if(dis<reach){
 
-										if(mop.entityHit.hurtResistantTime==0 ){
-											AxisAlignedBB ab = mop.entityHit.boundingBox;
-											List<Entity> list = par2World.getEntitiesWithinAABB(Entity.class, ab);
-
-											if(!list.isEmpty()){
-
-												Entity hurtEnt = list.get(0);
-												//ep.attackTargetEntityWithCurrentItem(hurtEnt);
-												if(hurtEnt!=ep){
-													
-													UtilItem.playerAttackEntityWithItem(ep, hurtEnt, 0, 0.8F);
-												}
-											}
-
-										}
-									}
-								}
-							}
+							this.doSpearAttack(is, ep, par2World);
+						}
+						if(is!=null){
+							this.setNeutral(par1ItemStack);
 						}
 
 						//UtilSkill.setFreeStateNBT(par1ItemStack, "attack", 0);
@@ -136,6 +196,34 @@ public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExten
 		}
 	}
 
+	protected void doSpearAttack(ItemStack is,EntityPlayer ep,World par2World){
+		float reach = ((IExtendedReach) is.getItem()).getReach();
+		MovingObjectPosition mop = UtilItem.getMouseOver();
+		if(mop!=null){
+			if(mop.entityHit!=null){
+				//System.out.println(mop);
+				float dis = ep.getDistanceToEntity(mop.entityHit);
+				if(dis<reach){
+
+					if(mop.entityHit.hurtResistantTime==0 ){
+						AxisAlignedBB ab = mop.entityHit.boundingBox;
+						List<Entity> list = par2World.getEntitiesWithinAABB(Entity.class, ab);
+
+						if(!list.isEmpty()){
+
+							Entity hurtEnt = list.get(0);
+							//ep.attackTargetEntityWithCurrentItem(hurtEnt);
+							if(hurtEnt!=ep){
+								
+								UtilItem.playerAttackEntityWithItem(ep, hurtEnt, 0, 0.8F);
+							}
+						}
+
+					}
+				}
+			}
+		}
+	}
 	@Override
 	public float getReach() {
 		// TODO Auto-generated method stub
@@ -153,5 +241,9 @@ public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExten
 	public EnumUnsagaWeapon getCategory() {
 		// TODO 自動生成されたメソッド・スタブ
 		return EnumUnsagaWeapon.SPEAR;
+	}
+	
+	public static void setNeutral(ItemStack is){
+		UtilNBT.setFreeTag(is, KEYisAiming, false);
 	}
 }

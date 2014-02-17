@@ -44,6 +44,7 @@ public class ItemArmorUnsaga extends ItemArmor implements IUnsagaMaterial{
 	protected HelperUnsagaWeapon helper;
 	protected UnsagaMaterial material;
 	protected ModelArmorColored modelBiped;
+	protected int armorTypeInt;
 	
 	protected String path = Unsaga.domain+":textures/models/armor/";
 	
@@ -53,6 +54,7 @@ public class ItemArmorUnsaga extends ItemArmor implements IUnsagaMaterial{
 		super(par1, par2EnumArmorMaterial, getRenderIndex(material), armortypeint);
 		this.material = material;
 		this.armorType = armorType;
+		this.armorTypeInt = armortypeint;
 		this.armorTextureFiles = new String[2];
 		this.armorTextureFiles[0] = path+getArmorTextureFilename(material)+".png";
 		this.armorTextureFiles[1] = path+getArmorTextureFilename(material)+"2.png";
@@ -174,18 +176,21 @@ public class ItemArmorUnsaga extends ItemArmor implements IUnsagaMaterial{
 	@Override
     public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
     {
-		if(!par3EntityPlayer.isSneaking())return super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
-		
+
         //int i = EntityLiving.getArmorPosition(par1ItemStack) - 1;
         ItemStack itemstack1 = par3EntityPlayer.getCurrentArmor(0);
 
-        if (itemstack1 == null)
-        {
-            par3EntityPlayer.setCurrentItemOrArmor(1, par1ItemStack.copy()); //Forge: Vanilla bug fix associated with fixed setCurrentItemOrArmor indexs for players.
-            par1ItemStack.stackSize = 0;
-        }
+        if(par3EntityPlayer.isSneaking()){
+            if (itemstack1 == null)
+            {
+                par3EntityPlayer.setCurrentItemOrArmor(1, par1ItemStack.copy()); //Forge: Vanilla bug fix associated with fixed setCurrentItemOrArmor indexs for players.
+                par1ItemStack.stackSize = 0;
+            }
 
-        return par1ItemStack;
+            return par1ItemStack;
+        }
+        return super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
+
     }
 	
 	@Override

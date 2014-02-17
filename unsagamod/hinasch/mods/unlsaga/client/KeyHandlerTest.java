@@ -54,42 +54,45 @@ public class KeyHandlerTest extends KeyHandler{
 	@Override
 	public void keyDown(EnumSet<TickType> types, KeyBinding kb,
 			boolean tickEnd, boolean isRepeat) {
-	      if (kb.keyCode == zkey){
+		if(Unsaga.debug.get()){
+		      if (kb.keyCode == zkey){
 
-	    	  debugdata.increaseFloat(debugdata.index,debugdata.incr);
-	       }
-	      if (kb.keyCode == xkey){
-	    	  debugdata.decreaseFloat(debugdata.index,debugdata.incr);
+		    	  debugdata.increaseFloat(debugdata.index,debugdata.incr);
+		       }
+		      if (kb.keyCode == xkey){
+		    	  debugdata.decreaseFloat(debugdata.index,debugdata.incr);
 
-	       }
-	      if (kb.keyCode == ckey){
+		       }
+		      if (kb.keyCode == ckey){
 
-	    	  if(tickEnd)debugdata.nextIndex();
-	    	  
-	    	  
+		    	  if(tickEnd)debugdata.nextIndex();
+		    	  
+		    	  
 
-	       }
-	      if (kb.keyCode == vkey){
+		       }
+		      if (kb.keyCode == vkey){
 
-	    	  debugdata.increaseFloat(debugdata.index,1.0F);
-	       }
-	      if (kb.keyCode == bkey){
-	    	  debugdata.decreaseFloat(debugdata.index,1.0F);
-	       }
-	      if (kb.keyCode == nkey){
+		    	  debugdata.increaseFloat(debugdata.index,1.0F);
+		       }
+		      if (kb.keyCode == bkey){
+		    	  debugdata.decreaseFloat(debugdata.index,1.0F);
+		       }
+		      if (kb.keyCode == nkey){
 
-	       }
-	      if(kb.keyCode == mkey){
+		       }
+		      if(kb.keyCode == mkey){
 
-	    	   
-	      }
+		    	   
+		      }
+		}
+
 	      if(kb.keyCode == kammakey && tickEnd){
 	    	  
 	    	  EntityClientPlayerMP clientPlayer = (EntityClientPlayerMP)Minecraft.getMinecraft().thePlayer;
 
 	    	  if(Minecraft.getMinecraft().currentScreen !=null)return;
 	    	  //clientPlayer.openGui(Unsaga.instance, Unsaga.GuiEquipment, clientPlayer.worldObj,(int)clientPlayer.posX, (int)clientPlayer.posY, (int)clientPlayer.posZ);
-	    	  PacketDispatcher.sendPacketToServer(PacketHandler.getPacket(this,clientPlayer));
+	    	  PacketDispatcher.sendPacketToServer(PacketHandler.getEquipGuiPacket(clientPlayer));
 	    	  //FMLClientHandler.instance().displayGuiScreen(clientPlayer, new GuiEquipment(clientPlayer));
 	      }
 	}

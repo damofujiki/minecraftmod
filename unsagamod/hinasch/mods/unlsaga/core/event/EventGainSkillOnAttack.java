@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.core.event;
 
 import hinasch.lib.HSLibs;
+import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.ability.skill.HelperSkill;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -17,8 +18,11 @@ public class EventGainSkillOnAttack {
 				EntityPlayer ep = (EntityPlayer)e.source.getEntity();
 				ItemStack weapon = ep.getHeldItem();
 				if(weapon!=null){
-					HelperSkill helper = new HelperSkill(weapon,ep);
-					helper.drawChanceToGainAbility(ep.getRNG(),e.entityLiving );
+					if(weapon.getItem() instanceof IGainAbility){
+						HelperSkill helper = new HelperSkill(weapon,ep);
+						helper.drawChanceToGainAbility(ep.getRNG(),e.entityLiving );
+					}
+
 				}
 			}
 

@@ -5,6 +5,13 @@ import hinasch.mods.unlsaga.core.init.MaterialList;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.entity.EntityArrowUnsaga;
+import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
+import hinasch.mods.unlsaga.misc.ability.HelperAbility;
+import hinasch.mods.unlsaga.misc.ability.IGainAbility;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
+import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
+import hinasch.mods.unlsaga.misc.debuff.LivingStateBow;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
@@ -28,7 +35,7 @@ import net.minecraftforge.event.entity.player.ArrowNockEvent;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial
+public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial,IGainAbility
 {
     public static final String[] bowPullIconNameArray = new String[] {"pull0", "pull1", "pull2"};
     @SideOnly(Side.CLIENT)
@@ -103,11 +110,13 @@ public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial
     /**
      * called when the player releases the use item button. Args: itemstack, world, entityplayer, itemInUseCount
      */
-    public void onPlayerStoppedUsing(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer, int par4)
+    public void onPlayerStoppedUsing(ItemStack par1ItemStack, World par2World, EntityPlayer player, int par4)
     {
         int j = this.getMaxItemUseDuration(par1ItemStack) - par4;
 
-        ArrowLooseEvent event = new ArrowLooseEvent(par3EntityPlayer, par1ItemStack, j);
+        
+        SkillEffectHelper skilleffect = null;
+        ArrowLooseEvent event = new ArrowLooseEvent(player, par1ItemStack, j);
         MinecraftForge.EVENT_BUS.post(event);
         if (event.isCanceled())
         {
@@ -115,9 +124,9 @@ public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial
         }
         j = event.charge;
 
-        boolean flag = par3EntityPlayer.capabilities.isCreativeMode || EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, par1ItemStack) > 0;
+        boolean flag = player.capabilities.isCreativeMode || EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, par1ItemStack) > 0;
 
-        if (flag || par3EntityPlayer.inventory.hasItem(Item.arrow.itemID))
+        if (flag || player.inventory.hasItem(Item.arrow.itemID))
         {
             float f = (float)j / 20.0F;
             f = (f * f + f * 2.0F) / 3.0F;
@@ -132,8 +141,33 @@ public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial
                 f = 1.0F;
             }
 
-            EntityArrowUnsaga entityarrow = new EntityArrowUnsaga(par2World, par3EntityPlayer, f * 2.0F);
+            if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.doubleShot,par1ItemStack ) && player.isSneaking()){
+        		Unsaga.debug("呼ばれてますonstopping");
+            	LivingDebuff.addLivingDebuff(player, new LivingStateBow(DebuffRegistry.bowDouble,10,false,2,"none"));
+            	return;
+            }
+            if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.tripleShot,par1ItemStack ) && player.isSneaking()){
+            	LivingDebuff.addLivingDebuff(player, new LivingStateBow(DebuffRegistry.bowDouble,10,false,3,"none"));
+            	return;
+            }
 
+            EntityArrowUnsaga entityarrow = new EntityArrowUnsaga(par2World, player, f * 2.0F);
+
+            if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.zapper,par1ItemStack ) && player.isSneaking()){
+            	skilleffect = new SkillEffectHelper(par2World, player, AbilityRegistry.zapper, par1ItemStack);
+            	skilleffect.setCharge(f);
+            	entityarrow.setZapper(true);
+            }
+            if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.exorcist,par1ItemStack ) && player.isSneaking()){
+            	skilleffect = new SkillEffectHelper(par2World, player, AbilityRegistry.exorcist, par1ItemStack);
+            	skilleffect.setCharge(f);
+            	entityarrow.setExorcist(true);
+            }
+            if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.shadowStitching,par1ItemStack ) && player.isSneaking()){
+            	skilleffect = new SkillEffectHelper(par2World, player, AbilityRegistry.shadowStitching, par1ItemStack);
+            	skilleffect.setCharge(f);
+            	entityarrow.setShadowStitch(true);
+            }
             if (f == 1.0F)
             {
                 entityarrow.setIsCritical(true);
@@ -145,7 +179,12 @@ public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial
 
             if (k > 0)
             {
-                entityarrow.setDamage(entityarrow.getDamage() + (double)k * 0.5D + 0.5D);
+            	if(skilleffect!=null){
+            		entityarrow.setDamage(entityarrow.getDamage() + (double)k * 0.5D + (double)skilleffect.getAttackDamage());
+            	}else{
+            		entityarrow.setDamage(entityarrow.getDamage() + (double)k * 0.5D + 0.5D);
+            	}
+                
             }
 
             int l = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, par1ItemStack);
@@ -160,8 +199,13 @@ public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial
                 entityarrow.setFire(100);
             }
 
-            par1ItemStack.damageItem(1, par3EntityPlayer);
-            par2World.playSoundAtEntity(par3EntityPlayer, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
+            if(skilleffect!=null){
+            	par1ItemStack.damageItem(skilleffect.getDamageItem(), player);
+            }else{
+            	par1ItemStack.damageItem(1, player);
+            }
+            
+            par2World.playSoundAtEntity(player, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 
             if (flag)
             {
@@ -169,7 +213,7 @@ public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial
             }
             else
             {
-                par3EntityPlayer.inventory.consumeInventoryItem(Item.arrow.itemID);
+                player.inventory.consumeInventoryItem(Item.arrow.itemID);
             }
 
             if (!par2World.isRemote)
@@ -254,5 +298,12 @@ public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial
 	public EnumUnsagaWeapon getCategory() {
 		// TODO 自動生成されたメソッド・スタブ
 		return EnumUnsagaWeapon.BOW;
+	}
+
+
+	@Override
+	public int getMaxAbility() {
+		// TODO 自動生成されたメソッド・スタブ
+		return 1;
 	}
 }

@@ -23,7 +23,9 @@ public class ExtendedPlayerData implements IExtendedEntityProperties{
 	public ItemStack getItemStack(int par1){
 		return this.acsInventory[par1];
 	}
-	
+	public ItemStack[] getItemStacks(){
+		return this.acsInventory;
+	}
 	public Optional<EntityVillager> getMerchant(){
 		if(this.merchant!=null){
 			return Optional.of(this.merchant);

@@ -673,7 +673,7 @@ public class EntityArrowThrowable extends EntityThrowable implements IProjectile
                     this.prevRotationYaw += 180.0F;
                     this.ticksInAir = 0;
                 }
-            }
+            } //entityhit以外
             else
             {
                 this.xTile = movingobjectposition.blockX;
@@ -692,6 +692,8 @@ public class EntityArrowThrowable extends EntityThrowable implements IProjectile
                 this.inGround = true;
                 this.throwableShake = 7;
                 this.setIsCritical(false);
+                
+                this.onArrowImpactOnTile();
 
                 if (this.inTile != 0)
                 {
@@ -699,6 +701,10 @@ public class EntityArrowThrowable extends EntityThrowable implements IProjectile
                 }
             }
         }
+		
+	}
+	
+	public void onArrowImpactOnTile(){
 		
 	}
 }

@@ -2,11 +2,13 @@ package hinasch.mods.unlsaga;
 
 import hinasch.lib.BWrapper;
 import hinasch.lib.HSLibs;
+import hinasch.mods.unlsaga.core.event.EventFallDamage;
 import hinasch.mods.unlsaga.core.event.EventGainAbilityOnDeath;
 import hinasch.mods.unlsaga.core.event.EventGainSkillOnAttack;
 import hinasch.mods.unlsaga.core.event.EventInitEnemyWeapon;
 import hinasch.mods.unlsaga.core.event.EventInteractVillager;
 import hinasch.mods.unlsaga.core.event.EventUnsagaToolTip;
+import hinasch.mods.unlsaga.core.event.ExtendedEntityLivingData;
 import hinasch.mods.unlsaga.core.event.ExtendedMerchantData;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
 import hinasch.mods.unlsaga.core.event.TickHandlerUnsaga;
@@ -16,9 +18,11 @@ import hinasch.mods.unlsaga.core.init.UnsagaBlocks;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.entity.EntityArrowUnsaga;
 import hinasch.mods.unlsaga.entity.EntityBarrett;
+import hinasch.mods.unlsaga.entity.EntityFlyingAxe;
 import hinasch.mods.unlsaga.misc.CreativeTabsUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.bartering.MerchandiseLibrary;
+import hinasch.mods.unlsaga.misc.module.Module;
 import hinasch.mods.unlsaga.misc.smith.MaterialLibrary;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.network.CommonProxy;
@@ -27,6 +31,9 @@ import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.Configuration;
+
+import com.google.common.base.Optional;
+
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
@@ -51,6 +58,7 @@ public class Unsaga {
 	public static int GuiEquipment = 1;
 	public static int GuiSmith = 2;
 	public static int GuiBartering = 3;
+	public static int GuiBlender = 4;
 	
 	public static AbilityRegistry abilityRegistry;
 	public static CreativeTabs tabUnsaga;
@@ -58,6 +66,7 @@ public class Unsaga {
 	public static MaterialLibrary materialFactory = new MaterialLibrary();
 	public static MerchandiseLibrary merchandiseFactory = new MerchandiseLibrary();
 	
+	public static Optional<Module> module = Optional.absent();
 	//基本情報のロード、イベントのレジスターなど
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
@@ -76,10 +85,15 @@ public class Unsaga {
 		
 		UnsagaBlocks.loadConfig(config);
 		UnsagaBlocks.registerValues();
-		
+
 		
 		UnsagaItems.loadConfig(config);
 		UnsagaItems.register();
+		
+		if(module.isPresent()){
+			module.get().preInit();
+			module.get().initItem(config);
+		}
 		
 		NoFuncItemList.load();
 		
@@ -101,6 +115,12 @@ public class Unsaga {
 		TickRegistry.registerTickHandler(new TickHandlerUnsaga(), Side.SERVER);
 		HSLibs.registerEvent(new EventGainAbilityOnDeath());
 		HSLibs.registerEvent(new EventGainSkillOnAttack());
+		HSLibs.registerEvent(new ExtendedEntityLivingData());
+		//HSLibs.registerEvent(new ExtendedEntityTag());
+		HSLibs.registerEvent(new EventFallDamage());
+		if(module.isPresent()){
+			module.get().registerEvents();
+		}
 		//(new ForgeEventRegistry()).registerEvent();
 		
 		//NetworkRegistry.instance().registerGuiHandler(instance, proxy);
@@ -132,7 +152,7 @@ public class Unsaga {
 	public void checkLoadedMods(){
 
 		String className1[] = {
-				"hinasch.mods.Debug"
+				"hinasch.mods.Debug","hinasch.mods.unlsagamagic.UnsagaMagic"
 		};
 		String cn = null;
 		for(int i=0;i<className1.length;i++){
@@ -145,6 +165,9 @@ public class Unsaga {
 				System.out.println(cn+"is ok.");
 				if(i==0){
 					debug.setTrue();
+				}
+				if(i==1){
+					this.module = Optional.of(new Module());
 				}
 
 			}catch(ClassNotFoundException e){
@@ -183,5 +206,10 @@ public class Unsaga {
 	public void registerEntity(){
 		EntityRegistry.registerModEntity(EntityArrowUnsaga.class, "unsaga.arrow", 1, this, 250, 5, true);
 		EntityRegistry.registerModEntity(EntityBarrett.class, "unsaga.barrett", 2, this, 250, 5, true);
+		//fireball 3
+		EntityRegistry.registerModEntity(EntityFlyingAxe.class, "unsaga.flyingaxe", 4, this, 250, 5, true);
+		if(this.module.isPresent()){
+			this.module.get().registerEntity();
+		}
 	}
 }

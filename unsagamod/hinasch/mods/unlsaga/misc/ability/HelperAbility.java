@@ -4,6 +4,7 @@ import hinasch.lib.CSVText;
 import hinasch.lib.UtilList;
 import hinasch.lib.UtilNBT;
 import hinasch.mods.unlsaga.Unsaga;
+import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
@@ -32,7 +33,7 @@ public class HelperAbility {
 	protected EnumUnsagaWeapon category;
 	protected int maxAbilitySize;
 	protected UnsagaMaterial material;
-	protected String KEY = "abilities";
+	protected static String KEY = "abilities";
 	protected EntityPlayer player;
 	
 	public HelperAbility (ItemStack is,EntityPlayer ep){
@@ -48,8 +49,8 @@ public class HelperAbility {
 		if(ab.getAbilities(category, material).isPresent()){
 			List<Ability> abList = new ArrayList();
 
-			if(this.getGainedAsIntList().isPresent()){
-				List<Integer> gainedAbilityList = this.getGainedAsIntList().get();
+			if(getGainedAsIntList(this.is).isPresent()){
+				List<Integer> gainedAbilityList = getGainedAsIntList(this.is).get();
 				if(gainedAbilityList.size()>=this.maxAbilitySize){
 					return;
 				}
@@ -67,7 +68,7 @@ public class HelperAbility {
 				
 				Ability gainab = abList.get(numgain);
 				Unsaga.debug(gainab.getName(1)+"を覚えた");
-				PacketDispatcher.sendPacketToPlayer(PacketHandler.getMessagePacket("gained ability:",gainab.number), (Player) this.player);
+				PacketDispatcher.sendPacketToPlayer(PacketHandler.getMessagePacket(1,gainab.number), (Player) this.player);
 				PacketDispatcher.sendPacketToPlayer(PacketHandler.getSoundPacket((int)1022),(Player)this.player);
 				this.addAbility(gainab);
 			}
@@ -90,7 +91,7 @@ public class HelperAbility {
 	
 	public void addAbility(Ability ab){
 		if(UtilNBT.hasKey(is, KEY)){
-			List<Integer> gainedList = this.getGainedAsIntList().get();
+			List<Integer> gainedList = getGainedAsIntList(this.is).get();
 			gainedList.add(ab.number);
 			this.setListToNBT(gainedList);
 		}else{
@@ -101,8 +102,8 @@ public class HelperAbility {
 	}
 	
 	public void forgetSomeAbility(Random rand){
-		if(this.getGainedAsIntList().isPresent()){
-			List<Ability> ablist = ab.exchangeToAbilities(this.getGainedAsIntList().get());
+		if(getGainedAsIntList(this.is).isPresent()){
+			List<Ability> ablist = ab.exchangeToAbilities(getGainedAsIntList(this.is).get());
 			int indexforgot = this.getRandomIndex(rand, ablist.size());
 			ablist.remove(indexforgot);
 			if(ablist.isEmpty()){
@@ -134,13 +135,20 @@ public class HelperAbility {
 	}
 	
 	public boolean hasAbility(Ability ab){
-		if(this.getGainedAsIntList().isPresent()){
-			return this.getGainedAsIntList().get().contains(ab.number);
+		if(getGainedAsIntList(this.is).isPresent()){
+			return getGainedAsIntList(this.is).get().contains(ab.number);
 		}
 		return false;
 	}
 	
-	public Optional<List<Integer>> getGainedAsIntList(){
+	public static boolean hasAbilityFromItemStack(Ability ab,ItemStack is){
+		if(getGainedAsIntList(is).isPresent()){
+			return getGainedAsIntList(is).get().contains(ab.number);
+		}
+		return false;
+	}
+	
+	public static Optional<List<Integer>> getGainedAsIntList(ItemStack is){
 		if(UtilNBT.hasKey(is, KEY)){
 			List<Integer> intlist = CSVText.csvToIntList(UtilNBT.readFreeStrTag(is, KEY));
 			if(intlist!=null){
@@ -169,12 +177,14 @@ public class HelperAbility {
 	}
 	
 	public Optional<List<Ability>> getGainedAbilities(){
-		if(this.getGainedAsIntList().isPresent()){
-			List<Integer> list = this.getGainedAsIntList().get();
+		if(getGainedAsIntList(this.is).isPresent()){
+			List<Integer> list = getGainedAsIntList(this.is).get();
 			return Optional.of(ab.exchangeToAbilities(list));
 		}
 		return Optional.absent();
 	}
+	
+
 	
 	public int getHealAmount(){
 		List<Ability> list = new ArrayList();
@@ -191,8 +201,32 @@ public class HelperAbility {
 					healAmount += ab.healPoint;
 				}
 			}
-			Unsaga.debug("計算");
+			//Unsaga.debug("計算:"+healAmount);
 		}
 		return healAmount;
+	}
+	
+	public static int hasAbilityPlayer(EntityPlayer ep,Ability ability){
+		int amount = 0;
+		if(ep.getExtendedProperties(ExtendedPlayerData.key)!=null){
+			ExtendedPlayerData data = (ExtendedPlayerData)ep.getExtendedProperties(ExtendedPlayerData.key);
+			for(ItemStack is:data.getItemStacks()){
+				if(is!=null){
+					HelperAbility helper = new HelperAbility(is,ep);
+					if(helper.hasAbility(ability)){
+						amount += 1;
+					}
+				}
+			}
+			for(ItemStack armor:ep.inventory.armorInventory){
+				if(armor!=null){
+					HelperAbility helper = new HelperAbility(armor,ep);
+					if(helper.hasAbility(ability)){
+						amount += 1;
+					}
+				}
+			}
+		}
+		return amount;
 	}
 }

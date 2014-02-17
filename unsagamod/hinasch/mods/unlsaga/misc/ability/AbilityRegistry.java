@@ -4,7 +4,7 @@ import hinasch.mods.unlsaga.core.init.MaterialList;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.skill.Skill;
 import hinasch.mods.unlsaga.misc.ability.skill.Skill.EnumDamageUnsaga;
-import hinasch.mods.unlsaga.misc.ability.skill.SkillSword;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillSword;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 
 import java.util.ArrayList;
@@ -59,16 +59,38 @@ public class AbilityRegistry {
 	public static final Ability forbidden = new Ability(28,"Spell Forbidden","禁行術");
 	public static final Ability supportForbidden = new Ability(29,"Support Forbidden","禁行サポート");
 	
-	public static final Skill Bopeep = new Skill(100,"Bopeep","変幻自在",20,6,EnumDamageUnsaga.SWORD,5);
+	public static final Skill kaleidoscope = new Skill(100,"Bopeep","変幻自在",20,6,EnumDamageUnsaga.SWORD,5);
 	public static final Skill slash = new Skill(101,"Slash","払い抜け",5,3,EnumDamageUnsaga.SWORD,3);
 	public static final Skill smash = new Skill(102,"Bear Slash","ベアクラッシュ",15,3,EnumDamageUnsaga.SWORD,8);
 	public static final Skill roundabout = new Skill(103,"Roundabout","転",0,0,EnumDamageUnsaga.SWORD,6);
 	public static final Skill rearBlade = new Skill(104,"Rear Blade","追突剣",0,0,EnumDamageUnsaga.SWORDPUNCH,8);
 	public static final Skill gust = new Skill(105,"Gust","逆風の太刀",0,0,EnumDamageUnsaga.SWORD,5);
 	public static final Skill vandalize = new Skill(106,"Vandalize","ヴァンダライズ",0,0,EnumDamageUnsaga.SWORD,15);
+	public static final Skill tomahawk = new Skill(107,"Tomahawk","トマホーク",5,0,EnumDamageUnsaga.SWORD,15);
+	public static final Skill fujiView = new Skill(108,"Fuji View","富嶽百景",0,0,EnumDamageUnsaga.SWORD,15);
+	public static final Skill skyDrive = new Skill(109,"Skydrive","スカイドライブ",10,0,EnumDamageUnsaga.SWORD,15);
+	public static final Skill woodBreakerPhoenix = new Skill(110,"Wood Breaker Phoenix","マキ割りフェニックス",0,0,EnumDamageUnsaga.SWORD,15);
+	public static final Skill woodChopper = new Skill(110,"Wood Chopper","大木断",0,0,EnumDamageUnsaga.SWORD,15);
+	public static final Skill aiming = new Skill(120,"Aiming","エイミング",10,2,EnumDamageUnsaga.SWORD,15);
+	public static final Skill acupuncture = new Skill(121,"Acupuncture","独妙点穴",20,2,EnumDamageUnsaga.SWORD,25);
+	public static final Skill swing = new Skill(122,"Swing","スウィング",20,2,EnumDamageUnsaga.SWORD,15);
+	public static final Skill grassHopper = new Skill(123,"Grass Hopper","草伏せる",0,0,EnumDamageUnsaga.SWORD,5);
+	public static final Skill earthDragon = new Skill(133,"Earth Dragon","土竜撃",1,0,EnumDamageUnsaga.SWORD,5);
+	public static final Skill skullCrash = new Skill(134,"Skull Crash","スカルクラッシュ",1,0,EnumDamageUnsaga.SWORD,5);
+	public static final Skill pulvorizer = new Skill(135,"Pulvorizer","粉砕撃",1,0,EnumDamageUnsaga.SWORD,5);
+	public static final Skill grandSlam = new Skill(136,"Grand Slam","グランドスラム",1,0,EnumDamageUnsaga.SWORD,5);
+	public static final Skill gonger = new Skill(137,"Gonger","どら鳴らし",1,0,EnumDamageUnsaga.SWORD,5);
+	
+	public static final Skill doubleShot = new Skill(140,"Double Shot","ニ連射",2,0,EnumDamageUnsaga.SWORD,5);
+	public static final Skill tripleShot = new Skill(141,"Triple Shot","三連射",2,0,EnumDamageUnsaga.SWORD,5);
+	public static final Skill zapper = new Skill(142,"Zapper","ザップショット",2,0,EnumDamageUnsaga.SWORD,5);
+	public static final Skill exorcist = new Skill(143,"Exorcist","破魔の矢",2,0,EnumDamageUnsaga.SWORD,5);
+	public static final Skill shadowStitching = new Skill(144,"Shadow Stitching","影縫い",2,0,EnumDamageUnsaga.SWORD,5);
 	
 	public static final HashSet<Ability> healDowns = Sets.newHashSet(healDown5,healDown10,healDown15,healDown20,healDown25);
 	public static final HashSet<Ability> healUps = Sets.newHashSet(healUp5,healUp10);
+	
+	public static final HashSet<Skill> requireCoolingSet = Sets.newHashSet(vandalize,skyDrive,grandSlam);
 	
 	public AbilityRegistry(){
 		this.inheritAbilityMap = new HashMap();
@@ -124,6 +146,15 @@ public class AbilityRegistry {
 	public void registerSkill(){
 		//vandalize.setMethod(skillSword.getClass().getMethod("doVandelize", parameterTypes));
 		addSkill(EnumUnsagaWeapon.SWORD,true,newSkillList(vandalize,smash));
+		addSkill(EnumUnsagaWeapon.SWORD,false,newSkillList(kaleidoscope,roundabout));
+		addSkill(EnumUnsagaWeapon.AXE,false,newSkillList(tomahawk,skyDrive,woodChopper));
+		addSkill(EnumUnsagaWeapon.AXE,true,newSkillList(fujiView,woodBreakerPhoenix,woodChopper));
+		addSkill(EnumUnsagaWeapon.SPEAR,false,newSkillList(swing,grassHopper));
+		addSkill(EnumUnsagaWeapon.SPEAR,true,newSkillList(aiming,acupuncture));
+		addSkill(EnumUnsagaWeapon.BOW,false,newSkillList(doubleShot,tripleShot,shadowStitching));
+		addSkill(EnumUnsagaWeapon.BOW,true,newSkillList(zapper,exorcist));
+		addSkill(EnumUnsagaWeapon.STAFF,false,newSkillList(skullCrash,pulvorizer,gonger));
+		addSkill(EnumUnsagaWeapon.STAFF,true,newSkillList(grandSlam,earthDragon));
 	}
 	
 	public static List<Ability> newSkillList(Skill... skills){

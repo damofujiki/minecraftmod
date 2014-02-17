@@ -5,12 +5,15 @@ import hinasch.mods.unlsaga.DebugUnsaga;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.render.RenderArrowUnsaga;
 import hinasch.mods.unlsaga.client.render.RenderBarrett;
+import hinasch.mods.unlsaga.client.render.RenderFlyingAxe;
 import hinasch.mods.unlsaga.client.render.equipment.RenderItemArmor;
 import hinasch.mods.unlsaga.client.render.equipment.RenderItemMusket;
 import hinasch.mods.unlsaga.client.render.equipment.RenderItemSpear;
 import hinasch.mods.unlsaga.client.render.equipment.RenderItemWeapon;
 import hinasch.mods.unlsaga.entity.EntityArrowUnsaga;
 import hinasch.mods.unlsaga.entity.EntityBarrett;
+import hinasch.mods.unlsaga.entity.EntityFlyingAxe;
+import hinasch.mods.unlsaga.misc.module.ProxyRegisterUnsagaSpell;
 import hinasch.mods.unlsaga.network.CommonProxy;
 import net.minecraftforge.client.MinecraftForgeClient;
 
@@ -22,6 +25,8 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 public class ClientProxy extends CommonProxy{
 
 	public DebugUnsaga debugdata;
+	public ProxyRegisterUnsagaSpell proxyUnsagaSpell;
+	
 	
 	@Override
 	public void registerSpearRenderer(int par1){
@@ -48,6 +53,11 @@ public class ClientProxy extends CommonProxy{
 	public void registerRenderers(){
 		RenderingRegistry.registerEntityRenderingHandler(EntityArrowUnsaga.class, new RenderArrowUnsaga());
 		RenderingRegistry.registerEntityRenderingHandler(EntityBarrett.class, new RenderBarrett(1.0F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityFlyingAxe.class, new RenderFlyingAxe(1.0F));
+		if(Unsaga.module.isPresent()){
+			this.proxyUnsagaSpell = new ProxyRegisterUnsagaSpell();
+			this.proxyUnsagaSpell.register();
+		}
 	}
 	
 	@Override

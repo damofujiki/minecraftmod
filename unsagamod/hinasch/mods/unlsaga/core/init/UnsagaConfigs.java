@@ -8,5 +8,6 @@ public class UnsagaConfigs {
 	
 	public static int probGenChest = 2;
 	
+	public static boolean decipherAtSleep = true;
 	
 }

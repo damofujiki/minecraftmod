@@ -7,14 +7,19 @@ import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
+import hinasch.mods.unlsaga.network.PacketHandler;
 
 import java.util.List;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.client.renderer.texture.IconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
+import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class ItemAccessory extends Item implements IGainAbility,IUnsagaMaterial{
 
@@ -38,17 +43,7 @@ public class ItemAccessory extends Item implements IGainAbility,IUnsagaMaterial{
 		helper.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
 	}
 
-	@Override
-	public void gainAbility(ItemStack is) {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
-	
-	@Override
-	public void gainAbilityWithChance(ItemStack is) {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
+
 	
     @Override
     public int getColorFromItemStack(ItemStack par1ItemStack, int par2)
@@ -84,4 +79,18 @@ public class ItemAccessory extends Item implements IGainAbility,IUnsagaMaterial{
 		// TODO 自動生成されたメソッド・スタブ
 		return EnumUnsagaWeapon.ACCESSORY;
 	}
+	
+	@Override
+    public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
+    {
+
+        if(par3EntityPlayer.isSneaking()){
+	    	  EntityClientPlayerMP clientPlayer = (EntityClientPlayerMP)Minecraft.getMinecraft().thePlayer;
+
+	    	  if(Minecraft.getMinecraft().currentScreen !=null)return par1ItemStack;
+	    	  PacketDispatcher.sendPacketToServer(PacketHandler.getEquipGuiPacket(clientPlayer));
+        }
+
+        return par1ItemStack;
+    }
 }

@@ -1,6 +1,7 @@
 package hinasch.lib;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
@@ -112,13 +113,25 @@ public class CSVText {
 		return 1;
 	}
 	
-	public static String listToCSV(List<String> input){
+	public static String collectionToCSV(Collection<String> input){
 		StringBuilder strbuilder = new StringBuilder();
 		for(Iterator<String> ite=input.iterator();ite.hasNext();){
 			if(ite.hasNext()){
 				strbuilder.append(ite.next()).append(",");
 			}else{
 				strbuilder.append(ite.next());
+			}
+		}
+		return new String(strbuilder);
+	}
+	
+	public static String exchangeCollectionToCSV(Collection input){
+		StringBuilder strbuilder = new StringBuilder();
+		for(Iterator<Object> ite=input.iterator();ite.hasNext();){
+			if(ite.hasNext()){
+				strbuilder.append(ite.next().toString()).append(",");
+			}else{
+				strbuilder.append(ite.next().toString());
 			}
 		}
 		return new String(strbuilder);
@@ -145,6 +158,18 @@ public class CSVText {
 		}
 		for(String s:strs){
 			output.add(Integer.valueOf(s));
+		}
+		return output;
+	}
+	
+	public static List<String> csvToStrList(String str){
+		String[] strs = str.split(",");
+		List<String> output = new ArrayList();
+		if(strs.length==0){
+			return null;
+		}
+		for(String s:strs){
+			output.add(s);
 		}
 		return output;
 	}

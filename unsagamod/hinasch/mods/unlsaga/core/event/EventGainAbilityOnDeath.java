@@ -23,7 +23,7 @@ public class EventGainAbilityOnDeath {
 //						
 //					}
 //				}
-				if(ep.worldObj.isRemote)return;
+				
 				if(ExtendedPlayerData.getData(ep).isPresent()){
 					ExtendedPlayerData pdata = ExtendedPlayerData.getData(ep).get();
 					for(int i=0;i<2;i++){
@@ -31,7 +31,10 @@ public class EventGainAbilityOnDeath {
 						if(HelperAbility.canGainAbility(is)){
 							Unsaga.debug("アビリティを覚えられる");
 							HelperAbility helper = new HelperAbility(is,ep);
-							helper.drawChanceToGainAbility(ep.getRNG(), 100);
+							if(!ep.worldObj.isRemote){
+								helper.drawChanceToGainAbility(ep.getRNG(), 100);
+							}
+							
 						}
 					}
 					

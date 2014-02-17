@@ -78,7 +78,7 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 //		if(ItemAccessory.hasAbility(par5EntityPlayer, 8)){
 		if(Unsaga.debug.get()){
 			if(doChance(this.worldObj.rand,75)){
-				Unsaga.logc(par5EntityPlayer, Translation.trJP("Success")+":"+Translation.trJP("Unlock"),false);
+				Unsaga.logc(par5EntityPlayer, Translation.getWord("Success")+":"+Translation.getWord("Unlock"),false);
 				this.unlocked = true;
 			}
 		}
@@ -143,7 +143,7 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 		if(Unsaga.debug.get()){
 			if(doChance(this.worldObj.rand,80)){
 				this.defused = true;
-				Unsaga.logc(ep, Translation.trJP("Success")+":"+Translation.trJP("Defuse"),false);
+				Unsaga.logc(ep, Translation.getWord("Success")+":"+Translation.getWord("Defuse"),false);
 			}
 		}
 

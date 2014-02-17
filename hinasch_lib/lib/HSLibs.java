@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -35,6 +36,7 @@ import cpw.mods.fml.relauncher.SideOnly;
 public class HSLibs {
 
 	public static HSLibs instance;
+	public static String JPKEY = "ja_JP";
 
 	public static void langSet(String par1,String par3,Object par2){
 		//System.out.println(par1+":"+par3+":"+par2);
@@ -241,8 +243,8 @@ public class HSLibs {
 	}
 
 	public static void addPotionIfLiving(Entity entity,PotionEffect potionEffect){
-		if(entity instanceof EntityLiving){
-			EntityLiving el = (EntityLiving)entity;
+		if(entity instanceof EntityLivingBase){
+			EntityLivingBase el = (EntityLivingBase)entity;
 			el.addPotionEffect(potionEffect);
 		}
 	}
@@ -265,7 +267,7 @@ public class HSLibs {
 
 	public static boolean isEnemy(Entity par1,Entity player){
 		if(par1!=player && !(par1 instanceof EntityTameable) && !(par1 instanceof INpc)){
-			if(par1 instanceof EntityLiving){
+			if(par1 instanceof EntityLivingBase){
 				return true;
 			}
 
@@ -340,5 +342,9 @@ public class HSLibs {
     		return true;
     	}
     	return false;
+    }
+    
+    public static String getCurrentLang(){
+    	return Minecraft.getMinecraft().gameSettings.language;
     }
 }

@@ -1,7 +1,5 @@
 package hinasch.mods.unlsaga.misc.translation;
 
-import hinasch.mods.unlsaga.Unsaga;
-
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -21,7 +19,7 @@ public class Translation {
 //		this.strJP = jp;
 //	}
 	@SideOnly(Side.CLIENT)
-	public static String trJP(String strkey){
+	public static String getWord(String strkey){
 		if(strkey==null || strkey.equals(""))return "";
 		String language;
 		language = Minecraft.getMinecraft().gameSettings.language;
@@ -36,13 +34,13 @@ public class Translation {
 		return strkey;
 	}
 	
-	public static String translation(String str){
+	public static String translate(String str){
 		String newstr = str;
 		for(Iterator<String> ite=langMap.keySet().iterator();ite.hasNext();){
 			String eng = ite.next();
-			Unsaga.debug(eng);
-			if(newstr.toLowerCase().contains(eng)){
-				newstr = newstr.replace(eng, trJP(eng));
+			//Unsaga.debug(eng);
+			if(newstr.toLowerCase().contains(eng.toLowerCase())){
+				newstr = newstr.toLowerCase().replace(eng.toLowerCase(), getWord(eng));
 			}
 			
 
@@ -64,5 +62,18 @@ public class Translation {
 		langMap = new HashMap();
 		langMap.put("gained ability:", "のアビリティを解放した！");
 		langMap.put("gained skill:", "を閃いた！");
+		langMap.put("fire", "火");
+		langMap.put("water", "水");
+		langMap.put("wood", "木");
+		langMap.put("metal", "金");
+		langMap.put("earth", "土");
+		langMap.put("forbidden", "禁");
+		langMap.put("spell", "術");
+		langMap.put("finished deciphring the magic tablet.", "魔道板の解読が完了した。");
+		langMap.put("wrote to spell book.", "術を本に書き込んだ。");
+		langMap.put("succeeded invoke spell.", "詠唱成功");
+		langMap.put("healed", "回復");
+		langMap.put("deciphred", "解読済み");
+		langMap.put("not deciphred", "未解読");
 	}
 }

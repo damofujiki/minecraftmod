@@ -1,8 +1,13 @@
 package hinasch.mods.unlsaga.item.weapon;
 
+import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
+import hinasch.mods.unlsaga.misc.ability.HelperAbility;
+import hinasch.mods.unlsaga.misc.ability.IGainAbility;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
@@ -23,7 +28,7 @@ import net.minecraft.item.ItemSword;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
-public class ItemStaffUnsaga extends ItemSword implements IUnsagaMaterial{
+public class ItemStaffUnsaga extends ItemSword implements IUnsagaMaterial,IGainAbility{
 
 	public final UnsagaMaterial unsMaterial;
 	public final EnumToolMaterial toolMaterial;
@@ -49,6 +54,34 @@ public class ItemStaffUnsaga extends ItemSword implements IUnsagaMaterial{
     public boolean requiresMultipleRenderPasses()
     {
         return true;
+    }
+    
+	@Override
+    public boolean onItemUse(ItemStack is, EntityPlayer ep, World par3World, int par4, int par5, int par6, int side, float par8, float par9, float par10)
+    {
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.gonger, is) && ep.isSneaking() && side==1){
+			SkillEffectHelper helper = new SkillEffectHelper(par3World,ep,AbilityRegistry.gonger,is);
+			helper.setUsePoint(new XYZPos(par4,par5,par6));
+			helper.doSkill();
+		}
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.grandSlam, is) && ep.isSneaking() && side==1){
+			SkillEffectHelper helper = new SkillEffectHelper(par3World,ep,AbilityRegistry.grandSlam,is);
+			helper.setCoolingTime(13);
+			helper.setUsePoint(new XYZPos(par4,par5,par6));
+			helper.doSkill();
+		}
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.pulvorizer, is) && ep.isSneaking()){
+			SkillEffectHelper helper = new SkillEffectHelper(par3World,ep,AbilityRegistry.pulvorizer,is);
+			helper.setUsePoint(new XYZPos(par4,par5,par6));
+			helper.doSkill();
+		}
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.earthDragon, is) && ep.isSneaking() && side==1){
+			SkillEffectHelper helper = new SkillEffectHelper(par3World,ep,AbilityRegistry.earthDragon,is);
+			helper.setUsePoint(new XYZPos(par4,par5,par6));
+			helper.doSkill();
+		}
+		
+        return false;
     }
     
 	@Override
@@ -100,6 +133,15 @@ public class ItemStaffUnsaga extends ItemSword implements IUnsagaMaterial{
     @Override
     public boolean hitEntity(ItemStack par1ItemStack, EntityLivingBase par2EntityLivingBase, EntityLivingBase par3EntityLivingBase)
     {
+    	if(par2EntityLivingBase instanceof EntityPlayer){
+    		EntityPlayer ep =(EntityPlayer)par2EntityLivingBase;
+        	if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.skullCrash, par1ItemStack)){
+        		SkillEffectHelper helper = new SkillEffectHelper(ep.worldObj,ep,AbilityRegistry.skullCrash,par1ItemStack);
+        		helper.doSkill();
+        		return true;
+        	}
+    	}
+
         par1ItemStack.damageItem(4, par3EntityLivingBase);
         return true;
     }
@@ -140,5 +182,11 @@ public class ItemStaffUnsaga extends ItemSword implements IUnsagaMaterial{
 	public EnumUnsagaWeapon getCategory() {
 		// TODO 自動生成されたメソッド・スタブ
 		return EnumUnsagaWeapon.STAFF;
+	}
+
+	@Override
+	public int getMaxAbility() {
+		// TODO 自動生成されたメソッド・スタブ
+		return 1;
 	}
 }

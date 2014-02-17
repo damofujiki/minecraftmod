@@ -29,6 +29,18 @@ public class UtilItem {
 
 	private static Minecraft mc = FMLClientHandler.instance().getClient();
 	
+	public static boolean hasItemInstance(EntityPlayer player,Class _class){
+		if(player.getHeldItem()!=null){
+			if(player.getHeldItem().getItem().getClass().isInstance(_class)){
+				return true;
+			}
+			if(player.getHeldItem().getItem().getClass()==_class){
+				return true;
+			}
+		}
+		return false;
+		
+	}
 
 	public static MovingObjectPosition getMouseOver(){
 		Entity pointedEntity = null;
@@ -169,6 +181,7 @@ public class UtilItem {
                         par1Entity.setFire(1);
                     }
 
+                    
                     boolean flag2 = par1Entity.attackEntityFrom(DamageSource.causePlayerDamage(ep), attackDamage);
 
                     if (flag2)

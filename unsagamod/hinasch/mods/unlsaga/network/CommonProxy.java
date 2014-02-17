@@ -10,9 +10,12 @@ import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
 import hinasch.mods.unlsaga.inventory.ContainerBartering;
 import hinasch.mods.unlsaga.inventory.ContainerEquipment;
 import hinasch.mods.unlsaga.inventory.ContainerSmithUnsaga;
+import hinasch.mods.unlsaga.misc.module.HandlerCommonProxy;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.NpcMerchant;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.Container;
 import net.minecraft.world.World;
 
 import com.google.common.base.Optional;
@@ -26,6 +29,11 @@ import cpw.mods.fml.common.network.IGuiHandler;
 public class CommonProxy implements IGuiHandler{
 
 	public DebugUnsaga debugdata;
+	public HandlerCommonProxy handlerUnsagaMagic;
+	
+	public CommonProxy(){
+		this.handlerUnsagaMagic = new HandlerCommonProxy();
+	}
 	
 	public void registerSpearRenderer(int par1){
 		
@@ -68,12 +76,9 @@ public class CommonProxy implements IGuiHandler{
 			int x, int y, int z) {
 		// TODO 自動生成されたメソッド・スタブ
 		if(ID==Unsaga.GuiEquipment){
-			//if(player.openContainer==null){
-			//if(player.openContainer instanceof ContainerEquipment)return null;
 			if(player.openContainer == player.inventoryContainer){
 				
 				return new ContainerEquipment(player.inventory,player);
-			//}
 			}
 			
 		}
@@ -105,6 +110,13 @@ public class CommonProxy implements IGuiHandler{
 				
 			}
 		}
+		if(ID==Unsaga.GuiBlender){
+			if(player.openContainer == player.inventoryContainer){
+				Unsaga.debug("Container");
+				return (Container)HandlerCommonProxy.getContainerBlender(player, world);
+			}
+			
+		}
 		return null;
 	}
 
@@ -115,13 +127,11 @@ public class CommonProxy implements IGuiHandler{
 	public Object getClientGuiElement(int ID, EntityPlayer player, World world,
 			int x, int y, int z) {
 		if(ID==Unsaga.GuiEquipment){
-			//if(player.openContainer==null){
-			//if(player.openContainer instanceof ContainerEquipment)return null;
 			if(Minecraft.getMinecraft().currentScreen==null){
 				Unsaga.debug("client側が呼ばれました");
 				return new GuiEquipment(player);
 			}
-			//}
+
 		}
 		if(ID==Unsaga.GuiSmith){
 			if(Minecraft.getMinecraft().currentScreen==null){
@@ -134,6 +144,14 @@ public class CommonProxy implements IGuiHandler{
 			if(Minecraft.getMinecraft().currentScreen==null){
 
 						return new GuiBartering(new NpcMerchant(player), world, player);
+
+			}
+		}
+		if(ID==Unsaga.GuiBlender){
+			if(Minecraft.getMinecraft().currentScreen==null){
+
+				Unsaga.debug("GUI");
+						return (GuiContainer)HandlerCommonProxy.getGuiBlender(player,world);
 
 			}
 		}

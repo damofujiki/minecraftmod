@@ -16,9 +16,5 @@ public class MaterialLibraryBook extends Library{
 		// TODO 自動生成されたコンストラクター・スタブ
 	}
 
-	@Override
-	public void init(EnumSelecter selecter,Object par1){
 
-		
-	}
 }

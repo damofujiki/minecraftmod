@@ -24,6 +24,8 @@ public class HelperSkill extends HelperAbility{
 		super(is, ep);
 		if(HelperUnsagaWeapon.getCurrentWeight(is)>5){
 			this.isHeavy = true;
+		}else{
+			this.isHeavy = false;
 		}
 		// TODO 自動生成されたコンストラクター・スタブ
 	}
@@ -33,8 +35,8 @@ public class HelperSkill extends HelperAbility{
 		if(ab.getSkillList(category,this.isHeavy ).isPresent()){
 			List<Ability> abList = new ArrayList();
 
-			if(this.getGainedAsIntList().isPresent()){
-				List<Integer> gainedAbilityList = this.getGainedAsIntList().get();
+			if(HelperAbility.getGainedAsIntList(this.is).isPresent()){
+				List<Integer> gainedAbilityList = HelperAbility.getGainedAsIntList(this.is).get();
 				if(gainedAbilityList.size()>=this.maxAbilitySize){
 					return;
 				}
@@ -52,7 +54,7 @@ public class HelperSkill extends HelperAbility{
 				
 				Ability gainab = abList.get(numgain);
 				Unsaga.debug(gainab.getName(1)+"を覚えた");
-				PacketDispatcher.sendPacketToPlayer(PacketHandler.getMessagePacket("gained skill:",gainab.number), (Player) this.player);
+				PacketDispatcher.sendPacketToPlayer(PacketHandler.getMessagePacket(1,gainab.number), (Player) this.player);
 				PacketDispatcher.sendPacketToPlayer(PacketHandler.getSoundPacket((int)1022),(Player)this.player);
 				this.addAbility(gainab);
 			}

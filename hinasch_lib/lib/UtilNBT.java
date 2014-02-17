@@ -59,6 +59,14 @@ public class UtilNBT {
 		return;
 	}
 	
+	public static void setFreeTag(ItemStack is,String key,float val){
+		Preconditions.checkNotNull(is);
+		initNBTTag(is);
+		NBTTagCompound nbt = is.getTagCompound();
+		nbt.setFloat(key, (float)val);
+		return;
+	}
+	
 	public static void setFreeTag(ItemStack is,String key,boolean val){
 		Preconditions.checkNotNull(is);
 		initNBTTag(is);
@@ -76,6 +84,18 @@ public class UtilNBT {
 			return ERROR;
 		}
 		int rt = (int)nbt.getInteger(key);
+		return rt;
+	}
+	
+	public static float readFreeFloat(ItemStack is,String key){
+		Preconditions.checkNotNull(is);
+		NBTTagCompound nbt = is.getTagCompound();
+		Preconditions.checkNotNull(nbt);
+		if(!nbt.hasKey(key)){
+			System.out.println("tag not found key:"+key);
+			return ERROR;
+		}
+		float rt = (float)nbt.getFloat(key);
 		return rt;
 	}
 	
