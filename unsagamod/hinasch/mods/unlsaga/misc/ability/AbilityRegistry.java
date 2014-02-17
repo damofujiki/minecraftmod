@@ -82,10 +82,10 @@ public class AbilityRegistry {
 	public static final Skill gonger = new Skill(137,"Gonger","どら鳴らし",1,0,EnumDamageUnsaga.SWORD,5);
 	
 	public static final Skill doubleShot = new Skill(140,"Double Shot","ニ連射",2,0,EnumDamageUnsaga.SWORD,5);
-	public static final Skill tripleShot = new Skill(141,"Triple Shot","三連射",2,0,EnumDamageUnsaga.SWORD,5);
-	public static final Skill zapper = new Skill(142,"Zapper","ザップショット",2,0,EnumDamageUnsaga.SWORD,5);
-	public static final Skill exorcist = new Skill(143,"Exorcist","破魔の矢",2,0,EnumDamageUnsaga.SWORD,5);
-	public static final Skill shadowStitching = new Skill(144,"Shadow Stitching","影縫い",2,0,EnumDamageUnsaga.SWORD,5);
+	public static final Skill tripleShot = new Skill(141,"Triple Shot","三連射",2,0,EnumDamageUnsaga.SWORD,9);
+	public static final Skill zapper = new Skill(142,"Zapper","ザップショット",2,0,EnumDamageUnsaga.SWORD,15);
+	public static final Skill exorcist = new Skill(143,"Exorcist","破魔の矢",10,0,EnumDamageUnsaga.SWORD,5);
+	public static final Skill shadowStitching = new Skill(144,"Shadow Stitching","影縫い",2,0,EnumDamageUnsaga.SWORD,3);
 	
 	public static final HashSet<Ability> healDowns = Sets.newHashSet(healDown5,healDown10,healDown15,healDown20,healDown25);
 	public static final HashSet<Ability> healUps = Sets.newHashSet(healUp5,healUp10);

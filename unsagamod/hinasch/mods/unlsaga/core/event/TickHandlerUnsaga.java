@@ -113,7 +113,7 @@ public class TickHandlerUnsaga implements ITickHandler{
 			}
 		}
 		if(entityPlayer.ticksExisted % 20 * 12 == 0){
-			Unsaga.debug(amountHeal);
+			//Unsaga.debug(amountHeal);
 		}
 		
 	}

@@ -195,6 +195,10 @@ public class ItemSpellBook extends Item{
 			String spellname = spell.getName(HSLibs.getCurrentLang())+"<"+Translation.translate(spell.element.toString())+">";
 			par3List.add(spellname);
 		}
+		if(ItemSpellBook.hasMixed(par1ItemStack)){
+			String str = "Amplifier:"+ItemSpellBook.getAmp(par1ItemStack)+"/Cost:"+ItemSpellBook.getCost(par1ItemStack);
+			par3List.add(str);
+		}
 		
 	}
 	

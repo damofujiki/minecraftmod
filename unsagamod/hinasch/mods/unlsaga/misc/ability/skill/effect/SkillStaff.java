@@ -2,6 +2,7 @@ package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
 import hinasch.lib.ScanHelper;
 import hinasch.lib.XYZPos;
+import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
 import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
@@ -29,6 +30,7 @@ public class SkillStaff extends SkillEffect{
 	@Override
 	public void selector(SkillEffectHelper parent){
 		
+		Unsaga.debug("kitemasu");
 		if(parent.skill==AbilityRegistry.earthDragon)this.doEarthDragon(parent);
 		if(parent.skill==AbilityRegistry.pulvorizer)this.doPulverizer(parent);
 		if(parent.skill==AbilityRegistry.grandSlam)this.doGrandSlam(parent);
@@ -38,6 +40,10 @@ public class SkillStaff extends SkillEffect{
 	}
 	
 	public void doBellRinger(SkillEffectHelper parent){
+		parent.ownerSkill.swingItem();
+		XYZPos up = parent.usepoint;
+		parent.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (parent.ownerSkill.worldObj.rand.nextFloat() - parent.ownerSkill.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+		parent.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
 
 		boolean sw = false;
 		int depth = 40;
@@ -84,9 +90,14 @@ public class SkillStaff extends SkillEffect{
 	}
 	
 	public void doGrandSlam(SkillEffectHelper parent){
+		parent.ownerSkill.swingItem();
+		XYZPos up = parent.usepoint;
+		parent.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (parent.ownerSkill.worldObj.rand.nextFloat() - parent.ownerSkill.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+		parent.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
 
 		ScanHelper scan = new ScanHelper(parent.usepoint.x,parent.usepoint.y+4,parent.usepoint.z,4,4);
 		StringBuilder csv = new StringBuilder();
+		scan.setWorld(parent.world);
 		for(;scan.hasNext();scan.next()){
 			if(scan.isAirBlock()){
 				csv.append(0);
@@ -94,10 +105,10 @@ public class SkillStaff extends SkillEffect{
 				csv.append(scan.getID());
 			}
 			if(scan.hasNext())csv.append("\\.");
-			if(canBlockBreak(parent,new XYZPos(scan.sx,scan.sy,scan.sz))){
-				scan.setBlockHere(0);
+			//if(canBlockBreak(parent,new XYZPos(scan.sx,scan.sy,scan.sz))){
+			parent.world.setBlockToAir(scan.sx, scan.sy, scan.sz);
 				//Block.blocksList[scan.getID()].dropBlockAsItem(parent.world,scan.sx,scan.sy,scan.sz,scan.getID(),scan.getMetadata());
-			}
+			//}
 		}
 		
 		LivingDebuff.addLivingDebuff(parent.ownerSkill, new LivingStateGrandSlam(DebuffRegistry.grandSlam,5,false,parent.usepoint,new String(csv)));
@@ -132,7 +143,10 @@ public class SkillStaff extends SkillEffect{
 	}
 	public void doPulverizer(SkillEffectHelper helper){
 
-
+	
+		XYZPos up = helper.usepoint;
+		helper.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (helper.ownerSkill.worldObj.rand.nextFloat() - helper.ownerSkill.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+		helper.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
 		ScanHelper scan = new ScanHelper(helper.usepoint.x,helper.usepoint.y,helper.usepoint.z,3,3);
 		scan.setWorld(helper.world);
 		//System.out.print("kiteru1");
@@ -179,6 +193,11 @@ public class SkillStaff extends SkillEffect{
 	}
 	
 	public void doEarthDragon(SkillEffectHelper helper){
+		helper.ownerSkill.swingItem();
+		XYZPos up = helper.usepoint;
+		helper.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (helper.ownerSkill.worldObj.rand.nextFloat() - helper.ownerSkill.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+		helper.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
+
 		AxisAlignedBB bb = helper.ownerSkill.boundingBox.expand(8.0D, 8.0D, 8.0D);
 		CauseAddVelocity cause = new CauseAddVelocity(helper.world,helper);
 		DamageSource ds = DamageSource.causePlayerDamage(helper.ownerSkill);

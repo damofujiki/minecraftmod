@@ -14,6 +14,7 @@ public class LivingStateBow extends LivingState{
 	public int shootTick;
 	public String tag;
 	public float charge;
+	SkillEffectHelper helper;
 	
 	public LivingStateBow(Debuff par1, int par2, boolean par3,int par4,String tag,float par5) {
 		super(par1, par2, false);
@@ -28,6 +29,7 @@ public class LivingStateBow extends LivingState{
 		return this.debuff.number+":"+this.remain+":" + this.shootTick + ":" + this.tag + ":" + this.charge;
 	}
 	
+	@Override
 	public void updateTick(EntityLivingBase living) {
 		Unsaga.debug("呼ばれてますtick");
 		if(this.shootTick<0){
@@ -37,7 +39,11 @@ public class LivingStateBow extends LivingState{
 			EntityPlayer ep = (EntityPlayer)living;
 			if(UtilItem.hasItemInstance(ep, ItemBowUnsaga.class)){
 				Unsaga.debug("到達してます");
-				SkillEffectHelper helper = new SkillEffectHelper(ep.worldObj,ep,AbilityRegistry.doubleShot,ep.getHeldItem());
+				if(helper==null){
+					helper =  new SkillEffectHelper(ep.worldObj,ep,AbilityRegistry.doubleShot,ep.getHeldItem());
+				}
+				Unsaga.debug(shootTick);
+				this.shootTick -= 1;
 				helper.setCharge(charge);
 				helper.setParent(this);
 				helper.doSkill();

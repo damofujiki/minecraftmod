@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
 import hinasch.lib.VecUtil;
+import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.entity.EntityArrowUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.debuff.LivingStateBow;
@@ -18,7 +19,7 @@ public class SkillBow extends SkillEffect{
 
 	@Override
 	public void selector(SkillEffectHelper helper){
-		
+		Unsaga.debug("ここまできてます");
 		if(helper.skill==AbilityRegistry.doubleShot)this.doDoubleShots(helper);
 		if(helper.skill==AbilityRegistry.tripleShot)this.doDoubleShots(helper);
 		if(helper.skill==AbilityRegistry.zapper)this.doZapperOrExorcist(helper);
@@ -50,7 +51,7 @@ public class SkillBow extends SkillEffect{
 		}
 	}
 
-	public static void doDoubleShots(SkillEffectHelper parent){
+	public void doDoubleShots(SkillEffectHelper parent){
 
 		parent.playBowSound();
 

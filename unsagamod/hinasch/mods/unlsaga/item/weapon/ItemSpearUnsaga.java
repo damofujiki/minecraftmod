@@ -8,8 +8,8 @@ import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
+import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillSpear;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.IExtendedReach;
@@ -33,7 +33,7 @@ import net.minecraft.util.Icon;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
-public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExtendedReach {
+public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExtendedReach,IGainAbility {
 
 	public final UnsagaMaterial unsMaterial;
 	protected final HashMap<String,Icon> iconMap = new HashMap();
@@ -128,10 +128,15 @@ public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExten
 	{
 		int ac = 20;
 		int j = this.getMaxItemUseDuration(par1ItemStack) - par4;
-		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.aiming, par1ItemStack) || 
-				HelperAbility.hasAbilityFromItemStack(AbilityRegistry.acupuncture, par1ItemStack)){
-			SkillSpear sp = new SkillSpear();
-			sp.doAiming(par2World, par3EntityPlayer, par1ItemStack, j, this.getReach());
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.aiming, par1ItemStack)){
+			SkillEffectHelper helper = new SkillEffectHelper(par2World, par3EntityPlayer,AbilityRegistry.aiming , par1ItemStack);
+			helper.setCharge(j);
+			helper.doSkill();
+		}
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.acupuncture, par1ItemStack)){
+			SkillEffectHelper helper = new SkillEffectHelper(par2World, par3EntityPlayer,AbilityRegistry.acupuncture , par1ItemStack);
+			helper.setCharge(j);
+			helper.doSkill();
 		}
 	}
 	
@@ -142,8 +147,8 @@ public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExten
 		super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
 
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.swing, par1ItemStack) && par3EntityPlayer.isSneaking()){
-			SkillSpear sp = new SkillSpear();
-			sp.doSwing(par2World, par3EntityPlayer, par1ItemStack);
+			SkillEffectHelper helper = new SkillEffectHelper(par2World, par3EntityPlayer, AbilityRegistry.swing, par1ItemStack);
+			helper.doSkill();
 		}
 		if (HelperAbility.hasAbilityFromItemStack(AbilityRegistry.aiming, par1ItemStack) && par3EntityPlayer.isSneaking())
 		{
@@ -162,7 +167,7 @@ public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExten
 	@Override
 	public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
 	{
-		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.grassHopper, par1ItemStack)){
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.grassHopper, par1ItemStack) && par2EntityPlayer.isSneaking()){
 			SkillEffectHelper helper = new SkillEffectHelper(par3World,par2EntityPlayer,AbilityRegistry.grassHopper,par1ItemStack);
 
 			helper.setUsePoint(new XYZPos(par4,par5,par6));
@@ -245,5 +250,11 @@ public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExten
 	
 	public static void setNeutral(ItemStack is){
 		UtilNBT.setFreeTag(is, KEYisAiming, false);
+	}
+
+	@Override
+	public int getMaxAbility() {
+		// TODO 自動生成されたメソッド・スタブ
+		return 1;
 	}
 }

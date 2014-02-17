@@ -2,6 +2,7 @@ package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
 import hinasch.lib.CauseDamageBoundingbox;
 import hinasch.lib.XYZPos;
+import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.skill.Skill;
@@ -51,20 +52,28 @@ public class SkillEffectHelper {
 		}
 		
 		switch(this.category){
+
 		case SWORD:
 			this.skillEffecter = new SkillSword();
+			break;
 		case STAFF:
 			this.skillEffecter = new SkillStaff();
+			break;
 		case SPEAR:
 			this.skillEffecter = new SkillSpear();
+			break;
 		case AXE:
 			this.skillEffecter = new SkillAxe();
+			break;
 		case BOW:
 			this.skillEffecter = new SkillBow();
+			break;
 		default:
 			this.skillEffecter = new SkillSword();
+			break;
 			
 		}
+		Unsaga.debug(this.category);
 	}
 	
 	public void setCharge(float par1){
@@ -87,6 +96,7 @@ public class SkillEffectHelper {
 		if(LivingDebuff.isCooling(ownerSkill) && this.requireCooling())return;
 		
 		if(this.skillEffecter!=null){
+			Unsaga.debug("skilleffectet!=の那珂"+this.skillEffecter);
 			this.skillEffecter.selector(this);
 		}
 		if(!this.world.isRemote){

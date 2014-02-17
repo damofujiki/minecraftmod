@@ -99,7 +99,10 @@ public class EntityArrowUnsaga extends EntityArrowThrowable implements IProjecti
     		AxisAlignedBB bb = HSLibs.getBounding(this.posX, this.posY, this.posZ, 2.0D, 2.0D);
     		List<EntityLivingBase> livings = this.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, bb);
     		for(EntityLivingBase living:livings){
-    			living.addPotionEffect(new PotionEffect(Potion.moveSlowdown.id,160,3));
+    			if(living!=this.shootingEntity){
+    				living.addPotionEffect(new PotionEffect(Potion.moveSlowdown.id,160,3));
+    			}
+    			
     		}
     	}
 
