@@ -78,7 +78,22 @@ public class ItemIngotsUnsaga extends Item{
 
 
     }
-
+	
+//	//デバグ用
+//	@Override
+//    public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer ep)
+//    {
+//		if(ep.inventory.getStackInSlot(0)!=null && ep.capabilities.isCreativeMode){
+//			if(ep.inventory.getStackInSlot(0).getItem() instanceof IGainAbility){
+//				HelperAbility ab = new HelperAbility(ep.inventory.getStackInSlot(0),ep);
+//				ab.forgetSomeAbility(ep.getRNG());
+//				ab.gainSomeAbility(itemRand);
+//				
+//			}
+//		}
+//		return par1ItemStack;
+//    }
+	
 	@Override
 	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List)
 	{

@@ -135,7 +135,7 @@ public class ItemStaffUnsaga extends ItemSword implements IUnsagaMaterial,IGainA
     {
     	if(par2EntityLivingBase instanceof EntityPlayer){
     		EntityPlayer ep =(EntityPlayer)par2EntityLivingBase;
-        	if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.skullCrash, par1ItemStack)){
+        	if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.skullCrash, par1ItemStack) && ep.isSneaking()){
         		SkillEffectHelper helper = new SkillEffectHelper(ep.worldObj,ep,AbilityRegistry.skullCrash,par1ItemStack);
         		helper.doSkill();
         		return true;

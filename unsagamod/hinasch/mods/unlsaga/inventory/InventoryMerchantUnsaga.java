@@ -2,6 +2,7 @@ package hinasch.mods.unlsaga.inventory;
 
 
 
+import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.event.ExtendedMerchantData;
 import hinasch.mods.unlsaga.misc.bartering.MerchandiseInfo;
@@ -13,6 +14,7 @@ import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
+import net.minecraft.village.Village;
 
 public class InventoryMerchantUnsaga implements IInventory{
 
@@ -67,7 +69,14 @@ public class InventoryMerchantUnsaga implements IInventory{
 	
 	public void changeMerchandiseStock(Random rand){
 		for(int i=0;i<9;++i){
-			ItemStack mis = MerchandiseInfo.getRandomMerchandise(rand);
+			EntityVillager villager = (EntityVillager)this.theMerchant;
+			XYZPos po = XYZPos.entityPosToXYZ(villager);
+			Village village = villager.worldObj.villageCollectionObj.findNearestVillage(po.x, po.y, po.z, 300);
+			int repu = 1;
+			if(village!=null){
+				repu = village.getReputationForPlayer(this.theCustomer.getCommandSenderName());
+			}
+			ItemStack mis = MerchandiseInfo.getRandomMerchandise(rand,repu);
 			MerchandiseInfo.setBuyPriceTag(mis,MerchandiseInfo.getPrice(mis)*3);
 			this.setMerchandise(i, mis);
 

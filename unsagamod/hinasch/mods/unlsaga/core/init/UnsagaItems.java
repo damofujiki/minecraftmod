@@ -122,7 +122,7 @@ public class UnsagaItems {
 		for(int i=0;i<sets.size();i++){
 			UnsagaMaterial uns = MaterialList.getMaterial(sets.get(i));
 			itemSwords[i] = new ItemSwordUnsaga(itemIDsSwords+i,uns.getToolMaterial(),uns).setUnlocalizedName("unsaga.sword."+uns.name).setCreativeTab(Unsaga.tabUnsaga);
-			
+			//GameData.newItemAdded(itemSwords[i]);	
 			particle = getParticle(noParticles,uns);
 			header = uns.headerEn;
 			header2 = uns.headerJp;
@@ -148,6 +148,7 @@ public class UnsagaItems {
 		for(int i=0;i<sets.size();i++){
 			UnsagaMaterial uns = MaterialList.getMaterial(sets.get(i));
 			itemAxes[i] = new ItemAxeUnsaga(itemIDsAxes+i,uns.getToolMaterial(),uns).setUnlocalizedName("unsaga.axe."+uns.name).setCreativeTab(Unsaga.tabUnsaga);
+			//GameData.newItemAdded(itemAxes[i]);	
 			particle = getParticle(noParticles,uns);
 			header = uns.headerEn;
 			header2 = uns.headerJp;
@@ -168,6 +169,7 @@ public class UnsagaItems {
 		for(int i=0;i<sets.size();i++){
 			UnsagaMaterial uns = MaterialList.getMaterial(sets.get(i));
 			itemSpears[i] = new ItemSpearUnsaga(itemIDsSpears+i,uns.getToolMaterial(),uns).setUnlocalizedName("unsaga.spear."+uns.name).setCreativeTab(Unsaga.tabUnsaga);
+			//GameData.newItemAdded(itemSpears[i]);	
 			particle = getParticle(noParticles,uns);
 			header = uns.headerEn;
 			header2 = uns.headerJp;
@@ -189,6 +191,7 @@ public class UnsagaItems {
 		for(int i=0;i<sets.size();i++){
 			UnsagaMaterial uns = MaterialList.getMaterial(sets.get(i));
 			itemStaffs[i] = new ItemStaffUnsaga(itemIDsStaffs+i,uns.getToolMaterial(),uns).setUnlocalizedName("unsaga.staff."+uns.name).setCreativeTab(Unsaga.tabUnsaga);
+			//GameData.newItemAdded(itemStaffs[i]);	
 			particle = getParticle(noParticles,uns);
 			header = uns.headerEn;
 			header2 = uns.headerJp;
@@ -213,6 +216,7 @@ public class UnsagaItems {
 			UnsagaMaterial uns = MaterialList.getMaterial(sets.get(i));
 			itemBows[i] = new ItemBowUnsaga(itemIDsBows+i,uns).setUnlocalizedName("unsaga.bows."+uns.name).setCreativeTab(Unsaga.tabUnsaga)
 					.setMaxDamage(uns.getToolMaterial().getMaxUses()+320);
+			//GameData.newItemAdded(itemBows[i]);	
 			particle = getParticle(noParticles,uns);
 			header = uns.headerEn;
 			header2 = uns.headerJp;
@@ -239,6 +243,7 @@ public class UnsagaItems {
 			UnsagaMaterial uns = MaterialList.getMaterial(sets.get(i));
 			Unsaga.debug(uns.name);
 			itemArmors[counter] = new ItemArmorUnsaga(itemIDsArmors+counter, uns.getArmorMaterial(), EnumUnsagaWeapon.BOOTS, 3, uns).setUnlocalizedName("unsaga.boots."+uns.name).setCreativeTab(Unsaga.tabUnsaga);
+			//GameData.newItemAdded(itemArmors[counter]);	
 			if(armorname.getLegsName(uns)!=null){
 				HSLibs.langSet(armorname.getLegsName(uns).get(0), armorname.getLegsName(uns).get(1), itemArmors[counter]);
 			}
@@ -250,6 +255,7 @@ public class UnsagaItems {
 			UnsagaMaterial uns = MaterialList.getMaterial(sets.get(i));
 			Unsaga.debug(uns.name);
 			itemArmors[counter] = new ItemArmorUnsaga(itemIDsArmors+counter, uns.getArmorMaterial(), EnumUnsagaWeapon.LEGGINS, 2, uns).setUnlocalizedName("unsaga.boots."+uns.name).setCreativeTab(Unsaga.tabUnsaga);
+			//GameData.newItemAdded(itemArmors[counter]);	
 			if(armorname.getLegsName(uns)!=null){
 				HSLibs.langSet(armorname.getLegsName(uns).get(0), armorname.getLegsName(uns).get(1), itemArmors[counter]);
 			}
@@ -263,7 +269,7 @@ public class UnsagaItems {
 			UnsagaMaterial uns = MaterialList.getMaterial(sets.get(i));
 			Unsaga.debug(uns.name);
 			itemArmors[counter] = new ItemArmorUnsaga(itemIDsArmors+counter, uns.getArmorMaterial(), EnumUnsagaWeapon.HELMET, 0, uns).setUnlocalizedName("unsaga.helmet."+uns.name).setCreativeTab(Unsaga.tabUnsaga);
-			
+			//GameData.newItemAdded(itemArmors[counter]);			
 			if(armorname.getHelmetName(uns)!=null){
 				HSLibs.langSet(armorname.getHelmetName(uns).get(0), armorname.getHelmetName(uns).get(1), itemArmors[counter]);
 			}
@@ -276,6 +282,7 @@ public class UnsagaItems {
 			UnsagaMaterial uns = MaterialList.getMaterial(sets.get(i));
 			Unsaga.debug(uns.name);
 			itemArmors[counter] = new ItemArmorUnsaga(itemIDsArmors+counter, uns.getArmorMaterial(), EnumUnsagaWeapon.ARMOR, 1, uns).setUnlocalizedName("unsaga.armor."+uns.name).setCreativeTab(Unsaga.tabUnsaga);
+			//GameData.newItemAdded(itemArmors[counter]);
 			if(armorname.getArmorName(uns)!=null){
 				HSLibs.langSet(armorname.getArmorName(uns).get(0), armorname.getArmorName(uns).get(1), itemArmors[counter]);
 			}
@@ -287,14 +294,17 @@ public class UnsagaItems {
 		for(int i=0;i<sets.size();i++){
 			UnsagaMaterial uns = MaterialList.getMaterial(sets.get(i));
 			itemAccessories[i] = new ItemAccessory(itemIDsAccessories+i,uns).setUnlocalizedName("unsaga.accessory."+uns.name).setCreativeTab(Unsaga.tabUnsaga);
+			//GameData.newItemAdded(itemAccessories[counter]);
 			if(armorname.getAcsName(uns)!=null){
 				HSLibs.langSet(armorname.getAcsName(uns).get(0), armorname.getAcsName(uns).get(1), itemAccessories[i]);
 			}
 		}
 		itemNoFunc = new ItemIngotsUnsaga(itemIDIngotsUnsaga).setUnlocalizedName("unsaga.nofuncitem").setCreativeTab(Unsaga.tabUnsaga);
-
+		//GameData.newItemAdded(itemNoFunc);
 		itemBarrett = new ItemBarrett(itemIDBarrett,"gunpowder").setUnlocalizedName("unsaga.barrett").setCreativeTab(Unsaga.tabUnsaga);
+		//GameData.newItemAdded(itemBarrett);
 		itemMusket = new ItemGunUnsaga(itemIDGun,"musket").setUnlocalizedName("unsaga.musket").setCreativeTab(Unsaga.tabUnsaga);
+		//GameData.newItemAdded(itemMusket);
 		HSLibs.langSet("Musket", "銃", itemMusket);
 		HSLibs.langSet("Barrett", "弾", itemBarrett);
 	}

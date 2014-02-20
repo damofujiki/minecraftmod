@@ -4,10 +4,13 @@ import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.event.ExtendedEntityLivingData;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
+import hinasch.mods.unlsaga.network.PacketHandler;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 
 import com.google.common.base.Optional;
+
+import cpw.mods.fml.common.network.PacketDispatcher;
 
 public class LivingDebuff {
 
@@ -47,7 +50,32 @@ public class LivingDebuff {
 			if(this.debuff==DebuffRegistry.downSkill && HelperAbility.hasAbilityPlayer(ep, AbilityRegistry.skillGuard)>0){
 				this.remain = 0;
 			}
+			if(this.debuff==DebuffRegistry.sleep && HelperAbility.hasAbilityPlayer(ep, AbilityRegistry.antiSleep)>0){
+				this.remain = 0;
+			}
+			if(this.debuff.getClass() == Debuff.class && HelperAbility.hasAbilityPlayer(ep, AbilityRegistry.antiDebuff)>0){
+				this.remain = 0;
+			}
+			if(this.debuff==DebuffRegistry.downPhysical && HelperAbility.hasAbilityPlayer(ep, AbilityRegistry.bodyGuard)>0){
+				this.remain = 0;
+			}
+			if(this.debuff==DebuffRegistry.downMagic && HelperAbility.hasAbilityPlayer(ep, AbilityRegistry.magicGuard)>0){
+				this.remain = 0;
+			}
 		}
+		
+		if(this.debuff.getClass()== Debuff.class || this.debuff.getClass()==Buff.class){
+			if(living.getRNG().nextInt(4)<=1){
+				PacketDispatcher.sendPacketToAllPlayers(PacketHandler.getParticlePacket(4, living.entityId,2));
+//                double d0 = (double)(7 >> 16 & 255) / 255.0D;
+//                double d1 = (double)(7 >> 8 & 255) / 255.0D;
+//                double d2 = (double)(7 >> 0 & 255) / 255.0D;
+//				 living.worldObj.spawnParticle("mobSpell", living.posX + (living.getRNG().nextDouble() - 0.5D) * (double)living.width, living.posY + living.getRNG().nextDouble() * (double)living.height - (double)living.yOffset, living.posZ + (living.getRNG().nextDouble() - 0.5D) * (double)living.width, 0, 0, 0);
+
+			}
+        }
+		
+
 
 		
 		

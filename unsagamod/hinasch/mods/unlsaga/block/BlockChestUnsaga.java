@@ -1,5 +1,6 @@
 package hinasch.mods.unlsaga.block;
 
+import hinasch.mods.unlsaga.network.PacketHandler;
 import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsaga;
 
 import java.util.Random;
@@ -16,6 +17,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
 public class BlockChestUnsaga extends BlockContainer{
 
@@ -46,12 +49,32 @@ public class BlockChestUnsaga extends BlockContainer{
 			return true;
 		}
 
-		boolean chestopen = var10.touchChest(par5EntityPlayer);
-
-		if(chestopen){
-			var10.setItemsToChest(par1World.rand);
+		if(var10.hasItemSet){
 			chestFunc(par1World, par2, par3, par4, par5EntityPlayer, par6, par7, par8, par9);
+			return false;
 		}
+
+		if(!var10.worldObj.isRemote){
+			int chestlevel = 0;
+			if(!var10.hasSetChestLevel()){
+				var10.initChestLevel(par5EntityPlayer);
+			}
+			chestlevel = var10.getChestLevel();
+			PacketDispatcher.sendPacketToPlayer(PacketHandler.getChestSyncPacket(chestlevel, par2, par3, par4,false,var10.trapOccured,var10.unlocked,var10.defused,var10.magicLock,var10.hasItemSet), (Player) par5EntityPlayer);
+			PacketDispatcher.sendPacketToServer(PacketHandler.getChestGuiPacket(par2,par3,par4));
+		}
+
+
+		
+		
+		
+		
+//		boolean chestopen = var10.touchChest(par5EntityPlayer);
+//
+//		if(chestopen){
+//			var10.setItemsToChest(par1World.rand);
+//			chestFunc(par1World, par2, par3, par4, par5EntityPlayer, par6, par7, par8, par9);
+//		}
 		return false;
 	}
 

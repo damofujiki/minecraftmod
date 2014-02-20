@@ -249,6 +249,9 @@ public class HSLibs {
 		}
 	}
 
+	public static AxisAlignedBB getBounding(XYZPos xyz,double range,double rangeY){
+		return getBounding(xyz.dx,xyz.dy,xyz.dz,range,rangeY);
+	}
 	public static AxisAlignedBB getBounding(int x,int y,int z,double range,double rangeY){
 
 

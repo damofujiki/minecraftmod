@@ -22,6 +22,7 @@ import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.WeightedRandom;
 
 public class MerchandiseInfo {
@@ -52,11 +53,12 @@ public class MerchandiseInfo {
 		return itemstackList.get(rand.nextInt(itemstackList.size()));
 	}
 	
-	public static ItemStack getRandomMerchandise(Random rand){
+	public static ItemStack getRandomMerchandise(Random rand,int popularity){
+		int merchantrank = getRankFromPopularity(popularity);
 		if(rand.nextInt(3)<=1){
 			return getRandomMaterialItemStack(rand);
 		}
-		ItemStack ms = UnsagaItems.getRandomWeapon(rand, 5, EnumSelecterItem.MERCHANDISE);
+		ItemStack ms = UnsagaItems.getRandomWeapon(rand, merchantrank, EnumSelecterItem.MERCHANDISE);
 		if(rand.nextInt(6)<=1){
 			WeightedRandomNumber wrs = (WeightedRandomNumber) WeightedRandom.getRandomItem(rand, wr);
 
@@ -161,6 +163,17 @@ public class MerchandiseInfo {
 		UtilNBT.removeTag(is, PRICE_TAG);
 	}
 	
+	public static int getRankFromPopularity(int popularity){
+		int rank = 1;
+		popularity = MathHelper.clamp_int(popularity, 1, 300);
+		for(int i=0;i<10;i++){
+			if((i+1)*(i+1)<popularity){
+				rank = i;
+			}
+			
+		}
+		return rank;
+	}
 	static{
 		wr = new WeightedRandomNumber[20];
 		for(int i=0;i<20;i++){

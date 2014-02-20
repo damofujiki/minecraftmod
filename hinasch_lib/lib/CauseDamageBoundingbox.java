@@ -1,5 +1,7 @@
 package hinasch.lib;
 
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+
 import java.util.List;
 
 import net.minecraft.entity.Entity;
@@ -14,10 +16,15 @@ public class CauseDamageBoundingbox {
 
 
 	public World world;
+	public SkillEffectHelper helper;
 	public CauseDamageBoundingbox(World world){
 		this.world = world;
 	}
 	
+	
+	public void setSkillEffectHelper(SkillEffectHelper parent){
+		this.helper = parent;
+	}
 	public void doCauseDamage(AxisAlignedBB bb,float damage,DamageSource damagesource,boolean isEnemyOnly){
 		causeDamage(this,this.world,bb,damage,damagesource,isEnemyOnly);
 	}
@@ -29,24 +36,26 @@ public class CauseDamageBoundingbox {
 			if(!moblist.isEmpty()){
 				for(EntityMob mob:moblist){
 					if(mob!=damageEntity){
-						mob.attackEntityFrom(damagesource,damage);
+						parent.attackMob(mob, damagesource, damage);
+						if(parent!=null){
+							parent.takeEntityLiving(mob,damagesource);
+						}
 					}
 
-					if(parent!=null){
-						parent.takeEntityLiving(mob,damagesource);
-					}
+
 				}
 			}
 			List<EntityGhast> ghasts = world.getEntitiesWithinAABB(EntityGhast.class, bb);
 			if(!ghasts.isEmpty()){
 				for(EntityGhast ghast:ghasts){
 					if(ghast!=damageEntity){
-						ghast.attackEntityFrom(damagesource,damage);
+						parent.attackMob(ghast, damagesource, damage);
+						if(parent!=null){
+							parent.takeEntityLiving(ghast,damagesource);
+						}
 					}
 
-					if(parent!=null){
-						parent.takeEntityLiving(ghast,damagesource);
-					}
+
 					
 				}
 			}
@@ -56,12 +65,13 @@ public class CauseDamageBoundingbox {
 			if(!moblist.isEmpty()){
 				for(EntityLivingBase mob:moblist){
 					if(mob!=damageEntity){
-						mob.attackEntityFrom(damagesource,damage);
+						parent.attackMob(mob, damagesource, damage);
+						if(parent!=null){
+							parent.takeEntityLiving(mob,damagesource);
+						}
 					}
 
-					if(parent!=null){
-						parent.takeEntityLiving(mob,damagesource);
-					}
+
 
 				}
 			}
@@ -69,6 +79,14 @@ public class CauseDamageBoundingbox {
 
 	}
 	
+	protected void attackMob(Entity mob,DamageSource ds,float damage){
+		if(this.helper!=null){
+			this.helper.attack(mob, null);
+		}else{
+			mob.attackEntityFrom(ds,damage);
+		}
+		
+	}
 	public void takeEntityLiving(EntityLivingBase living,DamageSource source){
 		
 	}

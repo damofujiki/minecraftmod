@@ -26,29 +26,53 @@ import net.minecraft.world.biome.BiomeGenOcean;
 import net.minecraftforge.oredict.OreDictionary;
 
 public class UnsagaElement {
-	public static enum EnumElement {FIRE,EARTH,WOOD,METAL,WATER,FORBIDDEN};
+	public static enum EnumElement {
+		FIRE,EARTH,WOOD,METAL,WATER,FORBIDDEN;
+
+		
+
+		public String getUnlocalized(){
+		
+			switch(this){
+			case FIRE:return "element.fire";
+			case EARTH:return "element.earth";
+			case WOOD:return "element.wood";
+			case METAL:return "element.metal";
+			case WATER:return "element.water";
+			case FORBIDDEN:return "element.forbidden";
+			}
+
+			return "";
+		}
+		
+		public String getLocalized(){
+			return Translation.localize(this.getUnlocalized());
+		}
+		
+
+	};
 	public static EnumSet<EnumElement> enumElements = EnumSet.of(EnumElement.FIRE,EnumElement.EARTH,EnumElement.WOOD,EnumElement.METAL,EnumElement.WATER,EnumElement.FORBIDDEN);
 
 	protected SpellMixTable worldElementTable;
 
-	
+
 	public UnsagaElement(){
 		this.worldElementTable = new SpellMixTable();
 	}
-	
+
 	public SpellMixTable getWorldElements(){
 		return this.worldElementTable;
 	}
 	public void figureElements(World world,EntityPlayer ep){
-			this.worldElementTable.reset();
-			this.figureFromWorld(world, ep);
-			this.figureFromBiomeAndWeather(world, ep);
-			this.figureFromEquipment(ep);
-			this.figureFromCurrentHeight(world, ep);
-			//this.worldElementTable.multiple(0.01F);
-			this.figureFromBuff(ep);
-			this.worldElementTable.cut(0, 100);
-		
+		this.worldElementTable.reset();
+		this.figureFromWorld(world, ep);
+		this.figureFromBiomeAndWeather(world, ep);
+		this.figureFromEquipment(ep);
+		this.figureFromCurrentHeight(world, ep);
+		//this.worldElementTable.multiple(0.01F);
+		this.figureFromBuff(ep);
+		this.worldElementTable.cut(0, 100);
+
 
 		//this.worldElementTable.cut(0, 100);
 	}
@@ -102,10 +126,10 @@ public class UnsagaElement {
 				//scanner.setBlockHere(Block.blockClay.blockID);
 			}
 		}
-		
-		
+
+
 	}
-	
+
 	protected void figureFromBiomeAndWeather(World world,EntityPlayer ep){
 		BiomeGenBase biomegen = world.getBiomeGenForCoords((int)ep.posX, (int)ep.posZ);
 		if(biomegen instanceof BiomeGenOcean){
@@ -137,7 +161,7 @@ public class UnsagaElement {
 			this.worldElementTable.add(EnumElement.FORBIDDEN, 40);
 		}
 	}
-	
+
 	protected void figureFromEquipment(EntityPlayer ep){
 		int fire = HelperAbility.hasAbilityPlayer(ep, AbilityRegistry.supportFire)*10;
 		int wood = HelperAbility.hasAbilityPlayer(ep, AbilityRegistry.supportWood)*10;
@@ -146,9 +170,9 @@ public class UnsagaElement {
 		int metal = HelperAbility.hasAbilityPlayer(ep, AbilityRegistry.supportMetal)*10;
 		int forbidden = HelperAbility.hasAbilityPlayer(ep, AbilityRegistry.supportForbidden)*10;
 		this.worldElementTable.add(new SpellMixTable(fire,earth,metal,water,wood,forbidden));
-		
+
 	}
-	
+
 	protected void figureFromCurrentHeight(World world,EntityPlayer ep){
 		int height = (int)ep.posY;
 		if(height<=10){
@@ -181,16 +205,9 @@ public class UnsagaElement {
 
 
 	}
-	
-	
+
+
 	public String getWorldElementInfo(){
-		StringBuilder info = new StringBuilder();
-		info.append("FIRE:"+this.worldElementTable.getInt(EnumElement.FIRE)+" ");
-		info.append("WOOD:"+this.worldElementTable.getInt(EnumElement.WOOD)+" ");
-		info.append("EARTH:"+this.worldElementTable.getInt(EnumElement.EARTH)+" ");
-		info.append("WATER:"+this.worldElementTable.getInt(EnumElement.WATER)+" ");
-		info.append("METAL:"+this.worldElementTable.getInt(EnumElement.METAL)+" ");
-		info.append("FORBIDDEN:"+this.worldElementTable.getInt(EnumElement.FORBIDDEN));
-		return Translation.translate(new String(info));
+		return this.worldElementTable.toString();
 	}
 }

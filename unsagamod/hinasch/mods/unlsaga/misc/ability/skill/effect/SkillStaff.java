@@ -103,10 +103,11 @@ public class SkillStaff extends SkillEffect{
 				csv.append(0);
 			}else{
 				csv.append(scan.getID());
+				parent.world.setBlockToAir(scan.sx, scan.sy, scan.sz);
 			}
 			if(scan.hasNext())csv.append("\\.");
 			//if(canBlockBreak(parent,new XYZPos(scan.sx,scan.sy,scan.sz))){
-			parent.world.setBlockToAir(scan.sx, scan.sy, scan.sz);
+			
 				//Block.blocksList[scan.getID()].dropBlockAsItem(parent.world,scan.sx,scan.sy,scan.sz,scan.getID(),scan.getMetadata());
 			//}
 		}
@@ -181,7 +182,7 @@ public class SkillStaff extends SkillEffect{
 		helper.addPotionChance(40, helper.target, Potion.weakness.id, 160, 1);
 		if(helper.target instanceof EntitySkeleton){
 
-			e.ammount += helper.getAttackDamage()+3;
+			e.ammount += helper.getAttackDamage()+4;
 			//UtilSkill.tryLPHurt(40, 2, en, ep);
 
 
@@ -201,6 +202,7 @@ public class SkillStaff extends SkillEffect{
 		AxisAlignedBB bb = helper.ownerSkill.boundingBox.expand(8.0D, 8.0D, 8.0D);
 		CauseAddVelocity cause = new CauseAddVelocity(helper.world,helper);
 		DamageSource ds = DamageSource.causePlayerDamage(helper.ownerSkill);
+		cause.setSkillEffectHelper(helper);
 		helper.causeRangeDamage(cause, helper.world, bb, helper.getAttackDamage(),ds , false);
 
 	}

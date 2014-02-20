@@ -2,9 +2,13 @@ package hinasch.mods.unlsaga.tileentity;
 
 
 
-import hinasch.mods.unlsaga.Unsaga;
+import hinasch.lib.XYZPos;
+import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
+import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
+import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.misc.util.HelperChestUnsaga;
+import hinasch.mods.unlsaga.network.PacketHandler;
 
 import java.util.Random;
 
@@ -12,18 +16,26 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import net.minecraft.util.WeightedRandomChestContent;
 import net.minecraft.world.World;
+
+import com.google.common.base.Optional;
+
+import cpw.mods.fml.common.network.PacketDispatcher;
+import cpw.mods.fml.common.network.Player;
 
 public class TileEntityChestUnsaga extends TileEntityChest{
 
 	private int spawnRange = 2;
+	private Optional<Integer> level = Optional.absent();
 	public boolean unlocked = true;
 	public boolean defused = false;
 	public boolean trapOccured = false;
@@ -32,9 +44,13 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 
 	public TileEntityChestUnsaga(){
 
+
 	}
 
 	public void init(World world){
+
+
+
 
 		if(this.doChance(world.rand, 60)){
 			this.unlocked = false;
@@ -45,9 +61,37 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 		}
 	}
 
+	public void initChestLevel(EntityPlayer ep){
+		this.level = Optional.of(HelperChestUnsaga.getChestLevelFromPlayer(ep));
+
+	}
+	
+	public boolean hasSetChestLevel(){
+		return this.level.isPresent();
+	}
+
 	public boolean touchChest(EntityPlayer ep){
-		if(!trapOccured && !defused){
-			tryDefuse(ep);
+		if(this.level.isPresent()){
+			return this.activateChest(ep);
+		}else{
+			if(this.worldObj.isRemote){
+
+			}
+
+		}
+
+		return false;
+
+
+	}
+
+	public boolean activateChest(EntityPlayer ep){
+		if(!this.worldObj.isRemote){
+			ep.addChatMessage(Translation.localize("msg.touch.chest"));
+		}
+
+
+		if(!trapOccured){
 			if(!defused){
 				activateTrap(ep);
 				if(this.trapOccured){
@@ -57,29 +101,40 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 		}
 
 		if(!unlocked){
-			tryUnlock(ep);
+			ep.addChatMessage(Translation.localize("msg.chest.locked"));
 			return false;
 		}else{
 			if(!magicLock){
 				return true;
 			}else{
-				Unsaga.logc(ep, "chest has locked with Magical Lock.",false);
+				ep.addChatMessage(Translation.localize("msg.chest.magiclocked"));
+				return false;
 			}
-			return false;
+			
 		}
-
 	}
 
 
+	public void sync(boolean trap,boolean unlock,boolean defuse,boolean magiclock,boolean hasitemset){
+		this.trapOccured = trap;
+		this.unlocked = unlock;
+		this.defused = defuse;
+		this.magicLock = magiclock;
+		this.hasItemSet = hasitemset;
+	}
+	public void tryUnlock(EntityPlayer par5EntityPlayer) {
+		if(!this.trapOccured && !this.defused){
+			this.activateTrap(par5EntityPlayer);
+		}
 
-	private void tryUnlock(EntityPlayer par5EntityPlayer) {
-
-		Unsaga.logc(par5EntityPlayer, "chest has locked.",false);
-//		if(ItemAccessory.hasAbility(par5EntityPlayer, 8)){
-		if(Unsaga.debug.get()){
+		
+		//		if(ItemAccessory.hasAbility(par5EntityPlayer, 8)){
+		if(HelperAbility.hasAbilityPlayer(par5EntityPlayer, AbilityRegistry.unlock)>0){
 			if(doChance(this.worldObj.rand,75)){
-				Unsaga.logc(par5EntityPlayer, Translation.getWord("Success")+":"+Translation.getWord("Unlock"),false);
+				par5EntityPlayer.addChatMessage(Translation.localize("msg.chest.unlocked"));
 				this.unlocked = true;
+			}else{
+				par5EntityPlayer.addChatMessage(Translation.localize("msg.failed"));
 			}
 		}
 
@@ -93,69 +148,79 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 			case 1:
 				if(!this.worldObj.isRemote){
 					this.trapOccured = true;
-					this.worldObj.createExplosion(null, this.xCoord, this.yCoord, this.zCoord, 1.5F, true);
+					float explv = ((float)this.level.get() * 0.06F);
+					explv = MathHelper.clamp_float(explv, 1.0F, 4.0F);
+					ep.addChatMessage(Translation.localize("msg.chest.burst"));
+					this.worldObj.createExplosion(null, this.xCoord, this.yCoord, this.zCoord, 1.5F*explv, true);
 				}
 				break;
 			case 2:
-				
-				ep.addPotionEffect(new PotionEffect(Potion.poison.id,7*20,0));
+
+				ep.addPotionEffect(new PotionEffect(Potion.poison.id,10*(this.level.get()/2+1),1));
+				ep.addChatMessage(Translation.localize("msg.chest.poison"));
 				this.trapOccured = true;
 				break;
 			case 3:
-				int damage = this.worldObj.rand.nextInt(4)+1;
+				int damage = this.worldObj.rand.nextInt(MathHelper.clamp_int(this.level.get()/15,3,100))+1;
+				damage = MathHelper.clamp_int(damage, 1, 10);
 				ep.attackEntityFrom(DamageSource.cactus, damage);
+				ep.addChatMessage(Translation.localize("msg.chest.needle"));
 				this.trapOccured = true;
 				break;
-				
+
 			}
 
+		}
+		this.trapOccured = true;
+		Entity var13 = null;
+		if(doChance(this.worldObj.rand,40)){
+			var13 = new EntityTreasureSlime(this.worldObj,this.level.get());
 		}else{
-			this.trapOccured = true;
-			Entity var13 = null;
-			//			if(doChance(this.worldObj.rand,30)){
-			//				var13 = new EntitySlime(this.worldObj);
-			//			}else{
 			var13 = new EntitySlime(this.worldObj);
-			//			}
+		}
 
+		System.out.println(var13);
+		if(var13!=null){
+			double var5 = (double)this.xCoord + (this.worldObj.rand.nextDouble() - this.worldObj.rand.nextDouble()) * (double)spawnRange;
+			double var7 = (double)(this.yCoord+ this.worldObj.rand.nextInt(3) - 1);
+			double var9 = (double)this.zCoord + (this.worldObj.rand.nextDouble() - this.worldObj.rand.nextDouble()) * (double)spawnRange;
+			EntityLiving var11 = var13 instanceof EntityLiving ? (EntityLiving)var13 : null;
+			var13.setLocationAndAngles(var5, var7, var9, this.worldObj.rand.nextFloat() * 360.0F, 0.0F);
 			System.out.println(var13);
-			if(var13!=null){
-				double var5 = (double)this.xCoord + (this.worldObj.rand.nextDouble() - this.worldObj.rand.nextDouble()) * (double)spawnRange;
-				double var7 = (double)(this.yCoord+ this.worldObj.rand.nextInt(3) - 1);
-				double var9 = (double)this.zCoord + (this.worldObj.rand.nextDouble() - this.worldObj.rand.nextDouble()) * (double)spawnRange;
-				EntityLiving var11 = var13 instanceof EntityLiving ? (EntityLiving)var13 : null;
-				var13.setLocationAndAngles(var5, var7, var9, this.worldObj.rand.nextFloat() * 360.0F, 0.0F);
-				System.out.println(var13);
-				//if(var11.getCanSpawnHere()){
-				if(!this.worldObj.isRemote){
-					this.worldObj.spawnEntityInWorld(var13);
-				}
-				//}
+			//if(var11.getCanSpawnHere()){
+			if(!this.worldObj.isRemote){
+				this.worldObj.spawnEntityInWorld(var13);
 			}
+			//}
+
 
 
 		}
 
 	}
 
-	private void tryDefuse(EntityPlayer ep) {
-//		if(ItemAccessory.hasAbility(ep, 9)){
-		if(Unsaga.debug.get()){
+	public void tryDefuse(EntityPlayer ep) {
+		//		if(ItemAccessory.hasAbility(ep, 9)){
+		if(HelperAbility.hasAbilityPlayer(ep, AbilityRegistry.defuse)>0){
 			if(doChance(this.worldObj.rand,80)){
 				this.defused = true;
-				Unsaga.logc(ep, Translation.getWord("Success")+":"+Translation.getWord("Defuse"),false);
+				ep.addChatMessage(Translation.localize("msg.chest.defused"));
 			}
 		}
 
 	}
+
+
 
 	public void setItemsToChest(Random random){
 		if(!this.hasItemSet){
-			HelperChestUnsaga hc = new HelperChestUnsaga();
+			HelperChestUnsaga hc = new HelperChestUnsaga(this.level.get());
 			WeightedRandomChestContent[] chestcontent = hc.getChestContentsUnsaga();
 			if(chestcontent!=null){
 				HelperChestUnsaga.generateChestContents(random, chestcontent, this, random.nextInt(5)+1);
 			}
+
+
 			this.hasItemSet = true;
 		}
 	}
@@ -191,7 +256,7 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 	}
 
 	private boolean doChance(Random random,int par1){
-		if(random.nextInt(100)<=par1){
+		if(random.nextInt(100)<par1){
 			return true;
 		}
 		return false;
@@ -208,6 +273,10 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 		this.trapOccured = par1NBTTagCompound.getBoolean("TrapOccured");
 		this.magicLock = par1NBTTagCompound.getBoolean("MagicalLock");
 		this.hasItemSet = par1NBTTagCompound.getBoolean("HasItemSet");
+		if(par1NBTTagCompound.hasKey("chestLevel")){
+			this.level = Optional.of(par1NBTTagCompound.getInteger("chestLevel"));
+		}
+
 	}
 
 	@Override
@@ -219,6 +288,13 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 		par1NBTTagCompound.setBoolean("TrapOccured", (boolean)this.trapOccured);
 		par1NBTTagCompound.setBoolean("MagicalLock", (boolean)this.magicLock);
 		par1NBTTagCompound.setBoolean("HasItemSet", (boolean)this.hasItemSet);
+		if(this.level.isPresent()){
+			par1NBTTagCompound.setInteger("chestLevel",(int)this.level.get());
+		}
+
+
+
+
 
 	}
 
@@ -232,4 +308,64 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 		}
 
 	}
+
+	public void setChestLevel(int chestlevel) {
+		this.level = Optional.of(chestlevel);
+
+	}
+
+	public void divination(EntityPlayer openPlayer) {
+		int div = HelperAbility.hasAbilityPlayer(openPlayer, AbilityRegistry.divination);
+		if(div>0){
+			int lv =0;
+			if(this.worldObj.rand.nextInt(100)<=50+(10*div)){
+				openPlayer.addChatMessage(Translation.localize("msg.chest.divination.succeeded"));
+				lv = this.level.get() + worldObj.rand.nextInt(7)+1;
+
+				
+			}else{
+				
+				if(this.worldObj.rand.nextInt(10)<=2){
+					openPlayer.addChatMessage(Translation.localize("msg.chest.divination.catastrophe"));
+					lv = 2;
+				}else{
+					openPlayer.addChatMessage(Translation.localize("msg.chest.divination.failed"));
+					lv = this.level.get() - worldObj.rand.nextInt(7)+1;
+				}
+
+				
+			}
+			this.setChestLevel(MathHelper.clamp_int(lv, 1, 100));
+			String str = Translation.localize("msg.chest.divination.levelis");
+			String formatted = String.format(str, this.level.get());
+			openPlayer.addChatMessage(formatted);
+			XYZPos xyz = new XYZPos(this.xCoord,this.yCoord,this.zCoord);
+			PacketDispatcher.sendPacketToPlayer(PacketHandler.getParticleToPosPacket(xyz,5,3), (Player) openPlayer);
+		}
+		
+	}
+
+	public int getChestLevel() {
+		return this.level.get();
+	}
+	
+    public boolean chestFunc(EntityPlayer ep)
+    {
+    	
+        if (this.worldObj.isRemote)
+        {
+            return true;
+        }
+        else
+        {
+            IInventory iinventory = this;
+            if (iinventory != null)
+            {
+                ep.displayGUIChest(iinventory);
+            }
+
+            return true;
+        }
+    }
+
 }

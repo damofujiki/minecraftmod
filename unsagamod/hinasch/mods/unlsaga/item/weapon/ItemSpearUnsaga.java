@@ -144,7 +144,7 @@ public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExten
 	@Override
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
 	{
-		super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
+
 
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.swing, par1ItemStack) && par3EntityPlayer.isSneaking()){
 			SkillEffectHelper helper = new SkillEffectHelper(par2World, par3EntityPlayer, AbilityRegistry.swing, par1ItemStack);
@@ -160,14 +160,15 @@ public class ItemSpearUnsaga extends ItemSword implements IUnsagaMaterial,IExten
 			UtilNBT.setFreeTag(par1ItemStack, KEYisAiming, true);
 
 		}
-
+		super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
+		
 		return par1ItemStack;
 	}
 	
 	@Override
 	public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
 	{
-		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.grassHopper, par1ItemStack) && par2EntityPlayer.isSneaking()){
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.grassHopper, par1ItemStack)){
 			SkillEffectHelper helper = new SkillEffectHelper(par3World,par2EntityPlayer,AbilityRegistry.grassHopper,par1ItemStack);
 
 			helper.setUsePoint(new XYZPos(par4,par5,par6));

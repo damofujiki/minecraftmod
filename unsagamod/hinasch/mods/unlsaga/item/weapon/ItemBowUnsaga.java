@@ -143,11 +143,11 @@ public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial,IGainAbili
 
             if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.doubleShot,par1ItemStack ) && player.isSneaking()){
         		Unsaga.debug("呼ばれてますonstopping");
-            	LivingDebuff.addLivingDebuff(player, new LivingStateBow(DebuffRegistry.bowDouble,10,false,2,"none", f));
+            	LivingDebuff.addLivingDebuff(player, new LivingStateBow(DebuffRegistry.bowDouble,10,false,2,"double", f));
             	return;
             }
             if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.tripleShot,par1ItemStack ) && player.isSneaking()){
-            	LivingDebuff.addLivingDebuff(player, new LivingStateBow(DebuffRegistry.bowDouble,10,false,3,"none", f));
+            	LivingDebuff.addLivingDebuff(player, new LivingStateBow(DebuffRegistry.bowDouble,10,false,3,"triple", f));
             	return;
             }
 

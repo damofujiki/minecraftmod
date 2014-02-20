@@ -6,6 +6,7 @@ import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.render.RenderArrowUnsaga;
 import hinasch.mods.unlsaga.client.render.RenderBarrett;
 import hinasch.mods.unlsaga.client.render.RenderFlyingAxe;
+import hinasch.mods.unlsaga.client.render.RenderTreasureSlime;
 import hinasch.mods.unlsaga.client.render.equipment.RenderItemArmor;
 import hinasch.mods.unlsaga.client.render.equipment.RenderItemMusket;
 import hinasch.mods.unlsaga.client.render.equipment.RenderItemSpear;
@@ -13,8 +14,10 @@ import hinasch.mods.unlsaga.client.render.equipment.RenderItemWeapon;
 import hinasch.mods.unlsaga.entity.EntityArrowUnsaga;
 import hinasch.mods.unlsaga.entity.EntityBarrett;
 import hinasch.mods.unlsaga.entity.EntityFlyingAxe;
-import hinasch.mods.unlsaga.misc.module.ProxyRegisterUnsagaSpell;
+import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
+import hinasch.mods.unlsaga.misc.module.UnsagaMagicHandlerClient;
 import hinasch.mods.unlsaga.network.CommonProxy;
+import net.minecraft.client.model.ModelSlime;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.google.common.base.Optional;
@@ -25,7 +28,7 @@ import cpw.mods.fml.client.registry.RenderingRegistry;
 public class ClientProxy extends CommonProxy{
 
 	public DebugUnsaga debugdata;
-	public ProxyRegisterUnsagaSpell proxyUnsagaSpell;
+	public UnsagaMagicHandlerClient proxyUnsagaSpell;
 	
 	
 	@Override
@@ -54,8 +57,9 @@ public class ClientProxy extends CommonProxy{
 		RenderingRegistry.registerEntityRenderingHandler(EntityArrowUnsaga.class, new RenderArrowUnsaga());
 		RenderingRegistry.registerEntityRenderingHandler(EntityBarrett.class, new RenderBarrett(1.0F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityFlyingAxe.class, new RenderFlyingAxe(1.0F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityTreasureSlime.class, new RenderTreasureSlime(new ModelSlime(16), new ModelSlime(0), 0.25F));
 		if(Unsaga.module.isPresent()){
-			this.proxyUnsagaSpell = new ProxyRegisterUnsagaSpell();
+			this.proxyUnsagaSpell = new UnsagaMagicHandlerClient();
 			this.proxyUnsagaSpell.register();
 		}
 	}

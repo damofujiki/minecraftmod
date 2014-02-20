@@ -10,6 +10,7 @@ import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.ability.skill.HelperSkill;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillAxe;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
 import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
 import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.debuff.LivingState;
@@ -141,35 +142,36 @@ public class ItemAxeUnsaga extends ItemAxe implements IUnsagaMaterial,IGainAbili
 		}
 
 
-		if(!LivingDebuff.hasDebuff(par3EntityPlayer, DebuffRegistry.cooling)){
-			if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.skyDrive, par1ItemStack) && !par3EntityPlayer.onGround){
-				if(!LivingDebuff.hasDebuff(par3EntityPlayer, DebuffRegistry.flyingAxe)){
-
-					par3EntityPlayer.motionY += 1.0;
-					LivingDebuff.addLivingDebuff(par3EntityPlayer, new LivingStateFlyingAxe(DebuffRegistry.flyingAxe,30,(int)this.damageVsEntity));
-					LivingDebuff.addLivingDebuff(par3EntityPlayer, new LivingState(DebuffRegistry.antiFallDamage,30,true));
-
-
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.skyDrive, par1ItemStack) && !par3EntityPlayer.onGround
+				&& !LivingDebuff.isCooling(par3EntityPlayer)){
+			if(!LivingDebuff.hasDebuff(par3EntityPlayer, DebuffRegistry.flyingAxe)){
+				this.setReadyToSkyDrive(par3EntityPlayer);
+			}
+			if(LivingDebuff.hasDebuff(par3EntityPlayer, DebuffRegistry.flyingAxe) && par3EntityPlayer.isSneaking()){
+				SkillEffectHelper helper = new SkillEffectHelper(par2World,par3EntityPlayer,AbilityRegistry.skyDrive,par1ItemStack);
+				EntityLivingBase target = null;
+				if(LivingDebuff.getLivingDebuff(par3EntityPlayer, DebuffRegistry.weaponTarget).isPresent()){
+					LivingStateTarget state = (LivingStateTarget)LivingDebuff.getLivingDebuff(par3EntityPlayer, DebuffRegistry.weaponTarget).get();
+					target = (EntityLivingBase) par2World.getEntityByID(state.targetid);
 				}
-				if(LivingDebuff.hasDebuff(par3EntityPlayer, DebuffRegistry.flyingAxe) && par3EntityPlayer.isSneaking()){
-					EntityLivingBase target = null;
-					if(LivingDebuff.getLivingDebuff(par3EntityPlayer, DebuffRegistry.weaponTarget).isPresent()){
-						LivingStateTarget state = (LivingStateTarget)LivingDebuff.getLivingDebuff(par3EntityPlayer, DebuffRegistry.weaponTarget).get();
-						target = (EntityLivingBase) par2World.getEntityByID(state.targetid);
-					}
-					LivingDebuff.addDebuff(par3EntityPlayer, DebuffRegistry.cooling, 8);
-					LivingDebuff.removeDebuff(par3EntityPlayer, DebuffRegistry.flyingAxe);
-					SkillAxe skill = new SkillAxe();
-					Unsaga.debug(target);
-					skill.doSkydrive((EntityPlayer) par3EntityPlayer, par1ItemStack, (int)this.weapondamage + AbilityRegistry.skyDrive.damageWeapon,target);
+				if(target!=null){
+					helper.setTarget(target);
 				}
+				helper.doSkill();
 			}
 
+
 		}
+
 
 		return par1ItemStack;
 	}
 
+	protected void setReadyToSkyDrive(EntityPlayer ep){
+		ep.motionY += 1.0;
+		LivingDebuff.addLivingDebuff(ep, new LivingStateFlyingAxe(DebuffRegistry.flyingAxe,30,(int)this.damageVsEntity));
+		LivingDebuff.addLivingDebuff(ep, new LivingState(DebuffRegistry.antiFallDamage,30,true));
+	}
 	@Override
 	public int getMaxItemUseDuration(ItemStack par1ItemStack)
 	{
@@ -188,9 +190,10 @@ public class ItemAxeUnsaga extends ItemAxe implements IUnsagaMaterial,IGainAbili
 
 		if(par2EntityPlayer.isSneaking() && HelperAbility.hasAbilityFromItemStack(AbilityRegistry.woodChopper, par1ItemStack)){
 			par2EntityPlayer.swingItem();
-			SkillAxe sa = new SkillAxe();
-			int damageamount = sa.doWoodChopper(par1ItemStack, par2EntityPlayer, par3World, new XYZPos(par4,par5,par6));
-			par1ItemStack.damageItem(damageamount+AbilityRegistry.woodChopper.damageWeapon, par2EntityPlayer);
+			SkillEffectHelper helper = new SkillEffectHelper(par3World,par2EntityPlayer,AbilityRegistry.woodChopper,par1ItemStack);
+			helper.setUsePoint(new XYZPos(par4,par5,par6));
+			helper.doSkill();
+
 
 		}
 

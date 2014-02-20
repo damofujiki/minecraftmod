@@ -2,6 +2,7 @@ package hinasch.mods.unlsaga.client.gui;
 
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.inventory.ContainerBartering;
+import hinasch.mods.unlsaga.misc.translation.Translation;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.IMerchant;
@@ -39,7 +40,7 @@ public class GuiBartering extends GuiContainer{
 
 
 		//fontRenderer.drawString("Bartering", 8, 5, 0x404040);
-		fontRenderer.drawString("Amount:"+this.container.getSellPrice(),8,48,0x404040);
+		fontRenderer.drawString(Translation.localize("gui.bartering.amount")+this.container.getSellPrice(),8,48,0x404040);
 	}
 	
 

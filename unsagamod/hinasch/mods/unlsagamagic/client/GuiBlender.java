@@ -46,8 +46,8 @@ public class GuiBlender extends GuiContainer
 
 		// ボタンを追加
 		// GuiButton(ボタンID, ボタンの始点X, ボタンの始点Y, ボタンの幅, ボタンの高さ, ボタンに表示する文字列)
-		buttonList.add(new GuiButton(-2, i + 2, j + 16, 48, 20 , "Blend"));
-		buttonList.add(new GuiButton(-3, i + 2, j + 38, 48, 20 , "Undo"));
+		buttonList.add(new GuiButton(-2, i + 2, j + 16, 48, 20 , Translation.localize("gui.blender.button.blend")));
+		buttonList.add(new GuiButton(-3, i + 2, j + 38, 48, 20 , Translation.localize("gui.blender.button.undo")));
 	}
 
 	@Override
@@ -55,7 +55,7 @@ public class GuiBlender extends GuiContainer
 	{
 
 		//fontRenderer.drawString("Magic Blender", 58, 6, 0x404040);
-		fontRenderer.drawString(Translation.translate(this.containerblender.getCurrentElement().toString()), 8, 6, 0x404040);
+		fontRenderer.drawString(this.containerblender.getCurrentElement().toString(), 8, 6, 0x404040);
 
 		fontRenderer.drawString("Result:"+getSpellStr(), 8, (ySize - 96) + 2, 0x404040);
 	}

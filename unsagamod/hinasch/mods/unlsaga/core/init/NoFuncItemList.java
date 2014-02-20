@@ -46,7 +46,7 @@ public class NoFuncItemList {
 		if(itemMap.containsKey(num)){
 			Unsaga.debug("key"+num+" is already registered.");
 		}
-		itemMap.put(num, new NoFuncItem(name,jp,dict,icon,color,material,num,damage));
+		itemMap.put(num, new NoFuncItem(num,name,jp,dict,icon,color,material,num,damage));
 	}
 	
 	public static int length(){

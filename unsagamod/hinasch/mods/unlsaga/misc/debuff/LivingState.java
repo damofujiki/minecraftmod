@@ -1,6 +1,20 @@
 package hinasch.mods.unlsaga.misc.debuff;
 
+import hinasch.lib.HSLibs;
+import hinasch.lib.XYZPos;
+import hinasch.mods.unlsaga.Unsaga;
+import hinasch.mods.unlsaga.item.weapon.ItemSwordUnsaga;
+import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.util.CauseKnockBack;
+import hinasch.mods.unlsaga.misc.util.UtilItem;
+
+import java.util.List;
+
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
 
 public class LivingState extends LivingDebuff{
 
@@ -18,12 +32,64 @@ public class LivingState extends LivingDebuff{
 	
 	@Override
 	public void updateRemain(EntityLivingBase living){
+		Unsaga.debug(this.debuff+"updateremain");
 		this.remain -= 1;
 		if(this.remain<=0){
 			this.remain = 0;
 		}
 		if(this.isOnlyAir && living.onGround){
 			this.remain = 0;
+			Unsaga.debug("地面にいますので消します");
+		}
+	}
+	
+	@Override
+	public void updateTick(EntityLivingBase living) {
+		super.updateTick(living);
+		if(this.debuff==DebuffRegistry.sleep){
+			living.setVelocity(0, 0, 0);
+		}
+		if(this.debuff==DebuffRegistry.gust){
+			this.remain -= 1;
+			living.moveForward = 0.5F;
+			AxisAlignedBB bb = HSLibs.getBounding(XYZPos.entityPosToXYZ(living), 2.0D, 1.0D);
+			List<EntityLivingBase> livings = living.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, bb);
+			if(!livings.isEmpty()){
+				for(EntityLivingBase lv:livings){
+					if(lv!=living){
+						lv.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer)living),AbilityRegistry.gust.hurtHp);
+
+						this.remain = 0;
+					}
+				}
+				
+			}
+		}
+		if(this.debuff==DebuffRegistry.rushBlade){
+			
+			if(living instanceof EntityPlayer){
+				EntityPlayer ep = (EntityPlayer)living;
+
+				if(ep.motionX + ep.motionZ <= 0.0001D){
+					this.remain = 0;
+				}
+				if(UtilItem.hasItemInstance(ep, ItemSwordUnsaga.class)){
+					
+					ep.setSneaking(true);
+					SkillEffectHelper helper = new SkillEffectHelper(ep.worldObj,ep,AbilityRegistry.chargeBlade,ep.getHeldItem());
+					CauseKnockBack causeknock = new CauseKnockBack(ep.worldObj,1.0D);
+					AxisAlignedBB bb = ep.boundingBox
+							.expand(1.5D, 1.0D, 1.5D);
+					causeknock.setLPDamage(helper.getAttackDamageLP());
+					causeknock.doCauseDamage(bb, helper.getAttackDamage(), DamageSource.causePlayerDamage(ep), false);
+					
+				
+				}else{
+					this.remain = 0;
+				}
+
+			}
+
 		}
 	}
 }

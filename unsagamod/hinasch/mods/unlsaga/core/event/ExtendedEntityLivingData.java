@@ -106,14 +106,16 @@ public class ExtendedEntityLivingData implements IExtendedEntityProperties{
 	}
 	
 	public void updateAllRemaining(EntityLivingBase living){
-		HashSet<LivingDebuff> removes = new HashSet();
 		if(this.debuffSet.isEmpty() || this.debuffSet==null)return;
+		for(LivingDebuff debuff:this.debuffSet){
+			debuff.updateRemain(living);
+		}
 	}
 	
 	public boolean hasDebuff(Debuff debuff){
 		if(this.debuffSet.isEmpty())return false;
 		for(LivingDebuff living:this.debuffSet){
-			if(living.getDebuff()==debuff)return true;
+			if(living.getDebuff().number==debuff.number)return true;
 		}
 		return false;
 	}
@@ -151,7 +153,7 @@ public class ExtendedEntityLivingData implements IExtendedEntityProperties{
 			if(ldata.debuffSet.isEmpty())return;
 			HashSet<LivingDebuff> removes = new HashSet();
 			for(LivingDebuff ldebuff:ldata.debuffSet){
-				if(ldebuff.getDebuff()==debuff){
+				if(ldebuff.getDebuff().number==debuff.number){
 					removes.add(ldebuff);
 				}
 			}
@@ -173,7 +175,7 @@ public class ExtendedEntityLivingData implements IExtendedEntityProperties{
 			ExtendedEntityLivingData ldata = (ExtendedEntityLivingData) living.getExtendedProperties(ExtendedEntityLivingData.KEY);
 			if(ldata.debuffSet.isEmpty())return false;
 			for(LivingDebuff ldebuff:ldata.debuffSet){
-				if(ldebuff.getDebuff()==debuff){
+				if(ldebuff.getDebuff().number==debuff.number){
 					return true;
 				}
 			}
@@ -186,7 +188,7 @@ public class ExtendedEntityLivingData implements IExtendedEntityProperties{
 			ExtendedEntityLivingData ldata = (ExtendedEntityLivingData) living.getExtendedProperties(ExtendedEntityLivingData.KEY);
 			if(ldata.debuffSet.isEmpty())return Optional.absent();
 			for(LivingDebuff ldebuff:ldata.debuffSet){
-				if(ldebuff.getDebuff()==debuff){
+				if(ldebuff.getDebuff().number==debuff.number){
 					return Optional.of(ldebuff);
 				}
 			}

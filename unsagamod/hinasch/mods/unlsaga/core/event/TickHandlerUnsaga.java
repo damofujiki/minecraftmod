@@ -2,23 +2,18 @@ package hinasch.mods.unlsaga.core.event;
 
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
-import hinasch.mods.unlsaga.item.weapon.ItemSwordUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.ability.IGainAbility;
-import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
-import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
-import hinasch.mods.unlsaga.misc.util.CauseKnockBack;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
-import hinasch.mods.unlsaga.misc.util.UtilItem;
 
 import java.util.EnumSet;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
+import net.minecraft.potion.Potion;
+import net.minecraft.potion.PotionEffect;
 import cpw.mods.fml.common.ITickHandler;
 import cpw.mods.fml.common.TickType;
 
@@ -36,33 +31,51 @@ public class TickHandlerUnsaga implements ITickHandler{
 	protected void onPlayerTick(EntityPlayer entityPlayer) {
 		int amountHeal = 0;
 
-		if (LivingDebuff.hasDebuff(entityPlayer, DebuffRegistry.rushBlade) && UtilItem.hasItemInstance(entityPlayer, ItemSwordUnsaga.class)) {
-			entityPlayer.setSneaking(true);
-			ItemStack is = entityPlayer.getHeldItem();
-			float damage = ((ItemSwordUnsaga)is.getItem()).weapondamage + (float)AbilityRegistry.rearBlade.damageWeapon;
-			CauseKnockBack causeknock = new CauseKnockBack(entityPlayer.worldObj,1.0D);
-			AxisAlignedBB bb = entityPlayer.boundingBox
-					.expand(1.0D, 1.0D, 1.0D);
-			causeknock.doCauseDamage(bb, damage, DamageSource.causePlayerDamage(entityPlayer), false);
-
-//			List entlist = entityPlayer.worldObj.getEntitiesWithinAABB(
-//					EntityLiving.class, bb);
-//			if (!entlist.isEmpty()) {
-//				for (Iterator<EntityLiving> ite = entlist.iterator(); ite
-//						.hasNext();) {
-//					EntityLiving entityliving = ite.next();
-//					if (entityliving != null && entityliving != entityPlayer) {
-//						int str = 0;
-//						entityliving
-//						.attackEntityFrom(DamageSource
-//								.causePlayerDamage(entityPlayer), 2);
-//						entityliving.knockBack(entityPlayer, 0, 2.0D, 1.0D);
-//					}
-//				}
-//			}
-
-
+		if(entityPlayer.isPotionActive(Potion.poison)){
+			if(HelperAbility.hasAbilityPlayer(entityPlayer, AbilityRegistry.antiPoison)>0 || 
+					HelperAbility.hasAbilityPlayer(entityPlayer, AbilityRegistry.antiDebuff)>0){
+				entityPlayer.removePotionEffect(Potion.poison.id);
+			}
 		}
+		if(entityPlayer.isPotionActive(Potion.blindness)){
+			if(HelperAbility.hasAbilityPlayer(entityPlayer, AbilityRegistry.antiBlind)>0 || 
+					HelperAbility.hasAbilityPlayer(entityPlayer, AbilityRegistry.antiDebuff)>0){
+				entityPlayer.removePotionEffect(Potion.blindness.id);
+			}
+		}
+		if(entityPlayer.isPotionActive(Potion.wither)){
+			if(HelperAbility.hasAbilityPlayer(entityPlayer, AbilityRegistry.antiWither)>0){
+				entityPlayer.removePotionEffect(Potion.wither.id);
+			}
+		}
+		if(!entityPlayer.isPotionActive(Potion.fireResistance)){
+			if(HelperAbility.hasAbilityPlayer(entityPlayer, AbilityRegistry.fireProtection)>0){
+				int amount = HelperAbility.hasAbilityPlayer(entityPlayer, AbilityRegistry.fireProtection);
+				entityPlayer.addPotionEffect(new PotionEffect(Potion.fireResistance.id,50,amount));
+			}
+		}
+		
+//		if (LivingDebuff.hasDebuff(entityPlayer, DebuffRegistry.rushBlade) && UtilItem.hasItemInstance(entityPlayer, ItemSwordUnsaga.class)) {
+//
+//
+////			List entlist = entityPlayer.worldObj.getEntitiesWithinAABB(
+////					EntityLiving.class, bb);
+////			if (!entlist.isEmpty()) {
+////				for (Iterator<EntityLiving> ite = entlist.iterator(); ite
+////						.hasNext();) {
+////					EntityLiving entityliving = ite.next();
+////					if (entityliving != null && entityliving != entityPlayer) {
+////						int str = 0;
+////						entityliving
+////						.attackEntityFrom(DamageSource
+////								.causePlayerDamage(entityPlayer), 2);
+////						entityliving.knockBack(entityPlayer, 0, 2.0D, 1.0D);
+////					}
+////				}
+////			}
+//
+//
+//		}
 		
 		if(ExtendedPlayerData.getData(entityPlayer).isPresent()){
 			ExtendedPlayerData pdata = ExtendedPlayerData.getData(entityPlayer).get();

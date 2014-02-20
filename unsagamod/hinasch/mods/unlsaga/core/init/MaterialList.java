@@ -141,6 +141,8 @@ public class MaterialList {
 		bone.associate(new ItemStack(Item.bone,1));
 		obsidian.associate(new ItemStack(Block.obsidian,1));
 		silk.associate(new ItemStack(Item.silk,1));
+		ironOre.associate(new ItemStack(Block.oreIron,1));
+
 	}
 	
 	protected static void setRenderColor(){

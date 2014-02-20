@@ -4,13 +4,16 @@ import hinasch.lib.HSLibs;
 import hinasch.mods.unlsaga.DebugUnsaga;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.gui.GuiBartering;
+import hinasch.mods.unlsaga.client.gui.GuiChest;
 import hinasch.mods.unlsaga.client.gui.GuiEquipment;
 import hinasch.mods.unlsaga.client.gui.GuiSmithUnsaga;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
 import hinasch.mods.unlsaga.inventory.ContainerBartering;
+import hinasch.mods.unlsaga.inventory.ContainerChestUnsaga;
 import hinasch.mods.unlsaga.inventory.ContainerEquipment;
 import hinasch.mods.unlsaga.inventory.ContainerSmithUnsaga;
-import hinasch.mods.unlsaga.misc.module.HandlerCommonProxy;
+import hinasch.mods.unlsaga.misc.module.UnsagaMagicContainerHandler;
+import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsaga;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.NpcMerchant;
@@ -29,10 +32,10 @@ import cpw.mods.fml.common.network.IGuiHandler;
 public class CommonProxy implements IGuiHandler{
 
 	public DebugUnsaga debugdata;
-	public HandlerCommonProxy handlerUnsagaMagic;
+	public UnsagaMagicContainerHandler handlerUnsagaMagic;
 	
 	public CommonProxy(){
-		this.handlerUnsagaMagic = new HandlerCommonProxy();
+		this.handlerUnsagaMagic = new UnsagaMagicContainerHandler();
 	}
 	
 	public void registerSpearRenderer(int par1){
@@ -113,9 +116,17 @@ public class CommonProxy implements IGuiHandler{
 		if(ID==Unsaga.GuiBlender){
 			if(player.openContainer == player.inventoryContainer){
 				Unsaga.debug("Container");
-				return (Container)HandlerCommonProxy.getContainerBlender(player, world);
+				return (Container)UnsagaMagicContainerHandler.getContainerBlender(player, world);
 			}
 			
+		}
+		if(ID==Unsaga.GuiChest){
+			TileEntityChestUnsaga chest = (TileEntityChestUnsaga)world.getBlockTileEntity(x, y, z);
+			if(player.openContainer == player.inventoryContainer && chest!=null){
+				Unsaga.debug("Container");
+				return new ContainerChestUnsaga(chest,player);
+			}
+
 		}
 		return null;
 	}
@@ -151,9 +162,19 @@ public class CommonProxy implements IGuiHandler{
 			if(Minecraft.getMinecraft().currentScreen==null){
 
 				Unsaga.debug("GUI");
-						return (GuiContainer)HandlerCommonProxy.getGuiBlender(player,world);
+						return (GuiContainer)UnsagaMagicContainerHandler.getGuiBlender(player,world);
 
 			}
+		}
+		if(ID==Unsaga.GuiChest){
+			TileEntityChestUnsaga chest = (TileEntityChestUnsaga)world.getBlockTileEntity(x, y, z);
+			if(Minecraft.getMinecraft().currentScreen==null && chest!=null){
+				Unsaga.debug("GUI");
+				return new GuiChest(chest,player);
+
+			}
+
+
 		}
 		return null;
 	}

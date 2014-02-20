@@ -32,7 +32,7 @@ public class EntityArrowThrowable extends EntityThrowable implements IProjectile
     /** 1 if the player can pick up the arrow */
     public int canBePickedUp;
 
-    /** Seems to be some sort of timer for animating an arrow. */
+    /** Seems to be some sort of timer for animating an arfrow. */
     //public int arrowShake;
 
     /** The owner of this arrow. */

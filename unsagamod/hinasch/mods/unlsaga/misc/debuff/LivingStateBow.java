@@ -18,7 +18,11 @@ public class LivingStateBow extends LivingState{
 	
 	public LivingStateBow(Debuff par1, int par2, boolean par3,int par4,String tag,float par5) {
 		super(par1, par2, false);
-		this.shootTick = par4;
+		if(tag.equals("double")){
+			this.shootTick = 2;
+		}else{
+			this.shootTick = 3;
+		}
 		this.tag = tag;
 		this.charge = par5;
 		// TODO 自動生成されたコンストラクター・スタブ
@@ -38,15 +42,24 @@ public class LivingStateBow extends LivingState{
 		if(living instanceof EntityPlayer){
 			EntityPlayer ep = (EntityPlayer)living;
 			if(UtilItem.hasItemInstance(ep, ItemBowUnsaga.class)){
-				Unsaga.debug("到達してます");
 				if(helper==null){
-					helper =  new SkillEffectHelper(ep.worldObj,ep,AbilityRegistry.doubleShot,ep.getHeldItem());
+					if(this.tag.equals("triple")){
+						helper =  new SkillEffectHelper(ep.worldObj,ep,AbilityRegistry.tripleShot,ep.getHeldItem());
+					}else{
+						helper =  new SkillEffectHelper(ep.worldObj,ep,AbilityRegistry.doubleShot,ep.getHeldItem());
+					}
+					
 				}
 				Unsaga.debug(shootTick);
-				this.shootTick -= 1;
+
 				helper.setCharge(charge);
 				helper.setParent(this);
-				helper.doSkill();
+				if(this.shootTick>=0){
+					helper.doSkill();
+				}
+				this.shootTick -= 1;
+				
+
 			}
 		}
 		

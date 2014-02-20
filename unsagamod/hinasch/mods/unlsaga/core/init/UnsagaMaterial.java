@@ -81,6 +81,12 @@ public class UnsagaMaterial {
 		return mat;
 	}
 	
+	public void associate(ItemStack is){
+		Item item = (Item)is.getItem();
+		this.associatedItem = new PairID();
+		this.associatedItem.id = item.itemID;
+		this.associatedItem.metadata = is.getItemDamage();
+	}
 	public EnumArmorMaterial getArmorMaterial(){
 		if(this.enumArmor.isPresent()){
 			return this.enumArmor.get();
@@ -91,6 +97,14 @@ public class UnsagaMaterial {
 		Unsaga.debug("this Material has no EnumArmorMAterial:"+this.name);
 		return EnumArmorMaterial.CLOTH;
 	}
+	
+	public Optional<ItemStack> getAssociatedItem(){
+		if(this.associatedItem!=null){
+			return Optional.of(new ItemStack(this.associatedItem.id,1,this.associatedItem.metadata));
+		}
+		return Optional.absent();
+	}
+
 	public int getBowModifier(){
 		if(this.bowModifier.isPresent()){
 			return this.bowModifier.get();
@@ -101,7 +115,7 @@ public class UnsagaMaterial {
 	public int getItemMeta(){
 		return this.itemMeta.get();
 	}
-
+	
 	public UnsagaMaterial getParentMaterial(){
 		Optional<UnsagaMaterial> mat = Optional.absent();
 		if(this.parentMaterial!=null){
@@ -116,13 +130,6 @@ public class UnsagaMaterial {
 			return mlist.get(rand.nextInt(mlist.size()));
 		}
 		return this;
-	}
-	
-	public Optional<ItemStack> getAssociatedItem(){
-		if(this.associatedItem!=null){
-			return Optional.of(new ItemStack(this.associatedItem.id,1,this.associatedItem.metadata));
-		}
-		return Optional.absent();
 	}
 	
 	public Optional<Integer> getRenderColor() {
@@ -185,6 +192,7 @@ public class UnsagaMaterial {
 		return this.subMaterialMap;
 	}
 	
+
 	public EnumToolMaterial getToolMaterial(){
 		if(this.enumTool.isPresent()){
 			return this.enumTool.get();
@@ -196,7 +204,6 @@ public class UnsagaMaterial {
 		return EnumToolMaterial.STONE;
 	}
 	
-
 	public boolean hasSubMaterials(){
 		if(this.subMaterialMap.isEmpty()){
 			return false;
@@ -206,13 +213,6 @@ public class UnsagaMaterial {
 	
 	public void linkToItem(int meta){
 		this.itemMeta = Optional.of(meta);
-	}
-	
-	public void associate(ItemStack is){
-		Item item = (Item)is.getItem();
-		this.associatedItem = new PairID();
-		this.associatedItem.id = item.itemID;
-		this.associatedItem.metadata = is.getItemDamage();
 	}
 	
 	public UnsagaMaterial setArmorMaterial(EnumArmorMaterial par1){

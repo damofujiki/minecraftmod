@@ -47,7 +47,10 @@ public class ExtendedPlayerData implements IExtendedEntityProperties{
 	
 		if(e.entity instanceof EntityPlayer){
 			EntityPlayer ep = (EntityPlayer)e.entity;
-			ep.registerExtendedProperties(key, new ExtendedPlayerData());
+			if(ep.getExtendedProperties(key)==null){
+				ep.registerExtendedProperties(key, new ExtendedPlayerData());
+			}
+			
 		}
 	}
 	

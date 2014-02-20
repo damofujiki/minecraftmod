@@ -1,5 +1,6 @@
 package hinasch.mods.unlsagamagic.misc.spell;
 
+import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsagamagic.misc.element.UnsagaElement;
 import hinasch.mods.unlsagamagic.misc.element.UnsagaElement.EnumElement;
 
@@ -54,6 +55,7 @@ public class SpellMixTable {
 		if(this.get(EnumElement.METAL)>=table.get(EnumElement.METAL))flag+=1;
 		if(this.get(EnumElement.WATER)>=table.get(EnumElement.WATER))flag+=1;
 		if(this.get(EnumElement.FORBIDDEN)>=table.get(EnumElement.FORBIDDEN))flag+=1;
+		//Unsaga.debug(flag);
 		if(flag>=6){
 			return true;
 		}
@@ -99,19 +101,25 @@ public class SpellMixTable {
 	
 	@Override
 	public String toString(){
-		StringBuilder builder = new StringBuilder();
-		for(EnumElement element:UnsagaElement.enumElements){
-			builder.append(element.toString()+":"+this.get(element)+" ");
-		}
-		return new String(builder);
+		String str = Translation.localize("gui.blender.elements");
+		String formatted = String.format(str, this.getInt(EnumElement.FIRE),this.getInt(EnumElement.METAL),this.getInt(EnumElement.WOOD)
+				,this.getInt(EnumElement.WATER),this.getInt(EnumElement.EARTH),this.getInt(EnumElement.FORBIDDEN));
+//		StringBuilder builder = new StringBuilder();
+//		for(EnumElement element:UnsagaElement.enumElements){
+//			builder.append(element.toString()+":"+this.get(element)+" ");
+//		}
+		return formatted;
 	}
 	
 
 	public String getPercentage(){
-		StringBuilder builder = new StringBuilder();
-		for(EnumElement element:UnsagaElement.enumElements){
-			builder.append(element.toString()+":"+this.get(element)+"% ");
-		}
-		return new String(builder);
+		String str = Translation.localize("gui.blender.elements");
+		String formatted = String.format(str, this.getInt(EnumElement.FIRE),this.getInt(EnumElement.METAL),this.getInt(EnumElement.WOOD)
+				,this.getInt(EnumElement.WATER),this.getInt(EnumElement.EARTH),this.getInt(EnumElement.FORBIDDEN));
+//		StringBuilder builder = new StringBuilder();
+//		for(EnumElement element:UnsagaElement.enumElements){
+//			builder.append(element.toString()+":"+this.get(element)+" ");
+//		}
+		return formatted;
 	}
 }

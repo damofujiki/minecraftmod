@@ -1,7 +1,11 @@
 package hinasch.mods.unlsagamagic.misc.spell.effect;
 
 import hinasch.lib.HSLibs;
+import hinasch.lib.ScanHelper;
+import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
+import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.translation.Translation;
+import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsaga;
 import hinasch.mods.unlsagamagic.UnsagaMagic;
 import hinasch.mods.unlsagamagic.item.ItemSpellBook;
 import hinasch.mods.unlsagamagic.misc.element.UnsagaElement;
@@ -12,6 +16,7 @@ import hinasch.mods.unlsagamagic.misc.spell.SpellRegistry;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 
@@ -43,6 +48,19 @@ public class InvokeSpell {
 		
 	}
 	
+	public void tryUnlockMagicLock(){
+		ScanHelper scan = new ScanHelper(this.invoker,3,3);
+		for(;scan.hasNext();scan.next()){
+			TileEntity te = this.world.getBlockTileEntity(scan.sx, scan.sy, scan.sz);
+			if(te instanceof TileEntityChestUnsaga){
+				TileEntityChestUnsaga chest = (TileEntityChestUnsaga)te;
+				if(chest.tryUnlockMagicalLock()){
+					this.invoker.addChatMessage(Translation.localize("msg.chest.magiclock.unlocked"));
+				}
+			}
+		}
+	}
+	
 	public void setMagicItem(ItemStack is){
 		this.magicItem = is;
 	}
@@ -60,7 +78,13 @@ public class InvokeSpell {
 	}
 	
 	public float getAmp(){
-		return ItemSpellBook.getAmp(this.spellbook);
+		float amp = ItemSpellBook.getAmp(this.spellbook);
+		if(LivingDebuff.hasDebuff(invoker, DebuffRegistry.downMagic)){
+			amp = amp /2;
+			amp = MathHelper.clamp_float(amp, 0.1F, 10.0F);
+			
+		}
+		return amp;
 	}
 	
 	public Optional<EntityLivingBase> getTarget(){
@@ -76,13 +100,14 @@ public class InvokeSpell {
 	}
 	public void run(){
 		if(!this.world.isRemote && this.tryInvoke()){
-			this.invoker.addChatMessage(Translation.translate("succeeded invoke spell.("+prob+"%)"));
+			this.tryUnlockMagicLock();
+			this.invoker.addChatMessage(Translation.localize("msg.spell.succeeded")+"("+prob+"%)");
 			this.spellEffect.doEffect(this);
 			if(this.getMagicItem().isPresent()){
 				this.getMagicItem().get().damageItem(this.getCost(), this.invoker);
 			}
 		}else{
-			this.invoker.addChatMessage(Translation.translate("failed."));
+			this.invoker.addChatMessage(Translation.localize("msg.spell.failed")+"("+prob+"%)");
 		}
 	}
 	

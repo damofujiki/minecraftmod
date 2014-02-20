@@ -54,7 +54,7 @@ public class HelperSkill extends HelperAbility{
 				
 				Ability gainab = abList.get(numgain);
 				Unsaga.debug(gainab.getName(1)+"を覚えた");
-				PacketDispatcher.sendPacketToPlayer(PacketHandler.getMessagePacket(1,gainab.number), (Player) this.player);
+				PacketDispatcher.sendPacketToPlayer(PacketHandler.getMessagePacket(2,gainab.number), (Player) this.player);
 				PacketDispatcher.sendPacketToPlayer(PacketHandler.getSoundPacket((int)1022),(Player)this.player);
 				this.addAbility(gainab);
 			}

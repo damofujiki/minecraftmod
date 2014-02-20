@@ -194,7 +194,7 @@ public class ContainerBlender extends Container
 			}
 		}
 		if(this.id==-2){
-			if(this.hasNoBlendSpell()){
+			if(this.hasNoBlendSpell() && this.getAmountSlotSpellBook()>1){
 				if(this.getSpellTransformed().isPresent()){
 					Spell transformed = this.getSpellTransformed().get();
 					HashMap<String,SpellMixTable> tables = this.getCurrentAllElement();
@@ -234,6 +234,15 @@ public class ContainerBlender extends Container
 	}
 
 
+	public int getAmountSlotSpellBook(){
+		int amount = 0;
+		for(int i=0;i<this.invBlender.getSizeInventory();i++){
+			if(this.invBlender.getStackInSlot(i)!=null){
+				amount +=1;
+			}
+		}
+		return amount;
+	}
 	@Override
 	public ItemStack transferStackInSlot(EntityPlayer par1EntityPlayer, int par2)
 	{
@@ -274,8 +283,11 @@ public class ContainerBlender extends Container
 				Spell spell = ItemSpellBook.getSpell(is);
 				if(!(spell instanceof SpellBlend)){
 					table.add(spell.elementsTable);
-					cost.add(spell.elementsCost);
-					amp.add(spell.elementsAmp);
+					if(i!=0){
+						cost.add(spell.elementsCost);
+						amp.add(spell.elementsAmp);
+					}
+
 				}
 			}
 		}
@@ -295,9 +307,9 @@ public class ContainerBlender extends Container
 	public Optional<Spell> getSpellTransformed(){
 		if(this.getBaseMagic().isPresent()){
 			for(SpellBlend blend:SpellRegistry.blendSet){
-				if(blend.getRequireMap().containsKey(this.getBaseMagic())){
+				if(blend.getRequireMap().containsKey(this.getBaseMagic().get())){
 					Unsaga.debug("キーがありました");
-					if(this.getCurrentElement().isBiggerThan(blend.getRequireMap().get(this.getBaseMagic()))){
+					if(this.getCurrentElement().isBiggerThan(blend.getRequireMap().get(this.getBaseMagic().get()))){
 						Unsaga.debug("でかい");
 						return Optional.of((Spell)blend);
 					}

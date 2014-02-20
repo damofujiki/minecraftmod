@@ -17,12 +17,14 @@ import hinasch.mods.unlsagamagic.misc.spell.SpellRegistry;
 import net.minecraft.item.Item;
 import net.minecraftforge.common.Configuration;
 import cpw.mods.fml.common.registry.EntityRegistry;
+import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.TickRegistry;
 import cpw.mods.fml.relauncher.Side;
 
 
 public class UnsagaMagic {
 
+	public static UnsagaMagic instance;
 	public static UnsagaElement worldElement;
 	public static ElementLibrary elementLibrary;
 	protected static int itemIDMagicTablet;
@@ -35,8 +37,15 @@ public class UnsagaMagic {
 	public static int GuiBlander = 4;
 
 	
-	public UnsagaMagic(){
+	protected UnsagaMagic(){
 		
+	}
+	
+	public static UnsagaMagic getInstance(){
+		if(instance==null){
+			instance = new UnsagaMagic();
+		}
+		return instance;
 	}
 	
 	public void init(){
@@ -75,8 +84,9 @@ public class UnsagaMagic {
 		itemSpellBook = new ItemSpellBook(this.itemIDSpellBook).setCreativeTab(Unsaga.tabUnsaga).setUnlocalizedName("unsaga.spellbook");
 		itemBlender = new ItemBlender(this.itemIDBlender).setCreativeTab(Unsaga.tabUnsaga).setUnlocalizedName("unsaga.blender");
 		
-		HSLibs.langSet("Magic Tablet", "魔道板", itemMagicTablet);
-		HSLibs.langSet("Spell Book", "術書", itemSpellBook);
-		HSLibs.langSet("Blender", "術合成", itemBlender);
+
+		GameRegistry.registerItem(itemMagicTablet, "itemMagicTablet");
+		GameRegistry.registerItem(itemSpellBook, "itemSpellBook");
+		GameRegistry.registerItem(itemBlender, "itemBlender");
 	}
 }

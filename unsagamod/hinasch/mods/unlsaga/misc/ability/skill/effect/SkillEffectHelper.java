@@ -4,25 +4,42 @@ import hinasch.lib.CauseDamageBoundingbox;
 import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.skill.Skill;
+import hinasch.mods.unlsaga.misc.ability.skill.Skill.EnumDamageUnsaga;
 import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
 import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
+
+import java.util.HashMap;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.monster.EntitySkeleton;
+import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+
+import com.google.common.collect.Maps;
 
 public class SkillEffectHelper {
 	
+	//未実装
 
+	public static HashMap<Class,Integer> effectiveSpear = Maps.newHashMap();
+	public static HashMap<Class,Integer> effectivePunch = Maps.newHashMap();
+	public static HashMap<Class,Integer> effectiveSword = Maps.newHashMap();
+	public static HashMap<Class,Integer> effectiveAxe = Maps.newHashMap();
+	
+	
 	protected SkillEffect skillEffecter;
 	protected int coolingTime;
 	protected Object parent;
@@ -128,6 +145,7 @@ public class SkillEffectHelper {
 			UnsagaMaterial material = HelperUnsagaWeapon.getMaterial(this.weaponGained);
 			modifier += material.getBowModifier();
 		}
+		modifier += LivingDebuff.getModifierAttackBuff(ownerSkill);
 		return modifier + this.skill.hurtHp;
 	}
 	
@@ -186,5 +204,38 @@ public class SkillEffectHelper {
 	}
 	public void causeRangeDamage(CauseDamageBoundingbox parent,World world,AxisAlignedBB bb,int damage,DamageSource ds,boolean isEnemyOnly){
 		CauseDamageBoundingbox.causeDamage(parent, world, bb, damage, ds, isEnemyOnly);
+	}
+	
+	public void attack(Entity living,Entity projectile){
+		int at = this.getAttackDamage();
+		if(this.skill.damageType==EnumDamageUnsaga.PUNCH){
+			if(living instanceof EntitySkeleton) at += 3;
+			if(living instanceof EntitySlime) at = 0;
+			if(living instanceof EntityTreasureSlime) at = 0;
+		}
+		if(this.skill.damageType==EnumDamageUnsaga.SPEAR){
+			if(living instanceof EntitySkeleton) at -= 3;
+		}
+		if(this.skill.damageType==EnumDamageUnsaga.SWORDPUNCH){
+			if(living instanceof EntitySkeleton) at += 1;
+			if(living instanceof EntitySlime) at -= 3;
+			if(living instanceof EntityTreasureSlime) at -= 3;
+		}
+
+
+		if(this.category==EnumUnsagaWeapon.BOW){
+			living.attackEntityFrom(DamageSource.causeThrownDamage(ownerSkill, projectile), at);
+			if(living instanceof EntityLivingBase){
+				Unsaga.lpHandler.tryHurtLP((EntityLivingBase) living, getAttackDamageLP());
+			}
+			
+			return;
+		}
+		at = MathHelper.clamp_int(at, 0, 100);
+		living.attackEntityFrom(DamageSource.causePlayerDamage(ownerSkill), at);
+		if(living instanceof EntityLivingBase){
+			Unsaga.lpHandler.tryHurtLP((EntityLivingBase) living, getAttackDamageLP());
+		}
+		return;
 	}
 }

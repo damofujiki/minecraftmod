@@ -38,17 +38,20 @@ public class EventDecipherAtSleep implements ITickHandler{
 		if(ep.getHeldItem()!=null){
 			ItemStack is = ep.getHeldItem();
 			if(is.getItem() instanceof ItemTablet && !world.isRemote){
-				UnsagaMagic.worldElement.figureElements(world, ep);
-				SpellMixTable table = UnsagaMagic.worldElement.getWorldElements();
-				Spell spell = ItemTablet.getSpell(is);
-				int difficultySpell = spell.difficultyDecipher;
-				EnumElement elementMagic = spell.element;
-				int elementpoint = table.getInt(elementMagic);
-				int progressDecipher = (elementpoint*3) / HSLibs.exceptZero(difficultySpell/2);
-				if(progressDecipher<2)progressDecipher=2;
-				progressDecipher *= 2;
-				Unsaga.debug("解読度:"+progressDecipher);
-				ItemTablet.progressDeciphering(ep, is, progressDecipher);
+				if(ItemTablet.isDeciphered(is)){
+					UnsagaMagic.worldElement.figureElements(world, ep);
+					SpellMixTable table = UnsagaMagic.worldElement.getWorldElements();
+					Spell spell = ItemTablet.getSpell(is);
+					int difficultySpell = spell.difficultyDecipher;
+					EnumElement elementMagic = spell.element;
+					int elementpoint = table.getInt(elementMagic);
+					int progressDecipher = (elementpoint*3) / HSLibs.exceptZero(difficultySpell/2);
+					if(progressDecipher<2)progressDecipher=2;
+					progressDecipher *= 2;
+					Unsaga.debug("解読度:"+progressDecipher);
+					ItemTablet.progressDeciphering(ep, is, progressDecipher);
+				}
+
 			}
 		}
 	}

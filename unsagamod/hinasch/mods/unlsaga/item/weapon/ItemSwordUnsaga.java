@@ -1,13 +1,14 @@
 package hinasch.mods.unlsaga.item.weapon;
 
+
+import hinasch.lib.UtilNBT;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.ability.IGainAbility;
-import hinasch.mods.unlsaga.misc.ability.skill.HelperSkill;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillSword;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
 import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
 import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.debuff.LivingState;
@@ -40,6 +41,8 @@ public class ItemSwordUnsaga extends ItemSword implements IUnsagaMaterial,IGainA
 	protected final Icon[] icons;
 	public final float weapondamage;
 	
+	public static String GUSTKEY = "unsaga.gust";
+	
 	public ItemSwordUnsaga(int par1, EnumToolMaterial par2EnumToolMaterial,UnsagaMaterial mat) {
 		super(par1, par2EnumToolMaterial);
 		this.weapondamage = 4.0F + par2EnumToolMaterial.getDamageVsEntity();
@@ -53,23 +56,27 @@ public class ItemSwordUnsaga extends ItemSword implements IUnsagaMaterial,IGainA
 	}
 
 	@Override
-	public void onPlayerStoppedUsing(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer, int par4)
+	public void onPlayerStoppedUsing(ItemStack is, World world, EntityPlayer ep, int par4)
 	{
-		int j = this.getMaxItemUseDuration(par1ItemStack) - par4;
-		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.smash, par1ItemStack)){
-			List<EntityLivingBase> entlist = par2World.getEntitiesWithinAABB(EntityLivingBase.class, par3EntityPlayer.boundingBox.expand(2.0D, 1.0D, 2.0D));
-			par3EntityPlayer.swingItem();
+		int j = this.getMaxItemUseDuration(is) - par4;
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.gust, is) && this.isGust(is)){
+			this.setGust(is, false);
+			if(j>15){
+				SkillEffectHelper helper = new SkillEffectHelper(world,ep,AbilityRegistry.gust,is);
+				helper.doSkill();
+			}
+		}
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.smash, is)){
+			List<EntityLivingBase> entlist = world.getEntitiesWithinAABB(EntityLivingBase.class, ep.boundingBox.expand(2.0D, 1.0D, 2.0D));
+			ep.swingItem();
 			if(entlist!=null && !entlist.isEmpty()){
 				for(EntityLivingBase damageentity:entlist){
 					//Entity damageentity = i.next();
-					if(damageentity!=par3EntityPlayer){
+					if(damageentity!=ep){
 						float damage = (float)this.weapondamage + (float)AbilityRegistry.smash.hurtHp;
-						damageentity.attackEntityFrom(DamageSource.causePlayerDamage(par3EntityPlayer), (int)damage);
-//						UtilItem.playerAttackEntityWithItem(par3EntityPlayer, damageentity, additionalDamage, damageChange);
-//						HSLibs.playerAttackEntityWithItem(par3EntityPlayer, damageentity, Math.round(j*0.5F),-1);
-						//damageentity.attackEntityFrom(DamageSource.causeMobDamage(par3EntityPlayer),Math.round(j*0.4F));
-						//UtilSkill.tryLPHurt(50, 1, damageentity, par3EntityPlayer);
-						par1ItemStack.damageItem(AbilityRegistry.smash.damageWeapon, par3EntityPlayer);
+						damageentity.attackEntityFrom(DamageSource.causePlayerDamage(ep), (int)damage);
+						Unsaga.lpHandler.tryHurtLP(damageentity, AbilityRegistry.smash.hurtLp);
+						is.damageItem(AbilityRegistry.smash.damageWeapon, ep);
 					}
 				}
 			}
@@ -94,19 +101,21 @@ public class ItemSwordUnsaga extends ItemSword implements IUnsagaMaterial,IGainA
 	@Override
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
     {
-		HelperSkill helper = new HelperSkill(stack,player);
-		if(helper.hasAbility(AbilityRegistry.vandalize) && player.isSneaking() && !LivingDebuff.isCooling(player)){
-			SkillSword vandalize = new SkillSword();
-			vandalize.doVandelize(player, entity, player.worldObj, stack);
-			stack.damageItem(AbilityRegistry.vandalize.damageWeapon, player);
-			player.addExhaustion(0.5F);
-
-			LivingDebuff.addDebuff(player, DebuffRegistry.cooling, 10);
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.vandalize, stack) && player.isSneaking()){
+			SkillEffectHelper helper = new SkillEffectHelper(player.worldObj,player,AbilityRegistry.vandalize,stack);
+			if(entity instanceof EntityLivingBase){
+				helper.setTarget((EntityLivingBase) entity);
+				helper.setCoolingTime(8);
+				helper.doSkill();
+			}
 		}
-		if(helper.hasAbility(AbilityRegistry.kaleidoscope) && player.isSneaking()){
-			SkillSword kalaidoscope = new SkillSword();
-			kalaidoscope.doKaleidoscope(player, entity, player.worldObj, stack);
-			stack.damageItem(AbilityRegistry.kaleidoscope.damageWeapon, player);
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.kaleidoscope,stack) && player.isSneaking()){
+			SkillEffectHelper helper = new SkillEffectHelper(player.worldObj,player,AbilityRegistry.kaleidoscope,stack);
+			if(entity instanceof EntityLivingBase){
+				helper.setTarget((EntityLivingBase) entity);
+				helper.doSkill();
+			}
+
 
 		}
         return false;
@@ -153,6 +162,9 @@ public class ItemSwordUnsaga extends ItemSword implements IUnsagaMaterial,IGainA
     	if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.smash, par1ItemStack)){
     		return EnumAction.bow;
     	}
+    	if(this.isGust(par1ItemStack)){
+    		return EnumAction.bow;
+    	}
     	if(HelperUnsagaWeapon.getCurrentWeight(par1ItemStack)>5){
     		return EnumAction.none;
     	}
@@ -174,6 +186,7 @@ public class ItemSwordUnsaga extends ItemSword implements IUnsagaMaterial,IGainA
 	@Override
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
 	{
+		super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.roundabout, par1ItemStack)){
 			if(LivingDebuff.hasDebuff(par3EntityPlayer, DebuffRegistry.roundabout)){
 				
@@ -188,16 +201,41 @@ public class ItemSwordUnsaga extends ItemSword implements IUnsagaMaterial,IGainA
 					par3EntityPlayer.playSound("mob.wither.shoot", 0.5F, 1.8F / (par3EntityPlayer.getRNG().nextFloat() * 0.4F + 1.2F));
 
 					LivingDebuff.addLivingDebuff(par3EntityPlayer, new LivingState(DebuffRegistry.antiFallDamage,10,true));
-					LivingDebuff.addLivingDebuff(par3EntityPlayer, new LivingState(DebuffRegistry.roundabout,1,true));
+					LivingDebuff.addLivingDebuff(par3EntityPlayer, new LivingState(DebuffRegistry.roundabout,5,true));
 					par3EntityPlayer.motionY += 0.7;
 					par1ItemStack.damageItem(AbilityRegistry.roundabout.damageWeapon, par3EntityPlayer);
 				}
 			}
 
 		}
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.chargeBlade,par1ItemStack) && par3EntityPlayer.isSprinting()){
+			if(!LivingDebuff.hasDebuff(par3EntityPlayer,DebuffRegistry.rushBlade)){
+				SkillEffectHelper helper = new SkillEffectHelper(par2World,par3EntityPlayer,AbilityRegistry.chargeBlade,par1ItemStack);
+				par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
+				helper.setCoolingTime(4);
+				helper.doSkill();
+				
+			}
+
+		}
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.gust,par1ItemStack) && par3EntityPlayer.isSneaking()){
+			
+			this.setGust(par1ItemStack, true);
+			par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
+		}
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.smash,par1ItemStack)){
+			par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
+		}
 		return par1ItemStack;
 	}
     
+	protected void setGust(ItemStack is,boolean par1){
+		UtilNBT.setFreeTag(is, GUSTKEY, par1);
+	}
+	
+	protected boolean isGust(ItemStack is){
+		return (UtilNBT.hasKey(is, GUSTKEY)? UtilNBT.readFreeTagBool(is, GUSTKEY) : false);
+	}
 //    @Override
 //    public Icon getIconIndex(ItemStack par1ItemStack)
 //    {
@@ -225,7 +263,15 @@ public class ItemSwordUnsaga extends ItemSword implements IUnsagaMaterial,IGainA
 		return EnumUnsagaWeapon.SWORD;
 	}
 
-
+	@Override
+    public void onUpdate(ItemStack par1ItemStack, World par2World, Entity par3Entity, int par4, boolean par5) {
+    	if(par3Entity instanceof EntityPlayer){
+    		EntityPlayer ep = (EntityPlayer)par3Entity;
+    		if(this.isGust(par1ItemStack) && !ep.isSneaking()){
+    			this.setGust(par1ItemStack, false);
+    		}
+    	}
+    }
 
 
 

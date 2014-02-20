@@ -5,6 +5,7 @@ import hinasch.mods.unlsaga.client.model.ModelArmorColored;
 import hinasch.mods.unlsaga.core.init.MaterialList;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
@@ -24,7 +25,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
-public class ItemArmorUnsaga extends ItemArmor implements IUnsagaMaterial{
+public class ItemArmorUnsaga extends ItemArmor implements IUnsagaMaterial,IGainAbility{
 
 	//必要なのかよくわからない
 	public static int getRenderIndex(UnsagaMaterial mat){
@@ -183,7 +184,8 @@ public class ItemArmorUnsaga extends ItemArmor implements IUnsagaMaterial{
         if(par3EntityPlayer.isSneaking()){
             if (itemstack1 == null)
             {
-                par3EntityPlayer.setCurrentItemOrArmor(1, par1ItemStack.copy()); //Forge: Vanilla bug fix associated with fixed setCurrentItemOrArmor indexs for players.
+            	par3EntityPlayer.inventory.armorInventory[1] = par1ItemStack.copy();
+                //par3EntityPlayer.setCurrentItemOrArmor(1, par1ItemStack.copy()); //Forge: Vanilla bug fix associated with fixed setCurrentItemOrArmor indexs for players.
                 par1ItemStack.stackSize = 0;
             }
 
@@ -213,6 +215,12 @@ public class ItemArmorUnsaga extends ItemArmor implements IUnsagaMaterial{
 	public EnumUnsagaWeapon getCategory() {
 		// TODO 自動生成されたメソッド・スタブ
 		return this.armorType;
+	}
+
+	@Override
+	public int getMaxAbility() {
+		// TODO 自動生成されたメソッド・スタブ
+		return 2;
 	}
 
 }

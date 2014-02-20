@@ -1,7 +1,7 @@
 package hinasch.mods.unlsaga.client.render;
 
 
-import hinasch.mods.unlsaga.entity.EntityFlyingAxe;
+import hinasch.mods.unlsaga.entity.EntitySolutionLiquid;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -17,41 +17,28 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 @SideOnly(Side.CLIENT)
-public class RenderFlyingAxe extends Render
+public class RenderSolutionLiquid extends Render
 {
     private float field_77002_a;
 
 
-    public RenderFlyingAxe(float par1)
+    public RenderSolutionLiquid(float par1)
     {
         this.field_77002_a = par1;
     }
 
 
-    public void doRenderFlyingAxe(EntityFlyingAxe axe, double par2, double par4, double par6, float par8, float par9)
+    public void doRenderFlyingAxe(EntitySolutionLiquid axe, double par2, double par4, double par6, float par8, float par9)
     {
-    	
+    	Icon icon = Item.slimeBall.getIconFromDamage(0);
         GL11.glPushMatrix();
-        Icon icon = Item.axeIron.getIconFromDamage(0);
         this.bindEntityTexture(axe);
         GL11.glTranslatef((float)par2, (float)par4, (float)par6);
         GL11.glEnable(GL12.GL_RESCALE_NORMAL);
         float f2 = this.field_77002_a;
         GL11.glScalef(f2 / 1.0F, f2 / 1.0F, f2 / 1.0F);
        
-        if(axe.getEntityItem()!=null){
-        	 int k = axe.getEntityItem().getItem().getColorFromItemStack(axe.getEntityItem(), 0);
-             
-             float f31 = (float)(k >> 16 & 255) / 255.0F;
-             float f32 = (float)(k >> 8 & 255) / 255.0F;
-             float f33 = (float)(k & 255) / 255.0F;
-             GL11.glColor4f(f31, f32, f33, 1.0F);
-        }
 
-
-
-        //System.out.println("render:"+axe.itemstackaxe);
-        //this.loadTexture("/gui/items.png");
         Tessellator tessellator = Tessellator.instance;
         float f3 = icon.getMinU();
         float f4 = icon.getMaxU();
@@ -62,7 +49,6 @@ public class RenderFlyingAxe extends Render
         float f9 = 0.25F;
         GL11.glRotatef(180.0F - this.renderManager.playerViewY, 0.0F, 1.0F, 0.0F);
         GL11.glRotatef(-this.renderManager.playerViewX, 1.0F, 0.0F, 0.0F);
-        GL11.glRotatef(axe.rotation, 0.0F, 1.0F, 1.0F);
         tessellator.startDrawingQuads();
         tessellator.setNormal(0.0F, 1.0F, 0.0F);
         tessellator.addVertexWithUV((double)(0.0F - f8), (double)(0.0F - f9), 0.0D, (double)f3, (double)f6);
@@ -82,7 +68,7 @@ public class RenderFlyingAxe extends Render
      */
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9)
     {
-        this.doRenderFlyingAxe((EntityFlyingAxe)par1Entity, par2, par4, par6, par8, par9);
+        this.doRenderFlyingAxe((EntitySolutionLiquid)par1Entity, par2, par4, par6, par8, par9);
     }
 
 	@Override

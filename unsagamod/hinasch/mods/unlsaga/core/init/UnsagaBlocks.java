@@ -1,6 +1,5 @@
 package hinasch.mods.unlsaga.core.init;
 
-import hinasch.lib.HSLibs;
 import hinasch.mods.tsukiyotake.lib.PropertyCustom;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.block.BlockChestUnsaga;
@@ -43,18 +42,19 @@ public class UnsagaBlocks {
 
 	public static void registerValues() {
 
-		blockChestUnsaga = new BlockChestUnsaga(blockChestUnsagaID,0).setUnlocalizedName("unsaga.blockchest").setCreativeTab(Unsaga.tabUnsaga);
+		blockChestUnsaga = new BlockChestUnsaga(blockChestUnsagaID,0).setUnlocalizedName("unsaga.chest").setCreativeTab(Unsaga.tabUnsaga);
 		blockFallStone = new BlockFallStone(blockFallStoneID,16,Material.rock).setHardness(2.0F).setResistance(10.0F).setStepSound(Block.soundStoneFootstep)
 				.setUnlocalizedName("unsaga.stonefalling").setCreativeTab(Unsaga.tabUnsaga);
 		tileEntityChestUnsaga = TileEntityChestUnsaga.class;
 		
 		GameRegistry.registerTileEntity(tileEntityChestUnsaga, "unsaga.tileEntityChestUnsaga");
-		GameRegistry.registerBlock(blockChestUnsaga,"unsaga.blockChestUnsaga");
+		GameRegistry.registerBlock(blockChestUnsaga,"unsaga.chest");
+		GameRegistry.registerBlock(blockFallStone,"unsaga.fallstone");
 	}
 
 
 	public static void setLocalize(){
-		HSLibs.langSet("Bonus Chest", "宝箱", blockChestUnsaga);
-		HSLibs.langSet("Fall Cobblestone", "落ちる丸石", blockFallStone);
+		//HSLibs.langSet("Bonus Chest", "宝箱", blockChestUnsaga);
+		//HSLibs.langSet("Fall Cobblestone", "落ちる丸石", blockFallStone);
 	}
 }

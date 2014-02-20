@@ -19,10 +19,13 @@ import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.entity.EntityArrowUnsaga;
 import hinasch.mods.unlsaga.entity.EntityBarrett;
 import hinasch.mods.unlsaga.entity.EntityFlyingAxe;
+import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
 import hinasch.mods.unlsaga.misc.CreativeTabsUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.bartering.MerchandiseLibrary;
-import hinasch.mods.unlsaga.misc.module.Module;
+import hinasch.mods.unlsaga.misc.module.LPHandler;
+import hinasch.mods.unlsaga.misc.module.LPHandlerEmpty;
+import hinasch.mods.unlsaga.misc.module.UnsagaMagicHandler;
 import hinasch.mods.unlsaga.misc.smith.MaterialLibrary;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.network.CommonProxy;
@@ -55,10 +58,12 @@ public class Unsaga {
 	public static Unsaga instance;
 	public static BWrapper debug = new BWrapper();
 	public static String domain = "hinasch.unlsaga";
+	public static Translation translation;
 	public static int GuiEquipment = 1;
 	public static int GuiSmith = 2;
 	public static int GuiBartering = 3;
 	public static int GuiBlender = 4;
+	public static int GuiChest = 5;
 	
 	public static AbilityRegistry abilityRegistry;
 	public static CreativeTabs tabUnsaga;
@@ -66,7 +71,8 @@ public class Unsaga {
 	public static MaterialLibrary materialFactory = new MaterialLibrary();
 	public static MerchandiseLibrary merchandiseFactory = new MerchandiseLibrary();
 	
-	public static Optional<Module> module = Optional.absent();
+	public static Optional<UnsagaMagicHandler> module = Optional.absent();
+	public static LPHandlerEmpty lpHandler = new LPHandlerEmpty();
 	//基本情報のロード、イベントのレジスターなど
 	@EventHandler
 	public void preInit(FMLPreInitializationEvent event)
@@ -81,7 +87,7 @@ public class Unsaga {
 		MaterialList.init();
 
 		tabUnsaga = new CreativeTabsUnsaga("tabUnsaga");
-		abilityRegistry = new AbilityRegistry();
+		abilityRegistry = AbilityRegistry.getInstance();
 		
 		UnsagaBlocks.loadConfig(config);
 		UnsagaBlocks.registerValues();
@@ -137,7 +143,7 @@ public class Unsaga {
 	public void init(FMLInitializationEvent event)
 	{
 		//MaterialLibrary.init();
-		Translation.load();
+		this.translation = Translation.getInstance();
 		NoFuncItemList.setLocalizeAndOreDict();
 		UnsagaBlocks.setLocalize();
 		
@@ -167,7 +173,10 @@ public class Unsaga {
 					debug.setTrue();
 				}
 				if(i==1){
-					this.module = Optional.of(new Module());
+					this.module = Optional.of(new UnsagaMagicHandler());
+				}
+				if(i==2){
+					this.lpHandler = new LPHandler();
 				}
 
 			}catch(ClassNotFoundException e){
@@ -179,6 +188,7 @@ public class Unsaga {
 
 
 	}
+	
 	
 	public static void debug(Object par1){
 
@@ -208,8 +218,11 @@ public class Unsaga {
 		EntityRegistry.registerModEntity(EntityBarrett.class, "unsaga.barrett", 2, this, 250, 5, true);
 		//fireball 3
 		EntityRegistry.registerModEntity(EntityFlyingAxe.class, "unsaga.flyingaxe", 4, this, 250, 5, true);
+		EntityRegistry.registerModEntity(EntityTreasureSlime.class, "unsaga.treasureslme", 8, this, 250, 5, true);
 		if(this.module.isPresent()){
 			this.module.get().registerEntity();
 		}
 	}
+	
+
 }

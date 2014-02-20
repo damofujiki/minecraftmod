@@ -69,6 +69,7 @@ public class ItemTablet extends Item{
     
     public static void setDeciphered(ItemStack is){
     	UtilNBT.setFreeTag(is, KEYDF,true);
+    	is.setItemDamage(0);
     }
     
     public ItemTablet(int par1) {
@@ -84,10 +85,10 @@ public class ItemTablet extends Item{
     public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
 		if(UtilNBT.hasKey(par1ItemStack, KEYID)){
 			Spell spell = SpellRegistry.getSpell(ItemTablet.getSpellID(par1ItemStack));
-			String spellname = spell.getName(HSLibs.getCurrentLang())+"<"+Translation.translate(spell.element.toString())+">";
+			String spellname = spell.getName(HSLibs.getCurrentLang())+"<"+spell.element.getLocalized()+">";
 			par3List.add(spellname);
-			String deciphred = ItemTablet.isDeciphered(par1ItemStack)? Translation.translate("deciphred") : Translation.translate("not deciphred");
-			par3List.add(deciphred);
+			String deciphred = ItemTablet.isDeciphered(par1ItemStack)? "tablet.deciphred" : "tablet.notdeciphred";
+			par3List.add(Translation.localize(deciphred));
 		}
 		
 	}
@@ -120,7 +121,7 @@ public class ItemTablet extends Item{
 	@Override
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
 	{
-		if(par3EntityPlayer.isSneaking() && !par2World.isRemote){
+		if(par3EntityPlayer.isSneaking()){
 			if(isDeciphered(par1ItemStack)){
 				boolean flag = ItemSpellBook.writeSpellToBook(par3EntityPlayer, par1ItemStack, getSpell(par1ItemStack));
 				if(flag && par2World.rand.nextInt(100)<20){

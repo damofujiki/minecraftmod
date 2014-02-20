@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Random;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
@@ -142,6 +143,7 @@ public class HelperAbility {
 	}
 	
 	public static boolean hasAbilityFromItemStack(Ability ab,ItemStack is){
+		
 		if(getGainedAsIntList(is).isPresent()){
 			return getGainedAsIntList(is).get().contains(ab.number);
 		}
@@ -206,27 +208,38 @@ public class HelperAbility {
 		return healAmount;
 	}
 	
-	public static int hasAbilityPlayer(EntityPlayer ep,Ability ability){
+	public static int hasAbilityPlayer(EntityLivingBase el,Ability ability){
 		int amount = 0;
-		if(ep.getExtendedProperties(ExtendedPlayerData.key)!=null){
-			ExtendedPlayerData data = (ExtendedPlayerData)ep.getExtendedProperties(ExtendedPlayerData.key);
-			for(ItemStack is:data.getItemStacks()){
-				if(is!=null){
-					HelperAbility helper = new HelperAbility(is,ep);
-					if(helper.hasAbility(ability)){
-						amount += 1;
+		if(el instanceof EntityPlayer){
+			EntityPlayer ep = (EntityPlayer)el;
+			if(ep.getExtendedProperties(ExtendedPlayerData.key)!=null){
+				ExtendedPlayerData data = (ExtendedPlayerData)ep.getExtendedProperties(ExtendedPlayerData.key);
+				for(ItemStack is:data.getItemStacks()){
+					if(is!=null){
+						HelperAbility helper = new HelperAbility(is,ep);
+						if(helper.hasAbility(ability)){
+							amount += 1;
+						}
+					}
+				}
+				for(ItemStack armor:ep.inventory.armorInventory){
+					if(armor!=null){
+						HelperAbility helper = new HelperAbility(armor,ep);
+						if(helper.hasAbility(ability)){
+							amount += 1;
+						}
 					}
 				}
 			}
-			for(ItemStack armor:ep.inventory.armorInventory){
-				if(armor!=null){
-					HelperAbility helper = new HelperAbility(armor,ep);
-					if(helper.hasAbility(ability)){
-						amount += 1;
-					}
-				}
+		}else{
+			ItemStack currentitem = el.getCurrentItemOrArmor(0);
+			if(currentitem!=null && HelperAbility.hasAbilityFromItemStack(ability, currentitem))amount +=1;
+			for(int i=1;i<5;i++){
+				ItemStack is = el.getCurrentItemOrArmor(i);
+				if(is!=null && HelperAbility.hasAbilityFromItemStack(ability, is))amount +=1;
 			}
 		}
+
 		return amount;
 	}
 }

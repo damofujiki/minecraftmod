@@ -4,6 +4,7 @@ package hinasch.mods.unlsaga.misc.ability.skill.effect;
 import hinasch.lib.CauseDamageBoundingbox;
 import hinasch.lib.HSLibs;
 import hinasch.lib.ScanHelper;
+import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemSpearUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
@@ -24,6 +25,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MovingObjectPosition;
+import net.minecraft.util.Vec3;
 
 public class SkillSpear extends SkillEffect{
 	
@@ -33,6 +35,7 @@ public class SkillSpear extends SkillEffect{
 		if(parent.skill==AbilityRegistry.grassHopper)this.doGrassHopper(parent);
 		if(parent.skill==AbilityRegistry.acupuncture)this.doAiming(parent);
 		if(parent.skill==AbilityRegistry.aiming)this.doAiming(parent);
+		if(parent.skill==AbilityRegistry.swing)this.doSwing(parent);
 		
 	}
 	public void doAiming(SkillEffectHelper parent){
@@ -64,7 +67,8 @@ public class SkillSpear extends SkillEffect{
 								parent.world.spawnParticle("portal", hitent.posX, hitent.posY + parent.world.rand.nextDouble() * 2.0D, hitent.posZ, parent.world.rand.nextGaussian()*2, 0.0D, parent.world.rand.nextGaussian()*2);
 							}
 							hitent.playSound("mob.irongolem.hit", 1.5F,1.2F / (parent.world.rand.nextFloat() * 0.2F + 0.9F));
-							hitent.attackEntityFrom(DamageSource.causePlayerDamage(parent.ownerSkill), parent.getAttackDamage());
+							parent.attack(hitent, null);
+							//hitent.attackEntityFrom(DamageSource.causePlayerDamage(parent.ownerSkill), parent.getAttackDamage());
 							UtilItem.playerAttackEntityWithItem(parent.ownerSkill, hitent, Math.round(parent.charge*0.5F), -1);
 							//UtilSkill.tryLPHurt(50, 2, hitent, ep);
 							if(hitent instanceof EntityLivingBase){
@@ -77,7 +81,8 @@ public class SkillSpear extends SkillEffect{
 						}
 						if(parent.skill!=AbilityRegistry.aiming){
 							
-							hitent.attackEntityFrom(DamageSource.causePlayerDamage(parent.ownerSkill), parent.getAttackDamage());
+							parent.attack(hitent, null);
+							//hitent.attackEntityFrom(DamageSource.causePlayerDamage(parent.ownerSkill), parent.getAttackDamage());
 
 						}
 
@@ -95,14 +100,19 @@ public class SkillSpear extends SkillEffect{
 		ep.swingItem();
 		ep.playSound("mob.wither.shoot", 0.5F, 1.8F / (ep.getRNG().nextFloat() * 0.4F + 1.2F));
 
+
+		Vec3 vec = ep.getLookVec();
+		vec.normalize();
 		AxisAlignedBB ab = ep.boundingBox.expand(5.0D, 1.0D, 5.0D);
+		//ab.offset(vec.xCoord, 0, vec.zCoord);
 		List<Entity> enlist = parent.world.getEntitiesWithinAABB(Entity.class, ab);
 		if(!enlist.isEmpty()){
 			for(Iterator<Entity> i=enlist.iterator();i.hasNext();){
 				Entity hitent = i.next();
 
 				if(HSLibs.isEnemy(hitent, ep)){
-					hitent.attackEntityFrom(DamageSource.causePlayerDamage(ep), parent.getAttackDamage());
+					parent.attack(hitent, null);
+					//hitent.attackEntityFrom(DamageSource.causePlayerDamage(ep), parent.getAttackDamage());
 					//hitent.attackEntityFrom(DamageSource.causePlayerDamage(ep), AbilityRegistry.swing.damageWeapon);
 					double d0 = ep.posX - hitent.posX;
 					double d1;
@@ -131,6 +141,7 @@ public class SkillSpear extends SkillEffect{
 		double bzs = (double)helper.usepoint.z - (max/2);
 		AxisAlignedBB aabb = AxisAlignedBB.getBoundingBox(bxs, bys-2, bzs, bxs+max, bys+2, bzs+max);
 		CauseAddVelocity cause = new CauseAddVelocity(helper.world,helper);
+		cause.setSkillEffectHelper(helper);
 		CauseDamageBoundingbox.causeDamage(cause, helper.world, aabb, AbilityRegistry.grassHopper.hurtHp
 				, DamageSource.causePlayerDamage(helper.ownerSkill), false);
 
@@ -142,10 +153,16 @@ public class SkillSpear extends SkillEffect{
 			for(;scan.hasNext();scan.next()){
 				if(idslist.contains(scan.getID()) || Block.blocksList[scan.getID()] instanceof BlockCrops){
 					Block block = Block.blocksList[scan.getID()];
-					block.onBlockDestroyedByPlayer(helper.world, scan.sx, scan.sy, scan.sz, scan.getMetadata());
-					//block.dropBlockAsItem(world, scan.sx, scan.sy, scan.sz, scan.getMetadata(), en);
-					//scan.setBlockHere(0);
-					
+					Unsaga.debug("きてるｓｑうぃｇ");
+
+					helper.world.playAuxSFX(2001, scan.sx, scan.sy, scan.sz, scan.getID() + (scan.getMetadata()  << 12));
+					if(!helper.world.isRemote){
+						boolean flag = helper.world.setBlockToAir(scan.sx, scan.sy, scan.sz);
+						if (block != null && flag) {
+							block.onBlockDestroyedByPlayer(helper.world, scan.sx, scan.sy, scan.sz, scan.getMetadata());
+							block.dropBlockAsItem(helper.world, scan.sx, scan.sy, scan.sz, scan.getMetadata(),1);
+						}
+					}
 				}
 			}
 		}

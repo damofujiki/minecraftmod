@@ -1,7 +1,7 @@
 package hinasch.mods.unlsagamagic.misc.spell.effect;
 
 
-public class SpellEffect {
+public abstract class SpellEffect {
 
 	protected InvokeSpell parentInvoke;
 	

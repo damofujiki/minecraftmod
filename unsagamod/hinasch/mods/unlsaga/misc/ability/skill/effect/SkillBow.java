@@ -51,7 +51,8 @@ public class SkillBow extends SkillEffect{
 		}
 	}
 
-	public void doDoubleShots(SkillEffectHelper parent){
+	public boolean doDoubleShots(SkillEffectHelper parent){
+		parent.ownerSkill.inventory.hasItem(Item.arrow.itemID);
 
 		parent.playBowSound();
 
@@ -82,11 +83,14 @@ public class SkillBow extends SkillEffect{
 			state.shootTick -= 1;
 			if(state.shootTick>0){
 
-				if(EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, parent.weaponGained)==0){
-					parent.ownerSkill.inventory.consumeInventoryItem(Item.arrow.itemID);
-				}
+
+			}
+			if(EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, parent.weaponGained)==0 && !parent.ownerSkill.capabilities.isCreativeMode){
+				parent.ownerSkill.inventory.consumeInventoryItem(Item.arrow.itemID);
 			}
 			parent.world.spawnEntityInWorld(clone);
+			return true;
 		}
+		return false;
 	}
 }

@@ -80,8 +80,13 @@ public class KeyHandlerTest extends KeyHandler{
 		      if (kb.keyCode == nkey){
 
 		       }
-		      if(kb.keyCode == mkey){
+		      if(kb.keyCode == mkey && tickEnd){
 
+		    	  EntityClientPlayerMP clientPlayer = (EntityClientPlayerMP)Minecraft.getMinecraft().thePlayer;
+		    	  if(clientPlayer.isSneaking()){
+		    		  PacketDispatcher.sendPacketToServer(PacketHandler.getAbilityPacket());
+		    	  }
+		    	
 		    	   
 		      }
 		}

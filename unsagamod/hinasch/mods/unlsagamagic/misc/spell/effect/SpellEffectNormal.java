@@ -92,6 +92,7 @@ public class SpellEffectNormal extends SpellEffect{
 			if(spell.getTarget().get() instanceof EntitySlime){
 				EntitySlime slime = (EntitySlime)spell.getTarget().get();
 				slime.addPotionEffect(new PotionEffect(Potion.weakness.id, 100*(int)spell.getAmp(),2*(int)spell.getAmp()));
+				LivingDebuff.addDebuff(slime, DebuffRegistry.sleep, 15);
 			}
 		}
 	}
@@ -118,13 +119,13 @@ public class SpellEffectNormal extends SpellEffect{
 				EntityTameable tameable = (EntityTameable)spell.getTarget().get();
 				tameable.setTamed(true);
 				tameable.setOwner(spell.invoker.getCommandSenderName());
-				PacketDispatcher.sendPacketToPlayer(PacketHandler.getParticlePacket(2, tameable.entityId), (Player)spell.invoker);
+				PacketDispatcher.sendPacketToPlayer(PacketHandler.getParticlePacket(2, tameable.entityId,10), (Player)spell.invoker);
 				return;
 			}
 			if(spell.getTarget().get() instanceof EntityHorse){
 				EntityHorse horse = (EntityHorse)spell.getTarget().get();
 				horse.setTamedBy(spell.invoker);
-				PacketDispatcher.sendPacketToPlayer(PacketHandler.getParticlePacket(2, horse.entityId), (Player)spell.invoker);
+				PacketDispatcher.sendPacketToPlayer(PacketHandler.getParticlePacket(2, horse.entityId,10), (Player)spell.invoker);
 				return;
 
 			}
@@ -272,7 +273,7 @@ public class SpellEffectNormal extends SpellEffect{
 					amp=4.0F;
 				}
 				float f3 = 0.25F;
-				PacketDispatcher.sendPacketToPlayer(PacketHandler.getParticlePacket(1, el.entityId), (Player) parent.invoker);
+				PacketDispatcher.sendPacketToPlayer(PacketHandler.getParticlePacket(1, el.entityId,10), (Player) parent.invoker);
 				//el.playSound("mob.endermen.portal", 1.0F, 1.0F);
 				int rand1 = parent.world.rand.nextInt(30*(int)amp);
 				if(rand1>100){

@@ -11,7 +11,6 @@ import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
 import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.debuff.LivingStateTarget;
-import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsagamagic.UnsagaMagic;
 import hinasch.mods.unlsagamagic.misc.element.UnsagaElement.EnumElement;
 import hinasch.mods.unlsagamagic.misc.spell.Spell;
@@ -160,11 +159,12 @@ public class ItemSpellBook extends Item{
 	
 	public static boolean writeSpellToBook(EntityPlayer ep,ItemStack is,Spell spell){
 		if(ep.inventory.hasItem(Item.book.itemID)){
+			ep.inventory.consumeInventoryItem(Item.arrow.itemID);
 			if(!ep.worldObj.isRemote){
-				ep.inventory.consumeInventoryItem(Item.book.itemID);
+				
 				ItemStack newbook = new ItemStack(UnsagaMagic.itemSpellBook,1);
 				writeSpell(newbook,spell);
-				ep.addChatMessage(Translation.translate("wrote to spell book."));
+				ep.addChatMessage("message.tablet.write");
 				ep.dropPlayerItem(newbook);
 				
 
@@ -192,7 +192,7 @@ public class ItemSpellBook extends Item{
     public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
 		if(UtilNBT.hasKey(par1ItemStack, MAGICKEY)){
 			Spell spell = ItemSpellBook.getSpell(par1ItemStack);
-			String spellname = spell.getName(HSLibs.getCurrentLang())+"<"+Translation.translate(spell.element.toString())+">";
+			String spellname = spell.getName(HSLibs.getCurrentLang())+"<"+(spell.element.getLocalized())+">";
 			par3List.add(spellname);
 		}
 		if(ItemSpellBook.hasMixed(par1ItemStack)){
