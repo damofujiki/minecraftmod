@@ -1,0 +1,1 @@
+"unsaga" lang file is en_US & ja_JP only now.

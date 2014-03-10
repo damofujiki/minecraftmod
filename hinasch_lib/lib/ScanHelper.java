@@ -1,10 +1,14 @@
 package hinasch.lib;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
 public class ScanHelper {
 
+	public static final int REVERSE = 2;
+	
 	public int sx;
 	public int sy;
 	public int sz;
@@ -93,6 +97,21 @@ public class ScanHelper {
 	}
 
 
+	public ScanHelper(XYZPos start,XYZPos end,int mode){
+
+		this.startX = start.x;
+		this.startY = start.y;
+		this.startZ = start.z;
+		this.sx = this.startX;
+		this.sy = this.startY;
+		this.sz = this.startZ;
+		this.endX = end.x;
+		this.endY = end.y;
+		this.endZ = end.z;
+		this.scanned = false;
+		this.mode = mode;
+
+	}
 
 	public void setWorld(World par1){
 		this.world = par1;
@@ -100,6 +119,22 @@ public class ScanHelper {
 
 	public void next(){
 		if(!scanned){
+			if(this.mode==2){
+				this.sx -= 1;
+				
+				if(this.sx < this.endX){
+					this.sx = this.startX;
+					this.sz -=1;
+				}
+				if(this.sz < this.endZ){
+					this.sz = this.startZ;
+					this.sy -= 1;
+				}
+				if(this.sy < this.endY){
+					this.scanned = true;
+				}
+				return;
+			}
 			if(this.mode==1){
 				this.sx += 1;
 				if(this.sx > this.endX){
@@ -159,6 +194,11 @@ public class ScanHelper {
 		if(scanned){
 			return false;
 		}
+		if(this.mode==REVERSE){
+			if(this.sy < this.endY){
+				return false;
+			}
+		}
 		if(this.mode==1){
 			if(this.sy > this.endY){
 				return false;
@@ -170,16 +210,16 @@ public class ScanHelper {
 		return true;
 	}
 
-	public int getID(){
+	public Block getBlock(){
 
 		if(this.world!=null){
 			if(this.world.isAirBlock(this.sx,this.sy, this.sz)){
-				return 0;
+				return Blocks.air;
 			}
-			return this.world.getBlockId(this.sx, this.sy, this.sz);
+			return this.world.getBlock(this.sx, this.sy, this.sz);
 		}else{
 			System.out.println("World is null(ScanHelper)");
-			return -1;
+			return null;
 		}
 	}
 
@@ -211,7 +251,7 @@ public class ScanHelper {
 		}
 	}
 
-	public void	setBlockHere(int par1){
+	public void	setBlockHere(Block par1){
 		if(this.world!=null){
 			this.world.setBlock(this.sx, this.sy, this.sz,par1);
 			return;
@@ -220,8 +260,28 @@ public class ScanHelper {
 			return;
 		}
 	}
+	
+	public void	setBlockHereOffset(int offsetx,int offsety,int offsetz,Block par1){
+		if(this.world!=null){
+			this.world.setBlock(this.sx+offsetx, this.sy+offsety, this.sz+offsetz,par1);
+			return;
+		}else{
+			System.out.println("World is null(ScanHelper)");
+			return;
+		}
+	}
+	
+	public void	setBlockHereOffset(int offsetx,int offsety,int offsetz,Block par1,int par2, int par3){
+		if(this.world!=null){
+			this.world.setBlock(this.sx+offsetx, this.sy+offsety, this.sz+offsetz,par1,par2,par3);
+			return;
+		}else{
+			System.out.println("World is null(ScanHelper)");
+			return;
+		}
+	}
 
-	public void	setBlockHere(int par1,int par2,int par3){
+	public void	setBlockHere(Block par1,int par2,int par3){
 		if(this.world!=null){
 			this.world.setBlock(this.sx, this.sy, this.sz,par1,par2,par3);
 			return;
@@ -231,9 +291,9 @@ public class ScanHelper {
 		}
 	}
 
-	public boolean canSnowHere(){
+	public boolean canSnowHere(boolean lightCheck){
 		if(this.world!=null){
-			return this.world.canSnowAt(this.sx, this.sy, this.sz);
+			return this.world.provider.canSnowAt(this.sx, this.sy, this.sz,lightCheck);
 		}else{
 			System.out.println("World is null(ScanHelper)");
 			return false;
@@ -242,7 +302,7 @@ public class ScanHelper {
 
 	public boolean isOpaqueBlock(){
 		if(this.world!=null){
-			return this.world.isBlockOpaqueCube(this.sx, this.sy, this.sz);
+			return this.world.getBlock(this.sx, this.sy, this.sz).isOpaqueCube();
 		}else{
 			System.out.println("World is null(ScanHelper)");
 			return false;
@@ -260,4 +320,9 @@ public class ScanHelper {
 		count.z = Math.abs(Math.abs(this.sz) - Math.abs(this.startZ));
 		return count;
 	}
+	
+	public XYZPos getAsXYZPos(){
+		return new XYZPos(this.sx,this.sy,this.sz);
+	}
+
 }

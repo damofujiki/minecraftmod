@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class UtilList {
 
+
 	public static List<Integer> getListExceptList(List<Integer> baselist,List<Integer> list){
 		List<Integer> output = baselist;
 		for(Integer i:list){
@@ -43,4 +44,32 @@ public class UtilList {
 		}
 		return output;
 	}
+//	
+//	public static HashMap<String,Integer> getSortedHashMap(HashMap<String,Integer> sample){
+//		HashMap<String,Integer> = new HashMap();
+//		Integer pick = null;
+//		ArrayList<Integer> list = new ArrayList();
+//		for(Integer i:sample.values()){
+//			if(pick==null){
+//				pick = i;
+//			}
+//		}
+//	}
+//	
+//	public static int[] sort(int[] intlist){
+//		int[] newlist = intlist;
+//		boolean flag = false;
+//		for(int i=0;i<intlist.length;i++){
+//			if(i+1<intlist.length){
+//				if(intlist[i]>intlist[i+1]){
+//					newlist[i] = intlist[i+1];
+//					newlist[i+1] = intlist[i];
+//					flag = true;
+//				}
+//			}
+//		}
+//		return flag ? sort(newlist) : newlist;
+//	}
+
+
 }

@@ -1,7 +1,7 @@
 package hinasch.lib;
 
-import net.minecraftforge.common.Configuration;
-import net.minecraftforge.common.Property;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 
 import com.google.common.base.Preconditions;
 
@@ -54,19 +54,19 @@ public class PropertyCustom {
 		return this.props[i];
 	}
 	
-	@Deprecated
-	public static void makeProps(Configuration config,Property[] props,String[] names,String[] categories,Object[] values){
-		for(int i=0;i<props.length;i++){
-			if(values[i] instanceof Boolean){
-				props[i] = config.get(categories[i], names[i],(Boolean)values[i] );
-			}
-			if(values[i] instanceof Integer){
-				props[i] = config.get(categories[i], names[i],(Integer)values[i] );
-			}
-			if(values[i] instanceof String){
-				props[i] = config.get(categories[i], names[i],(String)values[i] );
-			}
-		}
-		
-	}
+//	@Deprecated
+//	public static void makeProps(Configuration config,Property[] props,String[] names,String[] categories,Object[] values){
+//		for(int i=0;i<props.length;i++){
+//			if(values[i] instanceof Boolean){
+//				props[i] = config.get(categories[i], names[i],(Boolean)values[i] );
+//			}
+//			if(values[i] instanceof Integer){
+//				props[i] = config.get(categories[i], names[i],(Integer)values[i] );
+//			}
+//			if(values[i] instanceof String){
+//				props[i] = config.get(categories[i], names[i],(String)values[i] );
+//			}
+//		}
+//		
+//	}
 }

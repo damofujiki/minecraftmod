@@ -137,6 +137,14 @@ public class UtilNBT {
 		return rt;
 	}
 	
+	public static boolean hasiInitState(ItemStack is){
+		NBTTagCompound nbt = is.getTagCompound();
+		if(nbt==null){
+			initNBTTag(is);
+		}
+		return readFreeTag(is,KEY)==ERROR ? false : true;
+	}
+	
 	public static boolean readStateBool(ItemStack is){
 		boolean rt = false;
 		rt = readFreeTagBool(is,KEY);

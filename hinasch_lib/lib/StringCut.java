@@ -5,12 +5,14 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 public class StringCut {
 	public static ArrayList strapOffInt(String par1){
 		String[] splited = par1.split(",");
 		ArrayList<Integer> arraylist = new ArrayList();
-		for(int i=0 ;i<splited.length;i++){
-			arraylist.add(Integer.parseInt(splited[i]));
+		for(String str:splited){
+			arraylist.add(Integer.parseInt(str));
 		}
 		return arraylist;
 	}
@@ -18,18 +20,15 @@ public class StringCut {
 	public static ArrayList strapOffHexInt(String par1){
 		String[] splited = par1.split(",");
 		ArrayList<Integer> arraylist = new ArrayList();
-		for(int i=0 ;i<splited.length;i++){
-			arraylist.add(Integer.decode(splited[i]));
+		for(String str:splited){
+			arraylist.add(Integer.decode(str));
 		}
 		return arraylist;
 	}
 
 	public static ArrayList strapOffStr(String par1){
 		String[] splited = par1.split(",");
-		ArrayList<String> arraylist = new ArrayList();
-		for(int i=0 ;i<splited.length;i++){
-			arraylist.add(splited[i]);
-		}
+		ArrayList<String> arraylist = Lists.newArrayList(splited);
 		return arraylist;
 	}
 
@@ -38,8 +37,18 @@ public class StringCut {
 	public static ArrayList strapOffShort(String par1){
 		String[] splited = par1.split(",");
 		ArrayList<Short> arraylist = new ArrayList();
-		for(int i=0 ;i<splited.length;i++){
-			arraylist.add(Short.parseShort(splited[i]));
+		for(String str:splited){
+			arraylist.add(Short.parseShort(str));
+		}
+		return arraylist;
+	}
+	
+
+	public static ArrayList strapOffByte(String par1){
+		String[] splited = par1.split(",");
+		ArrayList<Byte> arraylist = new ArrayList();
+		for(String str:splited){
+			arraylist.add(Byte.valueOf(str));
 		}
 		return arraylist;
 	}
@@ -47,8 +56,8 @@ public class StringCut {
 	public static ArrayList strapOffBoolean(String par1){
 		String[] splited = par1.split(",");
 		ArrayList<Boolean> arraylist = new ArrayList();
-		for(int i=0 ;i<splited.length;i++){
-			arraylist.add(Boolean.parseBoolean(splited[i]));
+		for(String str:splited){
+			arraylist.add(Boolean.parseBoolean(str));
 		}
 		return arraylist;
 	}
