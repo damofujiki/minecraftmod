@@ -12,15 +12,15 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class EventInitEnemyWeapon {
 
 	private EntityAIArrowAttack aiArrowAttack;
 
-	@ForgeSubscribe
+	@SubscribeEvent 
 	public void EnemySetWeaponEvent(LivingSpawnEvent e){
 		if(e.world.rand.nextInt(3)>0){
 			return;
@@ -55,7 +55,7 @@ public class EventInitEnemyWeapon {
 		}
 	}
 	
-	@ForgeSubscribe
+	@SubscribeEvent 
 	public void SkeletonAttackWithUnsagaWeapon(LivingHurtEvent e){
 		if(e.source.getEntity()!=null){
 			Unsaga.debug("getEntity:"+e.source.getEntity());

@@ -8,8 +8,8 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class ExtendedMerchantData implements IExtendedEntityProperties{
 
@@ -18,7 +18,7 @@ public class ExtendedMerchantData implements IExtendedEntityProperties{
 	public long recentPurchaseDate; 
 	public static String VILLAGER = "unsaga.villager";
 	
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void attachDataEvent(EntityConstructing e){
 	
 		if(e.entity instanceof EntityVillager){
@@ -65,11 +65,11 @@ public class ExtendedMerchantData implements IExtendedEntityProperties{
 	@Override
 	public void loadNBTData(NBTTagCompound compound) {
 		Unsaga.debug("nbtから読み込み");
-        NBTTagList nbttaglist = compound.getTagList("Bartering.Items");
+        NBTTagList nbttaglist = compound.getTagList("Bartering.Items",10);
         this.merchantInventory = new ItemStack[10];
         for (int i = 0; i < nbttaglist.tagCount(); ++i)
         {
-            NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.tagAt(i);
+            NBTTagCompound nbttagcompound1 = (NBTTagCompound)nbttaglist.getCompoundTagAt(i);
             int j = nbttagcompound1.getByte("Slot") & 255;
 
             if (j >= 0 && j < this.merchantInventory.length)

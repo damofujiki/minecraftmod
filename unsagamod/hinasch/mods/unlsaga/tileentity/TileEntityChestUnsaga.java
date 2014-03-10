@@ -3,12 +3,14 @@ package hinasch.mods.unlsaga.tileentity;
 
 
 import hinasch.lib.XYZPos;
+import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.translation.Translation;
+import hinasch.mods.unlsaga.misc.util.ChatMessageHandler;
 import hinasch.mods.unlsaga.misc.util.HelperChestUnsaga;
-import hinasch.mods.unlsaga.network.PacketHandler;
+import hinasch.mods.unlsaga.network.packet.PacketParticle;
 
 import java.util.Random;
 
@@ -16,6 +18,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -29,8 +32,7 @@ import net.minecraft.world.World;
 
 import com.google.common.base.Optional;
 
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
+
 
 public class TileEntityChestUnsaga extends TileEntityChest{
 
@@ -59,10 +61,11 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 			this.magicLock = true;
 			this.unlocked = true;
 		}
+		this.initChestLevel(world);
 	}
 
-	public void initChestLevel(EntityPlayer ep){
-		this.level = Optional.of(HelperChestUnsaga.getChestLevelFromPlayer(ep));
+	public void initChestLevel(World world){
+		this.level = Optional.of(world.rand.nextInt(99)+1);
 
 	}
 	
@@ -87,7 +90,8 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 
 	public boolean activateChest(EntityPlayer ep){
 		if(!this.worldObj.isRemote){
-			ep.addChatMessage(Translation.localize("msg.touch.chest"));
+			ChatMessageHandler.sendChatToPlayer(ep,Translation.localize("msg.touch.chest"));
+			//ep.addChatMessage(Translation.localize("msg.touch.chest"));
 		}
 
 
@@ -101,13 +105,15 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 		}
 
 		if(!unlocked){
-			ep.addChatMessage(Translation.localize("msg.chest.locked"));
+			ChatMessageHandler.sendChatToPlayer(ep,Translation.localize("msg.chest.locked"));
+			//ep.addChatMessage(Translation.localize("msg.chest.locked"));
 			return false;
 		}else{
 			if(!magicLock){
 				return true;
 			}else{
-				ep.addChatMessage(Translation.localize("msg.chest.magiclocked"));
+				ChatMessageHandler.sendChatToPlayer(ep,Translation.localize("msg.chest.magiclocked"));
+				//ep.addChatMessage(Translation.localize("msg.chest.magiclocked"));
 				return false;
 			}
 			
@@ -129,12 +135,13 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 
 		
 		//		if(ItemAccessory.hasAbility(par5EntityPlayer, 8)){
-		if(HelperAbility.hasAbilityPlayer(par5EntityPlayer, AbilityRegistry.unlock)>0){
+		if(HelperAbility.hasAbilityLiving(par5EntityPlayer, AbilityRegistry.unlock)>0){
 			if(doChance(this.worldObj.rand,75)){
-				par5EntityPlayer.addChatMessage(Translation.localize("msg.chest.unlocked"));
+				ChatMessageHandler.sendChatToPlayer(par5EntityPlayer, Translation.localize("msg.chest.unlocked"));
 				this.unlocked = true;
 			}else{
-				par5EntityPlayer.addChatMessage(Translation.localize("msg.failed"));
+				ChatMessageHandler.sendChatToPlayer(par5EntityPlayer, Translation.localize("msg.failed"));
+				//par5EntityPlayer.addChatMessage(Translation.localize("msg.failed"));
 			}
 		}
 
@@ -150,21 +157,24 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 					this.trapOccured = true;
 					float explv = ((float)this.level.get() * 0.06F);
 					explv = MathHelper.clamp_float(explv, 1.0F, 4.0F);
-					ep.addChatMessage(Translation.localize("msg.chest.burst"));
+					ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("msg.chest.burst"));
+					//ep.addChatMessage(Translation.localize("msg.chest.burst"));
 					this.worldObj.createExplosion(null, this.xCoord, this.yCoord, this.zCoord, 1.5F*explv, true);
 				}
 				break;
 			case 2:
 
 				ep.addPotionEffect(new PotionEffect(Potion.poison.id,10*(this.level.get()/2+1),1));
-				ep.addChatMessage(Translation.localize("msg.chest.poison"));
+				ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("msg.chest.poison"));
+				//ep.addChatMessage(Translation.localize("msg.chest.poison"));
 				this.trapOccured = true;
 				break;
 			case 3:
 				int damage = this.worldObj.rand.nextInt(MathHelper.clamp_int(this.level.get()/15,3,100))+1;
 				damage = MathHelper.clamp_int(damage, 1, 10);
 				ep.attackEntityFrom(DamageSource.cactus, damage);
-				ep.addChatMessage(Translation.localize("msg.chest.needle"));
+				ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("msg.chest.needle"));
+				//ep.addChatMessage(Translation.localize("msg.chest.needle"));
 				this.trapOccured = true;
 				break;
 
@@ -201,10 +211,11 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 
 	public void tryDefuse(EntityPlayer ep) {
 		//		if(ItemAccessory.hasAbility(ep, 9)){
-		if(HelperAbility.hasAbilityPlayer(ep, AbilityRegistry.defuse)>0){
+		if(HelperAbility.hasAbilityLiving(ep, AbilityRegistry.defuse)>0){
 			if(doChance(this.worldObj.rand,80)){
 				this.defused = true;
-				ep.addChatMessage(Translation.localize("msg.chest.defused"));
+				ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("msg.chest.defused"));
+				//ep.addChatMessage(Translation.localize("msg.chest.defused"));
 			}
 		}
 
@@ -220,6 +231,13 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 				HelperChestUnsaga.generateChestContents(random, chestcontent, this, random.nextInt(5)+1);
 			}
 
+			for(int i=0;i<this.getSizeInventory();i++){
+				if(this.getStackInSlot(i)!=null){
+					ItemStack is = this.getStackInSlot(i);
+					is.stackSize = 1;
+					this.setInventorySlotContents(i, is);
+				}
+			}
 
 			this.hasItemSet = true;
 		}
@@ -315,21 +333,24 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 	}
 
 	public void divination(EntityPlayer openPlayer) {
-		int div = HelperAbility.hasAbilityPlayer(openPlayer, AbilityRegistry.divination);
+		int div = HelperAbility.hasAbilityLiving(openPlayer, AbilityRegistry.divination);
 		if(div>0){
 			int lv =0;
 			if(this.worldObj.rand.nextInt(100)<=50+(10*div)){
-				openPlayer.addChatMessage(Translation.localize("msg.chest.divination.succeeded"));
+				ChatMessageHandler.sendChatToPlayer(openPlayer, Translation.localize("msg.chest.divination.succeeded"));
+				//openPlayer.addChatMessage(Translation.localize("msg.chest.divination.succeeded"));
 				lv = this.level.get() + worldObj.rand.nextInt(7)+1;
 
 				
 			}else{
 				
 				if(this.worldObj.rand.nextInt(10)<=2){
-					openPlayer.addChatMessage(Translation.localize("msg.chest.divination.catastrophe"));
+					ChatMessageHandler.sendChatToPlayer(openPlayer, Translation.localize("msg.chest.divination.catastrophe"));
+					//openPlayer.addChatMessage(Translation.localize("msg.chest.divination.catastrophe"));
 					lv = 2;
 				}else{
-					openPlayer.addChatMessage(Translation.localize("msg.chest.divination.failed"));
+					ChatMessageHandler.sendChatToPlayer(openPlayer, Translation.localize("msg.chest.divination.failed"));
+					//openPlayer.addChatMessage(Translation.localize("msg.chest.divination.failed"));
 					lv = this.level.get() - worldObj.rand.nextInt(7)+1;
 				}
 
@@ -338,9 +359,12 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 			this.setChestLevel(MathHelper.clamp_int(lv, 1, 100));
 			String str = Translation.localize("msg.chest.divination.levelis");
 			String formatted = String.format(str, this.level.get());
-			openPlayer.addChatMessage(formatted);
+			ChatMessageHandler.sendChatToPlayer(openPlayer, Translation.localize(formatted));
+			//openPlayer.addChatMessage(formatted);
 			XYZPos xyz = new XYZPos(this.xCoord,this.yCoord,this.zCoord);
-			PacketDispatcher.sendPacketToPlayer(PacketHandler.getParticleToPosPacket(xyz,5,3), (Player) openPlayer);
+			PacketParticle pp = new PacketParticle(xyz,5,3);
+			Unsaga.packetPipeline.sendTo(pp, (EntityPlayerMP) openPlayer);
+			//PacketDispatcher.sendPacketToPlayer(PacketHandler.getParticleToPosPacket(xyz,5,3), (Player) openPlayer);
 		}
 		
 	}

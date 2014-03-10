@@ -2,79 +2,102 @@ package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
 import hinasch.lib.HSLibs;
 import hinasch.lib.PairID;
+import hinasch.lib.WorldHelper;
 import hinasch.lib.XYZPos;
+import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaBlocks;
-import hinasch.mods.unlsaga.entity.EntityFlyingAxe;
+import hinasch.mods.unlsaga.entity.projectile.EntityFlyingAxe;
 import hinasch.mods.unlsaga.item.weapon.ItemAxeUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
-import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
-import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
-import hinasch.mods.unlsaga.misc.util.UtilItem;
+import hinasch.mods.unlsaga.misc.debuff.Debuffs;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
+import hinasch.mods.unlsaga.network.packet.PacketParticle;
+import hinasch.mods.unlsaga.network.packet.PacketSkill;
+import hinasch.mods.unlsaga.network.packet.PacketUtil;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockLog;
 import net.minecraft.block.material.Material;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.item.Item;
+import net.minecraft.init.Blocks;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
+import net.minecraftforge.oredict.OreDictionary;
 
 public class SkillAxe extends SkillEffect{
 
+	public WorldHelper worldHelper;
+	public World world;
+
 	@Override
 	public void selector(SkillEffectHelper helper){
+		this.worldHelper = new WorldHelper(helper.world);
+		this.world = helper.world;
 		if(helper.skill==AbilityRegistry.woodChopper)this.doWoodChopper(helper);
+		
 		if(helper.skill==AbilityRegistry.skyDrive)this.doSkydrive(helper);
+		if(helper.skill==AbilityRegistry.fujiView)this.doFujiView(helper);
+		if(helper.skill==AbilityRegistry.woodBreakerPhoenix)this.doWoodBreaker(helper);
 
 	}
+	
+	protected void playShootSound(EntityLivingBase ep){
+		ep.playSound("mob.wither.shoot", 0.5F, 1.8F / (ep.getRNG().nextFloat() * 0.4F + 1.2F));
+	}
 	public int doWoodChopper(SkillEffectHelper parent){
-		EntityPlayer ep = parent.ownerSkill;
+		EntityPlayer ep = parent.owner;
 		XYZPos po = parent.usepoint;
 		int amount = 0;
 		int fortune = EnchantmentHelper.getFortuneModifier(ep);
-		ep.playSound("mob.wither.shoot", 0.5F, 1.8F / (ep.getRNG().nextFloat() * 0.4F + 1.2F));
-		int bid = parent.world.getBlockId(po.x, po.y, po.z);
-		int meta = parent.world.getBlockMetadata(po.x, po.y, po.z);
-		PairID blockdata = new PairID(parent.world.getBlockId(po.x, po.y, po.z),
-				parent.world.getBlockMetadata(po.x, po.y, po.z));
-		if(parent.world.getBlockMaterial(po.x, po.y, po.z)==Material.wood){
-			this.breakWood(parent, blockdata, po.x, po.y, po.z);
+		this.playShootSound(ep);
+		PairID blockdata = worldHelper.getBlockDatas(po);
+
+		if(this.worldHelper.getMaterial(po)==Material.wood){
+			this.breakWood(parent, blockdata, po);
 		}
 		return amount;
 	}
 
-	private void breakWood(SkillEffectHelper parent,PairID blockwooddata,int x,int y,int z){
-		Block block = Block.blocksList[blockwooddata.id];
-		parent.world.playAuxSFX(2001, x,y,z, blockwooddata.id + (blockwooddata.metadata  << 12));
-		if(!parent.world.isRemote){
-			boolean flag = parent.world.setBlockToAir(x,y,z);
-			if (block != null && flag) {
-				block.onBlockDestroyedByPlayer(parent.world, x,y,z, blockwooddata.metadata);
-				block.dropBlockAsItem(parent.world, x,y,z, blockwooddata.metadata,1);
-			}
-		}
-		PairID thisblock = new PairID(parent.world.getBlockId(x, y+1, z),parent.world.getBlockMetadata(x, y+1, z));
+	private void breakWood(SkillEffectHelper parent,PairID blockwooddata,XYZPos pos){
+		Block block = blockwooddata.blockObj;
+		HSLibs.playBlockBreakSFX(parent.world, pos, blockwooddata);
+		XYZPos upPos = pos.add(worldHelper.UP);
+		PairID thisblock = new PairID(worldHelper.getBlock(upPos),worldHelper.getBlockMetadata(upPos));
 		if(blockwooddata.equals(thisblock)){
-			this.breakWood(parent,blockwooddata,x,y+1,z);
-			parent.weaponGained.damageItem(1, parent.ownerSkill);
+			this.breakWood(parent,blockwooddata,upPos);
+			parent.weapon.damageItem(1, parent.owner);
 		}
 		return;
 
 	}
 
-	public void doFujiView(EntityPlayer ep,Entity entity,World world){
+	
+	public void doFujiView(SkillEffectHelper parent){
 
+		World world = parent.world;
+		Entity entity = parent.target;
+		EntityPlayer ep = parent.owner;
 		world.createExplosion(ep, entity.posX, entity.posY, entity.posZ, 2.5F,false);
 
+		Random rand = world.rand;
+		for(int i=0;i<10;i++){
+			XYZPos ta = XYZPos.entityPosToXYZ(entity);
+			XYZPos ppos = new XYZPos(ta.x+rand.nextInt(3)-1,ta.y+(i*3),ta.z+rand.nextInt(3)-1);
+			PacketParticle pp = new PacketParticle(ppos,3,6);
+			Unsaga.packetPipeline.sendToAllAround(pp, PacketUtil.getTargetPointNear(entity));
+			//PacketDispatcher.sendPacketToAllPlayers(PacketHandler.getParticleToPosPacket(pp, 3, 6));
+		}
+		
+//		makeBulge(world,XYZPos.entityPosToXYZ(entity));
 		for(int i=0;i<5;i++){
 			for(int j=0;j<5;j++){
 				XYZPos ta = XYZPos.entityPosToXYZ(entity);
@@ -83,16 +106,17 @@ public class SkillAxe extends SkillEffect{
 				ta.z = ta.z -3 + j;
 
 
-				PairID blockdata = new PairID(world.getBlockId(ta.x,ta.y,ta.z),world.getBlockMetadata(ta.x,ta.y,ta.z));
-				if(world.getBlockTileEntity(ta.x,ta.y,ta.z)==null && blockdata.id!=Block.obsidian.blockID && blockdata.id!=Block.bedrock.blockID){
-					if(world.isAirBlock(ta.x,ta.y+1,ta.z)||world.getBlockMaterial(ta.x,ta.y+2,ta.z)==Material.vine
-							||world.getBlockId(ta.x,ta.y+1,ta.z)==Block.snow.blockID){
-						if(!world.isRemote)world.setBlockToAir(ta.x,ta.y,ta.z);
-						if(blockdata.id==Block.stone.blockID | blockdata.id==Block.cobblestone.blockID){
-							blockdata.id = UnsagaBlocks.blockFallStone.blockID;
-							blockdata.metadata = 0;
+				PairID blockdata = new PairID(world.getBlock(ta.x,ta.y,ta.z),world.getBlockMetadata(ta.x,ta.y,ta.z));
+				if(world.getTileEntity(ta.x,ta.y,ta.z)==null && !HSLibs.isHardBlock(blockdata.blockObj)){
+					if(world.isAirBlock(ta.x,ta.y+1,ta.z)||world.getBlock(ta.x,ta.y+1,ta.z).isReplaceable(world, ta.x, ta.y+1, ta.z)){
+						if(!world.isRemote){
+							world.setBlockToAir(ta.x,ta.y,ta.z);
 						}
-						if(!world.isRemote)world.setBlock(ta.x,ta.y+1,ta.z, blockdata.id, blockdata.metadata, 2);
+						blockdata = getAssociatedFallBlock(blockdata);
+						
+						if(!world.isRemote){
+							world.setBlock(ta.x,ta.y+1,ta.z, blockdata.blockObj, blockdata.metadata, 3);
+						}
 					}
 				}
 			}
@@ -105,20 +129,17 @@ public class SkillAxe extends SkillEffect{
 				ta.y = ta.y -2;
 				ta.z = ta.z -2 + j;
 
-				PairID blockdata = new PairID(world.getBlockId(ta.x,ta.y,ta.z),world.getBlockMetadata(ta.x,ta.y,ta.z));
-				if(world.getBlockTileEntity(ta.x,ta.y,ta.z)==null && blockdata.id!=Block.obsidian.blockID && blockdata.id!=Block.bedrock.blockID){
-					if(world.isAirBlock(ta.x,ta.y+3,ta.z)|world.getBlockMaterial(ta.x,ta.y+3,ta.z)==Material.vine
-							||world.getBlockId(ta.x,ta.y+1,ta.z)==Block.snow.blockID){
+				PairID blockdata = new PairID(world.getBlock(ta.x,ta.y,ta.z),world.getBlockMetadata(ta.x,ta.y,ta.z));
+				if(world.getTileEntity(ta.x,ta.y,ta.z)==null && !HSLibs.isHardBlock(blockdata.blockObj)){
+					if(world.isAirBlock(ta.x,ta.y+3,ta.z)||world.getBlock(ta.x,ta.y+3,ta.z).isReplaceable(world, ta.x, ta.y+3, ta.z)){
 						if(!world.isRemote){
-							world.setBlock(ta.x,ta.y,ta.z, 0, 0, 2);
+							world.setBlockToAir(ta.x,ta.y,ta.z);
 						}
 
-						if(blockdata.id==Block.stone.blockID | blockdata.id==Block.cobblestone.blockID){
-							blockdata.id = UnsagaBlocks.blockFallStone.blockID;
-							blockdata.metadata = 0;
-						}
+						blockdata = getAssociatedFallBlock(blockdata);
+						
 						if(!world.isRemote){
-							world.setBlock(ta.x,ta.y+3,ta.z, blockdata.id, blockdata.metadata, 2);
+							world.setBlock(ta.x,ta.y+3,ta.z, blockdata.blockObj, blockdata.metadata, HSLibs.FLAG_SETBLOCK.NORMAL);
 						}
 
 
@@ -127,13 +148,31 @@ public class SkillAxe extends SkillEffect{
 			}
 		}
 
+		
+
 	}
 
+	protected PairID getAssociatedFallBlock(PairID blockdata){
+		PairID ret = new PairID();
+		if(blockdata.blockObj==Blocks.stone | blockdata.blockObj==Blocks.cobblestone){
+			ret.blockObj = UnsagaBlocks.blockFallStone;
+			ret.metadata = 0;
+		}
+		if(blockdata.blockObj==Blocks.dirt | blockdata.blockObj==Blocks.grass){
+			ret.blockObj = UnsagaBlocks.blockFallStone;
+			ret.metadata = 3;
+		}
+		if(blockdata.blockObj==Blocks.netherrack){
+			ret.blockObj = UnsagaBlocks.blockFallStone;
+			ret.metadata = 5;
+		}
+		return ret;
+	}
 	public void doSkydrive(SkillEffectHelper parent){
 
-		LivingDebuff.removeDebuff(parent.ownerSkill, DebuffRegistry.flyingAxe);
-		EntityFlyingAxe entityflyingaxe = new EntityFlyingAxe(parent.world, parent.ownerSkill, 0.0F,parent.weaponGained,true);
-		int modifier = (parent.ownerSkill.isPotionActive(Potion.damageBoost) ? 1 : 0) + LivingDebuff.getModifierAttackBuff(parent.ownerSkill);
+		LivingDebuff.removeDebuff(parent.owner, Debuffs.flyingAxe);
+		EntityFlyingAxe entityflyingaxe = new EntityFlyingAxe(parent.world, parent.owner, 0.0F,parent.weapon,true);
+		int modifier = (parent.owner.isPotionActive(Potion.damageBoost) ? 1 : 0) + LivingDebuff.getModifierAttackBuff(parent.owner);
 		entityflyingaxe.setDamage(parent.getAttackDamage()+modifier);
 		entityflyingaxe.setTarget(parent.target);
 		//entityPlayer.worldObj.playSoundAtEntity(par3EntityPlayer, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
@@ -142,10 +181,11 @@ public class SkillAxe extends SkillEffect{
 
 		if (!parent.world.isRemote)
 		{
-			parent.world.spawnEntityInWorld(entityflyingaxe);
+			
 			if(entityflyingaxe.getEntityItem()!=null){
+				parent.world.spawnEntityInWorld(entityflyingaxe);
 				ItemStack aitemstack = null;
-				parent.ownerSkill.inventory.mainInventory[parent.ownerSkill.inventory.currentItem] = aitemstack;
+				//parent.ownerSkill.inventory.setInventorySlotContents(parent.ownerSkill.inventory.currentItem, null);
 			}
 
 		}
@@ -154,37 +194,44 @@ public class SkillAxe extends SkillEffect{
 	}
 
 
-	public void doWoodBreaker(EntityPlayerMP playerMP, XYZPos xyz) {
-		if(playerMP.getHeldItem()!=null){
-			if(playerMP.getHeldItem().getItem() instanceof ItemAxeUnsaga){
-				World world = playerMP.worldObj;
-				Random rand = playerMP.getRNG();
-				ItemStack is = playerMP.getHeldItem();
+	public void doWoodBreaker(SkillEffectHelper parent) {
+		
+		if(parent.owner.getHeldItem()!=null){
+			if(parent.owner.getHeldItem().getItem() instanceof ItemAxeUnsaga){
+				Random rand = parent.world.rand;
+				ItemStack is = parent.weapon;
+				XYZPos xyz = parent.usepoint;
 				world.playSoundEffect((double)xyz.x, (double)xyz.y, (double)xyz.z, "random.explode", 4.0F, (1.0F + (world.rand.nextFloat() -world.rand.nextFloat()) * 0.2F) * 0.7F);
-				world.setBlockToAir(xyz.x, xyz.y, xyz.z);
 
+				PairID pairid = PairID.getBlockFromWorld(world, xyz);
+				Block block = pairid.blockObj;
+				boolean flag = false;
+				if(block instanceof BlockLog)flag = true;
+				int oreid = OreDictionary.getOreID(new ItemStack(pairid.blockObj,1,pairid.metadata));
+				if(OreDictionary.getOreName(oreid).equals("logWood"))flag=true;
+				if(!flag)return;
+				HSLibs.playBlockBreakSFX(world, xyz, pairid);
+				//parent.world.playAuxSFX(2001, xyz.x,xyz.y,xyz.z, Block.getIdFromBlock(pairid.blockObj) + (pairid.metadata  << 12));
+				
+//				if(!parent.world.isRemote){
+//					boolean flag2 = parent.world.setBlockToAir(xyz.x,xyz.y,xyz.z);
+//					if (block != null && flag2) {
+//						block.onBlockDestroyedByPlayer(parent.world,xyz.x,xyz.y,xyz.z, pairid.metadata);
+//						//block.dropBlockAsItem(parent.world, xyz.x,xyz.y,xyz.z, pairid.metadata,1);
+//					}
+//				}
 				AxisAlignedBB aabb = HSLibs.getBounding(xyz.x, xyz.y, xyz.z, 2.0D, 1.0D);
-				List<Entity> entlist = world.getEntitiesWithinAABB(EntityLivingBase.class, aabb);
-				for(Iterator<Entity> i = entlist.iterator();i.hasNext();){
-					Entity ent = i.next();
-					if(HSLibs.isEnemy(ent, playerMP)){
+				PacketSkill ps = new PacketSkill(PacketSkill.PACKETID.WOODBREAKER,xyz);
+				Unsaga.packetPipeline.sendToServer(ps);
+				//PacketDispatcher.sendPacketToPlayer(PacketHandler.getParticleToPosPacket(xyz, 3, 5), (Player) parent.owner);
+				parent.causeRangeDamage(null, world, aabb, parent.getAttackDamage(), DamageSource.causePlayerDamage(parent.owner), false);
 
-						//						if(Arrays.asList(HelperCreature.woodMonsters).contains(ent.getEntityName().toLowerCase())){
-						//							UtilItem.playerAttackEntityWithItem(playerMP, ent, 2, 1.0F);
-						//							UtilSkill.tryLPHurt(40, 1, ent, playerMP);
-						//						}else{
-						//							UtilItem.playerAttackEntityWithItem(playerMP, ent, 0, 1.0F);
-						//							UtilSkill.tryLPHurt(25, 1, ent, playerMP);
-						//						}
-						UtilItem.playerAttackEntityWithItem(playerMP, ent, 0, 1.0F);
-					}
-				}
 
 				for(int i=0;i<9;i++){
-					HSLibs.dropItem(world, new ItemStack(Item.stick), (double)xyz.x + rand.nextGaussian(), (double)xyz.y + rand.nextGaussian()
+					HSLibs.dropItem(world, new ItemStack(Items.stick), (double)xyz.x + rand.nextGaussian(), (double)xyz.y + rand.nextGaussian()
 							, (double)xyz.z + rand.nextGaussian());
 				}
-				is.damageItem(10, playerMP);
+
 			}
 
 		}

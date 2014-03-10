@@ -1,54 +1,71 @@
 package hinasch.mods.unlsaga.client;
 
 
+import hinasch.lib.HSLibs;
 import hinasch.mods.unlsaga.DebugUnsaga;
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.client.render.RenderArrowUnsaga;
-import hinasch.mods.unlsaga.client.render.RenderBarrett;
-import hinasch.mods.unlsaga.client.render.RenderFlyingAxe;
+import hinasch.mods.unlsaga.client.render.RenderGolemUnsaga;
 import hinasch.mods.unlsaga.client.render.RenderTreasureSlime;
 import hinasch.mods.unlsaga.client.render.equipment.RenderItemArmor;
 import hinasch.mods.unlsaga.client.render.equipment.RenderItemMusket;
 import hinasch.mods.unlsaga.client.render.equipment.RenderItemSpear;
 import hinasch.mods.unlsaga.client.render.equipment.RenderItemWeapon;
-import hinasch.mods.unlsaga.entity.EntityArrowUnsaga;
-import hinasch.mods.unlsaga.entity.EntityBarrett;
-import hinasch.mods.unlsaga.entity.EntityFlyingAxe;
+import hinasch.mods.unlsaga.client.render.projectile.RenderArrowUnsaga;
+import hinasch.mods.unlsaga.client.render.projectile.RenderBarrett;
+import hinasch.mods.unlsaga.client.render.projectile.RenderFlyingAxe;
+import hinasch.mods.unlsaga.client.render.projectile.RenderThrowableItem;
+import hinasch.mods.unlsaga.core.init.UnsagaConfigs;
+import hinasch.mods.unlsaga.core.init.UnsagaItems;
+import hinasch.mods.unlsaga.entity.EntityGolemUnsaga;
 import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
+import hinasch.mods.unlsaga.entity.projectile.EntityArrowUnsaga;
+import hinasch.mods.unlsaga.entity.projectile.EntityBarrett;
+import hinasch.mods.unlsaga.entity.projectile.EntityBoulder;
+import hinasch.mods.unlsaga.entity.projectile.EntityFireArrow;
+import hinasch.mods.unlsaga.entity.projectile.EntityFlyingAxe;
+import hinasch.mods.unlsaga.entity.projectile.EntitySolutionLiquid;
 import hinasch.mods.unlsaga.misc.module.UnsagaMagicHandlerClient;
 import hinasch.mods.unlsaga.network.CommonProxy;
 import net.minecraft.client.model.ModelSlime;
+import net.minecraft.init.Items;
+import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.google.common.base.Optional;
 
-import cpw.mods.fml.client.registry.KeyBindingRegistry;
 import cpw.mods.fml.client.registry.RenderingRegistry;
+import cpw.mods.fml.common.FMLCommonHandler;
 
 public class ClientProxy extends CommonProxy{
 
 	public DebugUnsaga debugdata;
 	public UnsagaMagicHandlerClient proxyUnsagaSpell;
-	
+	public KeyHandler keyHandler;
 	
 	@Override
-	public void registerSpearRenderer(int par1){
+	public void registerKeyHandler(){
+		this.keyHandler = new KeyHandler();
+		FMLCommonHandler.instance().bus().register(keyHandler);
+	}
+	
+	@Override
+	public void registerSpearRenderer(Item par1){
 		MinecraftForgeClient.registerItemRenderer(par1, new RenderItemSpear());
 	}
 	
 	@Override
-	public void registerSpecialRenderer(int par1){
+	public void registerSpecialRenderer(Item par1){
 		MinecraftForgeClient.registerItemRenderer(par1, new RenderItemWeapon());
 		
 	}
 	
 	@Override
-	public void registerMusketRenderer(int par1){
+	public void registerMusketRenderer(Item par1){
 		MinecraftForgeClient.registerItemRenderer(par1, new RenderItemMusket());
 	}
 	
 	@Override
-	public void registerArmorRenderer(int par1){
+	public void registerArmorRenderer(Item par1){
 		MinecraftForgeClient.registerItemRenderer(par1, new RenderItemArmor());
 	}
 	
@@ -58,10 +75,15 @@ public class ClientProxy extends CommonProxy{
 		RenderingRegistry.registerEntityRenderingHandler(EntityBarrett.class, new RenderBarrett(1.0F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityFlyingAxe.class, new RenderFlyingAxe(1.0F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityTreasureSlime.class, new RenderTreasureSlime(new ModelSlime(16), new ModelSlime(0), 0.25F));
-		if(Unsaga.module.isPresent()){
+		RenderingRegistry.registerEntityRenderingHandler(EntityGolemUnsaga.class, new RenderGolemUnsaga());
+		RenderingRegistry.registerEntityRenderingHandler(EntityFireArrow.class, new RenderThrowableItem(1.0F,Items.fire_charge,0));
+		RenderingRegistry.registerEntityRenderingHandler(EntityBoulder.class, new RenderThrowableItem(1.0F,UnsagaItems.itemMaterials,18));
+		RenderingRegistry.registerEntityRenderingHandler(EntitySolutionLiquid.class, new RenderThrowableItem(1.0F,Items.slime_ball,0));
+		if(UnsagaConfigs.module.isMagicEnabled()){
 			this.proxyUnsagaSpell = new UnsagaMagicHandlerClient();
 			this.proxyUnsagaSpell.register();
 		}
+		HSLibs.registerEvent(new UnsagaParticles());
 	}
 	
 	@Override
@@ -77,7 +99,7 @@ public class ClientProxy extends CommonProxy{
 				debugdata.registFloat(53.0F,1);
 			}
 		}
-		KeyBindingRegistry.registerKeyBinding(new KeyHandlerTest());
+		//KeyBindingRegistry.registerKeyBinding(new KeyHandlerTest());
 	}
 	
 	@Override

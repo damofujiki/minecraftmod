@@ -3,14 +3,16 @@ package hinasch.mods.unlsaga.misc.smith;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.smith.ValidPayment.EnumPayValues;
-import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 
 import java.util.Map;
 import java.util.Random;
 
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 
@@ -18,6 +20,9 @@ import com.google.common.base.Optional;
 
 public class ForgingTool {
 
+	public static final String wellDone = "well";
+	public static final String failed = "failed";
+	public static final String normal = "good";
 	
 	public UnsagaMaterial materialForged;
 	public MaterialInfo base;
@@ -27,12 +32,12 @@ public class ForgingTool {
 	public UnsagaMaterial subMaterial;
 	public int damageBase;
 	public int damageSub;
-	public EnumUnsagaWeapon categoryForge;
+	public EnumUnsagaTools categoryForge;
 	public Random rand;
 	public Optional<Map> newenchantMap;
 	public int weightForged;
 	
-	public ForgingTool(EnumUnsagaWeapon category,MaterialInfo base,MaterialInfo sub,Random rand){
+	public ForgingTool(EnumUnsagaTools category,MaterialInfo base,MaterialInfo sub,Random rand){
 		this.categoryForge = category;
 		this.base = base;
 		this.sub = sub;
@@ -42,7 +47,7 @@ public class ForgingTool {
 		this.newenchantMap = Optional.absent();
 	}
 	public ItemStack getForgedItemStack(){
-		ItemStack newstack = UnsagaItems.getItem(this.categoryForge, this.materialForged, 1, this.damageForged);
+		ItemStack newstack = UnsagaItems.getItemStack(this.categoryForge, this.materialForged, 1, this.damageForged);
 		HelperUnsagaWeapon.initWeapon(newstack, this.materialForged.name, this.weightForged);
 		if(this.newenchantMap.isPresent()){
 			EnchantmentHelper.setEnchantments(newenchantMap.get(), newstack);
@@ -65,13 +70,6 @@ public class ForgingTool {
 		this.weightForged = MathHelper.clamp_int(this.weightForged, 0, 20);
 	}
 
-//	public static int getWeight(ItemStack is){
-//		if(UtilNBT.hasKey(is, "weight")){
-//			return  HelperUnsagaWeapon.getCurrentWeight(is);
-//		}
-//		return HelperUnsagaWeapon.getMaterial(is).weight;
-//	}
-//	
 	public void decideForgedMaterial(){
 		Optional<UnsagaMaterial> transformed = MaterialTransform.drawTransformed(baseMaterial, subMaterial, rand);
 		if(transformed.isPresent()){
@@ -91,6 +89,7 @@ public class ForgingTool {
 	}
 	
 
+	//エンチャントの移植
 	public void prepareTransplantEnchant(EnumPayValues pay){
 		
 		Map newMap = EnchantmentHelper.getEnchantments(this.base.is);
@@ -101,11 +100,51 @@ public class ForgingTool {
 		this.newenchantMap = Optional.of(newMap);
 		switch(pay){
 		case HIGH:break;
-		case MID:this.forgotSomeEnchant(25);
-		case LOW:this.forgotSomeEnchant(60);
+		case MID:
+			this.forgotSomeEnchant(25);
+			break;
+		case LOW:
+			this.forgotSomeEnchant(60);
+			break;
 		}
 		
 	}
+	
+	//アビリティの移植
+	public String transplantAbilities(ItemStack forged,EntityPlayer ep,EnumPayValues pay){
+		if(!HelperAbility.canGainAbility(forged) || !HelperAbility.canGainAbility(this.base.is)){
+			return normal;
+		}
+		HelperAbility helperBaseItem = new HelperAbility(this.base.is,ep);
+		HelperAbility helperForged = new HelperAbility(forged,ep);
+		if(helperBaseItem.getGainedAbilities().isPresent()){
+			helperForged.setAbilityListToNBT(helperBaseItem.getGainedAbilities().get());
+		}
+		
+		String rt = normal;
+		Random rand = ep.getRNG();
+		switch(pay){
+		case HIGH:
+			if(rand.nextInt(100)<20){
+				helperForged.gainSomeAbility(rand);
+				rt = wellDone;
+			}
+			
+			break;
+			
+		case MID:
+			rt = helperForged.forgetSomeAbilityFromProb(rand, 25) ? failed : normal;
+			break;
+		case LOW:
+			rt = helperForged.forgetSomeAbilityFromProb(rand, 60) ? failed : normal;
+			break;
+		
+		
+		}
+		return rt;
+	}
+	
+
 	
 	protected void forgotSomeEnchant(int prob){
 		if(this.rand.nextInt(100)<=prob){

@@ -2,16 +2,25 @@ package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
 import hinasch.lib.VecUtil;
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.entity.EntityArrowUnsaga;
+import hinasch.mods.unlsaga.core.event.ExtendedEntityTag;
+import hinasch.mods.unlsaga.item.weapon.ItemBowUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
-import hinasch.mods.unlsaga.misc.debuff.LivingStateBow;
+import hinasch.mods.unlsaga.misc.debuff.Debuffs;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingBuff;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateBow;
+
+import java.util.List;
+
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 
@@ -26,23 +35,25 @@ public class SkillBow extends SkillEffect{
 		if(helper.skill==AbilityRegistry.exorcist)this.doZapperOrExorcist(helper);
 	}
 
+
 	public void doZapperOrExorcist(SkillEffectHelper helper){
 		LivingHurtEvent e = (LivingHurtEvent)helper.parent;
 
-		EntityArrowUnsaga arrow = (EntityArrowUnsaga)e.source.getSourceOfDamage();
+		EntityArrow arrow = (EntityArrow)e.source.getSourceOfDamage();
 
-		if(arrow.isZapper()){
+		if(ExtendedEntityTag.hasTag(arrow, ItemBowUnsaga.ARROW_ZAPPER)){
 			if(!arrow.worldObj.isRemote){
 				arrow.setKnockbackStrength(2);
-				arrow.worldObj.createExplosion(helper.ownerSkill, arrow.posX, arrow.posY, arrow.posZ, 1.0F+((float)arrow.getDamage())	, false);
+				arrow.worldObj.createExplosion(helper.owner, arrow.posX, arrow.posY, arrow.posZ, 1.0F+((float)arrow.getDamage())	, false);
 			}
 		}
-		if(arrow.isExorcist()){
+		if(ExtendedEntityTag.hasTag(arrow, ItemBowUnsaga.ARROW_EXORCIST)){
 			if(e.entity instanceof EntityLivingBase){
 				EntityLivingBase el = (EntityLivingBase)e.entity;
 				if(el.getCreatureAttribute()==EnumCreatureAttribute.UNDEAD){
 					//UtilSkill.tryLPHurt(45, 2, event.entity, ep);
-					el.heal(-helper.getAttackDamage());
+					//DamageSourceUnsaga ds = new DamageSourceUnsaga(null,helper.owner,helper.skill.hurtLp,DamageHelper.Type.MAGIC);
+					helper.attack(el,arrow);
 					el.setFire(3);
 
 
@@ -52,16 +63,21 @@ public class SkillBow extends SkillEffect{
 	}
 
 	public boolean doDoubleShots(SkillEffectHelper parent){
-		parent.ownerSkill.inventory.hasItem(Item.arrow.itemID);
+		boolean flag = false;
+		if(parent.owner.inventory.hasItem(Items.arrow))flag = true;
+		if(parent.owner.capabilities.isCreativeMode)flag = true;
+		if(!flag)return false;
 
+		Unsaga.debug("doubleショットmadekiter");
+		Unsaga.debug("remote:"+parent.owner.worldObj.isRemote);
 		parent.playBowSound();
 
 		LivingStateBow state = (LivingStateBow)parent.parent;
 
-		EntityArrow clone = new EntityArrow(parent.world, parent.ownerSkill,parent.charge * 1.0F+parent.world.rand.nextFloat());
+		EntityArrow clone = new EntityArrow(parent.world, parent.owner,parent.charge * 1.0F+parent.world.rand.nextFloat());
 		clone.setDamage(clone.getDamage()+parent.getAttackDamage());
 		//UtilItem.setArrowProp(clone, "LPHurt");
-		if(EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, parent.weaponGained)>0){
+		if(EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, parent.weapon)>0){
 			clone.canBePickedUp  = 2;
 		}
 
@@ -80,17 +96,39 @@ public class SkillBow extends SkillEffect{
 
 
 		if(!parent.world.isRemote){
-			state.shootTick -= 1;
-			if(state.shootTick>0){
-
-
-			}
-			if(EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, parent.weaponGained)==0 && !parent.ownerSkill.capabilities.isCreativeMode){
-				parent.ownerSkill.inventory.consumeInventoryItem(Item.arrow.itemID);
+//			state.shootTick -= 1;
+//			if(state.shootTick>0){
+//
+//
+//			}
+			if(EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, parent.weapon)==0 && !parent.owner.capabilities.isCreativeMode){
+				parent.owner.inventory.consumeInventoryItem(Items.arrow);
 			}
 			parent.world.spawnEntityInWorld(clone);
 			return true;
 		}
 		return false;
 	}
+	
+	public static void checkShadowStitchOnLivingUpdate(LivingUpdateEvent eventObj){
+		//LivingUpdateEvent eventObj = (LivingUpdateEvent)parent.parent;
+		AxisAlignedBB bb = eventObj.entityLiving.boundingBox.expand(5D, 5D, 5D);
+		List<EntityArrow> arrows = eventObj.entityLiving.worldObj.getEntitiesWithinAABB(EntityArrow.class, bb);
+		
+		for(EntityArrow arrow:arrows){
+			Unsaga.debug("矢を検地");
+			Unsaga.debug(arrow.motionX + arrow.motionY + arrow.motionZ);
+			if(arrow.shootingEntity!=eventObj.entityLiving && !LivingDebuff.hasDebuff(eventObj.entityLiving, Debuffs.sleep)){
+				if(arrow.motionX + arrow.motionY + arrow.motionZ <= 0.00001D && ExtendedEntityTag.hasTag(arrow, ItemBowUnsaga.ARROW_STITCH)){
+					Unsaga.debug("カゲヌイがあたりました");
+					
+					LivingBuff.addDebuff(eventObj.entityLiving, Debuffs.sleep, 15);
+					arrow.setDead();
+				}
+			}
+
+		}
+	}
+	
+
 }

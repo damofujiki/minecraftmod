@@ -4,14 +4,16 @@ import hinasch.lib.HSLibs;
 import hinasch.lib.UtilNBT;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.translation.Translation;
+import hinasch.mods.unlsaga.misc.util.ChatMessageHandler;
 import hinasch.mods.unlsagamagic.UnsagaMagic;
+import hinasch.mods.unlsagamagic.misc.CreativeTabsUnsagaMagic;
 import hinasch.mods.unlsagamagic.misc.spell.Spell;
-import hinasch.mods.unlsagamagic.misc.spell.SpellRegistry;
+import hinasch.mods.unlsagamagic.misc.spell.Spells;
 
 import java.util.List;
 import java.util.Random;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
@@ -35,32 +37,49 @@ public class ItemTablet extends Item{
     	return;
     }
 	
+    public boolean isItemTool(ItemStack par1ItemStack)
+    {
+        return false;
+    }
+    
 	public static void progressDeciphering(EntityPlayer ep,ItemStack is,int progress){
 		
 		is.damageItem(-progress, ep);
 		if(is.getItemDamage()<=0){
 			is.setItemDamage(0);
 			setDeciphered(is);
-			ep.addChatMessage("finished deciphring the magic tablet.");
+			ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("msg.decipher.finished"));
+			//ep.addChatMessage("finished deciphring the magic tablet.");
 		}
 		
 	}
 
 	public static ItemStack getRandomMagicTablet(Random rand){
-    	int magicsize = SpellRegistry.getSize();
+		List<Spell> spellList = Spells.getValidSpells();
+    	int magicsize = spellList.size();
     	int drawRand = rand.nextInt(magicsize);
-    	Spell spell = SpellRegistry.getSpell(drawRand);
+    	Spell spell = spellList.get(drawRand);
     	ItemStack is = new ItemStack(UnsagaMagic.itemMagicTablet,1);
     	activateMagicTablet(is,spell);
     	return is;
     }
+	
+	//For CreativeTab's Display
+	public static ItemStack getDisplayMagicTablet(CreativeTabsUnsagaMagic tab){
+		if(tab==null)return null;
+		ItemStack is = new ItemStack(UnsagaMagic.itemMagicTablet,1);
+		activateMagicTablet(is,Spells.fireArrow);
+		is.setItemDamage(0);
+		return is;
+		
+	}
 	
     public static int getSpellID(ItemStack is){
     	return UtilNBT.readFreeTag(is, KEYID);
     }
     
     public static Spell getSpell(ItemStack is){
-    	return SpellRegistry.getSpell(getSpellID(is));
+    	return Spells.getSpell(getSpellID(is));
     }
     
     public static boolean isDeciphered(ItemStack is){
@@ -72,8 +91,8 @@ public class ItemTablet extends Item{
     	is.setItemDamage(0);
     }
     
-    public ItemTablet(int par1) {
-		super(par1);
+    public ItemTablet() {
+		super();
         this.maxStackSize = 1;
         this.setMaxDamage(50);
        
@@ -84,7 +103,7 @@ public class ItemTablet extends Item{
 	@Override
     public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
 		if(UtilNBT.hasKey(par1ItemStack, KEYID)){
-			Spell spell = SpellRegistry.getSpell(ItemTablet.getSpellID(par1ItemStack));
+			Spell spell = Spells.getSpell(ItemTablet.getSpellID(par1ItemStack));
 			String spellname = spell.getName(HSLibs.getCurrentLang())+"<"+spell.element.getLocalized()+">";
 			par3List.add(spellname);
 			String deciphred = ItemTablet.isDeciphered(par1ItemStack)? "tablet.deciphred" : "tablet.notdeciphred";
@@ -94,9 +113,9 @@ public class ItemTablet extends Item{
 	}
 	
     @Override
-    public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List)
+    public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
     {
-    	for(Spell spell:SpellRegistry.spellMap.values()){
+    	for(Spell spell:Spells.spellMap.values()){
     		ItemStack is = new ItemStack(UnsagaMagic.itemMagicTablet,1);
     		ItemTablet.activateMagicTablet(is, spell);
     		par3List.add(is);
@@ -113,7 +132,7 @@ public class ItemTablet extends Item{
     }
     
     @Override
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerIcons(IIconRegister par1IconRegister)
     {
         this.itemIcon = par1IconRegister.registerIcon(Unsaga.domain+":tablet");
     }
@@ -130,7 +149,8 @@ public class ItemTablet extends Item{
 				}
 			}else{
 				UnsagaMagic.worldElement.figureElements(par2World, par3EntityPlayer);
-				par3EntityPlayer.addChatMessage(UnsagaMagic.worldElement.getWorldElementInfo());
+				ChatMessageHandler.sendChatToPlayer(par3EntityPlayer, UnsagaMagic.worldElement.getWorldElementInfo());
+				//par3EntityPlayer.addChatMessage(UnsagaMagic.worldElement.getWorldElementInfo());
 				
 			}
 			return par1ItemStack;

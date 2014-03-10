@@ -1,7 +1,7 @@
 package hinasch.mods.unlsaga.client.gui;
 
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.inventory.ContainerChestUnsaga;
+import hinasch.mods.unlsaga.inventory.container.ContainerChestUnsaga;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsaga;
 import net.minecraft.client.gui.GuiButton;
@@ -67,7 +67,7 @@ public class GuiChest extends GuiContainer{
 	{
 
 
-		fontRenderer.drawString(Translation.localize("word.chest")+" LV"+this.theChest.getChestLevel(), 8, 6, 0x404040);
+		fontRendererObj.drawString(Translation.localize("word.chest")+" LV"+this.theChest.getChestLevel(), 8, 6, 0x404040);
 		
 		//fontRenderer.drawString("Result:"+getSpellStr(), 8, (ySize - 96) + 2, 0x404040);
 	}

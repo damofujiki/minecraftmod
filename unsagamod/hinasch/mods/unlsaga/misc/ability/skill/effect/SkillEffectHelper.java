@@ -1,23 +1,25 @@
 package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
-import hinasch.lib.CauseDamageBoundingbox;
+import hinasch.lib.RangeDamageHelper;
 import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
+import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.skill.Skill;
-import hinasch.mods.unlsaga.misc.ability.skill.Skill.EnumDamageUnsaga;
-import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
-import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
-import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.debuff.Debuffs;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
+import hinasch.mods.unlsaga.misc.util.DamageHelper;
+import hinasch.mods.unlsaga.misc.util.DamageSourceUnsaga;
+import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
-import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
 
 import java.util.HashMap;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
@@ -45,18 +47,18 @@ public class SkillEffectHelper {
 	protected Object parent;
 	public final World world;
 	protected final Skill skill;
-	public final EntityPlayer ownerSkill;
-	public final ItemStack weaponGained;
-	public final EnumUnsagaWeapon category;
+	public final EntityPlayer owner;
+	public final ItemStack weapon;
+	public final EnumUnsagaTools category;
 	public EntityLivingBase target;
 	public XYZPos usepoint;
 	public float charge;
 	
 	public SkillEffectHelper(World world,EntityPlayer skillOwner,Skill skill,ItemStack gainedWeapon){
-		this.ownerSkill = skillOwner;
+		this.owner = skillOwner;
 		this.skill = skill;
 		this.world = world;
-		this.weaponGained = gainedWeapon;
+		this.weapon = gainedWeapon;
 		this.coolingTime = 10;
 		
 		
@@ -110,7 +112,7 @@ public class SkillEffectHelper {
 	
 	public void doSkill(){
 	
-		if(LivingDebuff.isCooling(ownerSkill) && this.requireCooling())return;
+		if(LivingDebuff.isCooling(owner) && this.requireCooling())return;
 		
 		if(this.skillEffecter!=null){
 			Unsaga.debug("skilleffectet!=の那珂"+this.skillEffecter);
@@ -120,7 +122,7 @@ public class SkillEffectHelper {
 			this.damageWeapon();
 		}
 		if(this.requireCooling()){
-			LivingDebuff.addDebuff(ownerSkill, DebuffRegistry.cooling, this.coolingTime);
+			LivingDebuff.addDebuff(owner, Debuffs.cooling, this.coolingTime);
 		}
 	}
 	
@@ -132,29 +134,31 @@ public class SkillEffectHelper {
 	}
 	
 	public void damageWeapon(){
-		this.weaponGained.damageItem(getDamageItem(), ownerSkill);
+		this.weapon.damageItem(getDamageItem(), owner);
 	}
 	
 	public int getDamageItem(){
 		return this.skill.damageWeapon;
 	}
 	
-	public int getAttackDamage(){
-		int modifier = 0;
-		if(this.category == EnumUnsagaWeapon.BOW){
-			UnsagaMaterial material = HelperUnsagaWeapon.getMaterial(this.weaponGained);
+	public float getAttackDamage(){
+		float modifier = 0;
+		if(this.category == EnumUnsagaTools.BOW){
+			UnsagaMaterial material = HelperUnsagaWeapon.getMaterial(this.weapon);
 			modifier += material.getBowModifier();
 		}
-		modifier += LivingDebuff.getModifierAttackBuff(ownerSkill);
-		return modifier + this.skill.hurtHp;
+		modifier += LivingDebuff.getModifierAttackBuff(owner);
+		float base = 0;
+
+		return modifier + base + this.skill.hurtHp;
 	}
 	
-	public int getAttackDamageLP(){
+	public float getAttackDamageLP(){
 		return this.skill.hurtLp;
 	}
 
-	public void playSoundServer(String par1){
-		this.ownerSkill.playSound(par1, 0.5F, 1.8F / (this.world.rand.nextFloat() * 0.4F + 1.2F));
+	public void playSound(String par1){
+		this.owner.playSound(par1, 0.5F, 1.8F / (this.world.rand.nextFloat() * 0.4F + 1.2F));
 
 	}
 	
@@ -178,8 +182,12 @@ public class SkillEffectHelper {
 	}
 	
 	public void playBowSound(){
-		this.world.playSoundAtEntity(ownerSkill, "random.bow", 1.0F, 1.0F / (this.world.rand.nextFloat() * 0.4F + 1.2F) + this.charge * 0.5F);
+		this.world.playSoundAtEntity(owner, "random.bow", 1.0F, 1.0F / (this.world.rand.nextFloat() * 0.4F + 1.2F) + this.charge * 0.5F);
 
+	}
+	
+	public DamageHelper.Type getDamageType(){
+		return this.skill.damageType;
 	}
 	public String getLargeExplode(){
 		return "largeexplode";
@@ -202,39 +210,95 @@ public class SkillEffectHelper {
 	public Skill getSkill(){
 		return this.skill;
 	}
-	public void causeRangeDamage(CauseDamageBoundingbox parent,World world,AxisAlignedBB bb,int damage,DamageSource ds,boolean isEnemyOnly){
-		CauseDamageBoundingbox.causeDamage(parent, world, bb, damage, ds, isEnemyOnly);
+	public void causeRangeDamage(RangeDamageHelper parent,World world,AxisAlignedBB bb,float damage,DamageSource ds,boolean isEnemyOnly){
+		RangeDamageHelper.causeDamage(parent, world, bb, damage, ds, isEnemyOnly);
 	}
 	
+	public DamageSourceUnsaga getDamageSource(){
+		String str = (this.owner instanceof EntityPlayer)? "player" : "mob";
+		DamageSourceUnsaga ds = new DamageSourceUnsaga(str,this.owner,this.getAttackDamageLP(),this.getDamageType());
+		return ds;
+		
+	}
+	
+	public float getModifiedAttackDamage(boolean ischarge,float charge){
+		float f = 0;
+		if(ischarge){
+			charge = MathHelper.clamp_float(charge, 0, 15);
+			f = charge/15.0F;
+			
+		}
+		float baseStr = (float)this.owner.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
+		float apliedStr;
+		if(ischarge){
+			apliedStr = baseStr  + (baseStr * ((this.getAttackDamage()*f)/30.0F));
+		}else{
+			apliedStr = baseStr  + (baseStr * (this.getAttackDamage()/30.0F));
+		}
+
+		return apliedStr;
+	}
 	public void attack(Entity living,Entity projectile){
-		int at = this.getAttackDamage();
-		if(this.skill.damageType==EnumDamageUnsaga.PUNCH){
+	
+		if(living instanceof EntityLivingBase){
+			living.attackEntityFrom(this.getDamageSource(), this.getModifiedAttackDamage(false,0));
+
+		}
+	}
+	
+	public void attack(Entity living,Entity projectile,float charge){
+
+		if(living instanceof EntityLivingBase){
+			living.attackEntityFrom(this.getDamageSource(), this.getModifiedAttackDamage(true,charge));
+
+		}
+
+		//Unsaga.debug("modifier STR:"+this.getModifiedAttackDamage());
+//		float at = attack(this.skill.damageType,this.getAttackDamage(),living);
+//		Unsaga.debug("Owner:"+owner.getCommandSenderName()+" Target:"+living.getCommandSenderName()+" Damage:"+at);
+//		doAttack(owner, living, projectile, at, charge);
+	}
+	
+	public static float attack(DamageHelper.Type type,float attackdamage,Entity living){
+		float at = attackdamage;
+		if(type==DamageHelper.Type.PUNCH){
 			if(living instanceof EntitySkeleton) at += 3;
 			if(living instanceof EntitySlime) at = 0;
 			if(living instanceof EntityTreasureSlime) at = 0;
 		}
-		if(this.skill.damageType==EnumDamageUnsaga.SPEAR){
+		if(type==DamageHelper.Type.SPEAR){
 			if(living instanceof EntitySkeleton) at -= 3;
 		}
-		if(this.skill.damageType==EnumDamageUnsaga.SWORDPUNCH){
+		if(type==DamageHelper.Type.SWORDPUNCH){
 			if(living instanceof EntitySkeleton) at += 1;
 			if(living instanceof EntitySlime) at -= 3;
 			if(living instanceof EntityTreasureSlime) at -= 3;
 		}
 
 
-		if(this.category==EnumUnsagaWeapon.BOW){
-			living.attackEntityFrom(DamageSource.causeThrownDamage(ownerSkill, projectile), at);
+
+		at = MathHelper.clamp_float(at, 0, 100);
+		return at;
+	}
+	
+	public static void doAttack(EntityLivingBase attacker,Entity living,Entity projectile,float at,float attackLP){
+		if(projectile!=null){
+			living.attackEntityFrom(DamageSource.causeThrownDamage(attacker, projectile), at);
 			if(living instanceof EntityLivingBase){
-				Unsaga.lpHandler.tryHurtLP((EntityLivingBase) living, getAttackDamageLP());
+				Unsaga.lpHandler.tryHurtLP((EntityLivingBase) living, (int)attackLP);
 			}
 			
 			return;
 		}
-		at = MathHelper.clamp_int(at, 0, 100);
-		living.attackEntityFrom(DamageSource.causePlayerDamage(ownerSkill), at);
+
+		if(attacker instanceof EntityPlayer){
+			living.attackEntityFrom(DamageSource.causePlayerDamage((EntityPlayer) attacker), at);
+		}else{
+			living.attackEntityFrom(DamageSource.causeMobDamage(attacker), at);
+		}
+		
 		if(living instanceof EntityLivingBase){
-			Unsaga.lpHandler.tryHurtLP((EntityLivingBase) living, getAttackDamageLP());
+			Unsaga.lpHandler.tryHurtLP((EntityLivingBase) living, (int) attackLP);
 		}
 		return;
 	}

@@ -1,27 +1,31 @@
 package hinasch.mods.unlsagamagic.event;
 
-import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
-import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
-import hinasch.mods.unlsaga.misc.debuff.LivingStateTarget;
+import hinasch.mods.unlsaga.misc.util.LockOnHelper;
 import hinasch.mods.unlsagamagic.item.ItemSpellBook;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraftforge.event.ForgeSubscribe;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
+import net.minecraft.world.World;
 import net.minecraftforge.event.entity.player.EntityInteractEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class EventSpellTarget {
 
 
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void onLivingInteractForTarget(EntityInteractEvent e){
 		if(e.target!=null){
-			if(e.entityPlayer.getHeldItem()==null)return;
-			if(e.entityPlayer.getHeldItem().getItem() instanceof ItemSpellBook && e.entityPlayer.isSneaking()){
-				if(e.target instanceof EntityLivingBase && !e.entityPlayer.worldObj.isRemote){
-					EntityLivingBase el = (EntityLivingBase)e.target;
-					LivingStateTarget state = new LivingStateTarget(DebuffRegistry.spellTarget,30,el.entityId);
-					LivingDebuff.addLivingDebuff(e.entityPlayer, state);
-					e.entityPlayer.addChatMessage("Set Target To "+e.target.getEntityName());
+			EntityPlayer ep = e.entityPlayer;
+			if(ep.getHeldItem()==null)return;
+			ItemStack is = ep.getHeldItem();
+			World world = ep.worldObj;
+			if(ep.isSneaking() && is.getItem() instanceof ItemSpellBook){
+				if(!world.isRemote){
+					if(e.target instanceof EntityLivingBase){
+						LockOnHelper.setSpellTarget(ep, (EntityLivingBase) e.target);
+					}
 				}
+
 			}
 		}
 	}

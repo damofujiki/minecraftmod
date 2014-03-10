@@ -2,44 +2,48 @@ package hinasch.mods.unlsaga.core.init;
 
 import hinasch.lib.PairID;
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.translation.Translation;
+import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
-import net.minecraft.item.EnumArmorMaterial;
-import net.minecraft.item.EnumToolMaterial;
 import net.minecraft.item.Item;
+import net.minecraft.item.Item.ToolMaterial;
+import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 
 import com.google.common.base.Optional;
 
 public class UnsagaMaterial {
 
+	protected PairID associatedItem;
+	protected Optional<Float> attackModifier = Optional.absent();
 	protected Optional<Integer> bowModifier = Optional.absent();
-	protected Optional<EnumArmorMaterial> enumArmor = Optional.absent();
-	protected Optional<EnumToolMaterial> enumTool = Optional.absent();
-	public String headerEn;
-	public String headerJp;
+	protected Optional<ArmorMaterial> enumArmor = Optional.absent();
+	protected Optional<ToolMaterial> enumTool = Optional.absent();
+	//protected String headerEn;
+	//protected String headerJp;
 	public String iconname;
 	public boolean isChild;
 	public boolean isRelatedVanillaItem = false;
 	public Optional<Integer> itemMeta = Optional.absent();
-	public String jpName;
+	//public String jpName;
 	public String name;
 	protected UnsagaMaterial parentMaterial;
 	public int rank;
-	protected PairID associatedItem;
 	protected Optional<Integer> renderColor = Optional.absent();
 	
 	
-	protected HashMap<EnumUnsagaWeapon,List<String>> specialArmorTextureMap;
+	protected HashMap<EnumUnsagaTools,List<String>> specialArmorTextureMap;
 
-	protected HashMap<EnumUnsagaWeapon,String> specialIconMap;
-	protected HashMap<EnumUnsagaWeapon,String> specialNameMap;
+	protected HashMap<EnumUnsagaTools,String> specialIconMap;
+	protected HashMap<EnumUnsagaTools,String> specialNameMap;
 	protected HashMap<String,UnsagaMaterial> subMaterialMap = new HashMap();
 	public int weight;
 	
@@ -50,29 +54,21 @@ public class UnsagaMaterial {
 		this.rank = rank;
 		this.isChild = false;
 		this.iconname = name;
-		MaterialList.allMaterialMap.put(this.name, this);
+		UnsagaMaterials.allMaterialMap.put(this.name, this);
 	}
 	
-	public UnsagaMaterial(String name,int weight,int rank,String en,String jp){
-
-		this(name,weight,rank);
-		this.headerEn = en;
-		this.headerJp = jp;
-		this.jpName = jp;
-		
-	}
 	
 	public UnsagaMaterial(String name,int weight,int rank,String en,String jp,String jpname){
 
-		this(name,weight,rank,en,jp);
-		this.jpName = jpname;
+		this(name,weight,rank);
+//		this.jpName = jpname;
 
 		
 	}
 	
 	public UnsagaMaterial addSubMaterial(UnsagaMaterial mat){
 		if(this.isChild){
-			Unsaga.debug("this Material is child.can't add child Material."+mat);
+			Unsaga.debug("this Material is a child.can't add child Material."+mat);
 			return mat;
 		}
 		mat.isChild = true;
@@ -80,14 +76,15 @@ public class UnsagaMaterial {
 		this.subMaterialMap.put(mat.name, mat);		
 		return mat;
 	}
-	
 	public void associate(ItemStack is){
 		Item item = (Item)is.getItem();
-		this.associatedItem = new PairID();
-		this.associatedItem.id = item.itemID;
-		this.associatedItem.metadata = is.getItemDamage();
+		this.associatedItem = new PairID(item,is.getItemDamage());
+
 	}
-	public EnumArmorMaterial getArmorMaterial(){
+	
+
+	
+	public ItemArmor.ArmorMaterial getArmorMaterial(){
 		if(this.enumArmor.isPresent()){
 			return this.enumArmor.get();
 		}
@@ -95,16 +92,34 @@ public class UnsagaMaterial {
 			return this.getParentMaterial().getArmorMaterial();
 		}
 		Unsaga.debug("this Material has no EnumArmorMAterial:"+this.name);
-		return EnumArmorMaterial.CLOTH;
+		return ItemArmor.ArmorMaterial.CLOTH;
 	}
-	
 	public Optional<ItemStack> getAssociatedItem(){
 		if(this.associatedItem!=null){
-			return Optional.of(new ItemStack(this.associatedItem.id,1,this.associatedItem.metadata));
+			return Optional.of(new ItemStack(this.associatedItem.itemObj,1,this.associatedItem.metadata));
 		}
 		return Optional.absent();
 	}
-
+	
+	public float getAttackModifier(EnumUnsagaTools type){
+		float base = 4.0F;
+		if(type==EnumUnsagaTools.AXE){
+			base = 3.0F;
+		}
+		if(type==EnumUnsagaTools.STAFF){
+			base = 2.0F;
+		}
+		if(type==EnumUnsagaTools.SPEAR){
+			base = 3.0F;
+		}
+			
+		
+		if(this.attackModifier.isPresent()){
+			return base + this.attackModifier.get();
+		}
+		return base + this.getToolMaterial().getDamageVsEntity();
+	}
+	
 	public int getBowModifier(){
 		if(this.bowModifier.isPresent()){
 			return this.bowModifier.get();
@@ -112,8 +127,12 @@ public class UnsagaMaterial {
 		return 0;
 	}
 	
-	public int getItemMeta(){
-		return this.itemMeta.get();
+	public String getLocalized(){
+		return Translation.localize(this.getUnlocalizedName());
+	}
+	
+	public String getLocalized(String lang){
+		return Unsaga.translation.getLocalized(this.getUnlocalizedName(), lang);
 	}
 	
 	public UnsagaMaterial getParentMaterial(){
@@ -144,7 +163,7 @@ public class UnsagaMaterial {
 		return Optional.absent();
 	}
 	
-	public Optional<String> getSpecialArmorTexture(EnumUnsagaWeapon category,int par1){
+	public Optional<String> getSpecialArmorTexture(EnumUnsagaTools category,int par1){
 		if(this.specialArmorTextureMap!=null){
 			if(this.specialArmorTextureMap.get(category)!=null){
 				return Optional.of(this.specialArmorTextureMap.get(category).get(par1));
@@ -156,7 +175,7 @@ public class UnsagaMaterial {
 		return Optional.absent();
 	}
 	
-	public Optional<String> getSpecialIcon(EnumUnsagaWeapon category){
+	public Optional<String> getSpecialIcon(EnumUnsagaTools category){
 		if(this.specialIconMap!=null){
 			if(this.specialIconMap.get(category)!=null){
 				return Optional.of(this.specialIconMap.get(category));
@@ -168,7 +187,7 @@ public class UnsagaMaterial {
 		return Optional.absent();
 	}
 	
-	public Optional<String> getSpecialName(EnumUnsagaWeapon category,int en_or_jp){
+	public Optional<String> getSpecialName(EnumUnsagaTools category,int en_or_jp){
 		if(specialNameMap!=null){
 			if(specialNameMap.get(category)!=null){
 				String[] names = specialNameMap.get(category).split(",");
@@ -188,12 +207,12 @@ public class UnsagaMaterial {
 		return material;
 	}
 	
+
 	public Map<String,UnsagaMaterial> getSubMaterials(){
 		return this.subMaterialMap;
 	}
 	
-
-	public EnumToolMaterial getToolMaterial(){
+	public ToolMaterial getToolMaterial(){
 		if(this.enumTool.isPresent()){
 			return this.enumTool.get();
 		}
@@ -201,7 +220,11 @@ public class UnsagaMaterial {
 			return this.getParentMaterial().getToolMaterial();
 		}
 		Unsaga.debug("this Material has no EnumToolMAterial:"+this.name);
-		return EnumToolMaterial.STONE;
+		return ToolMaterial.STONE;
+	}
+	
+	public String getUnlocalizedName(){
+		return "material."+this.name;
 	}
 	
 	public boolean hasSubMaterials(){
@@ -211,15 +234,15 @@ public class UnsagaMaterial {
 		return true;
 	}
 	
-	public void linkToItem(int meta){
-		this.itemMeta = Optional.of(meta);
-	}
-	
-	public UnsagaMaterial setArmorMaterial(EnumArmorMaterial par1){
+	public UnsagaMaterial setArmorMaterial(ArmorMaterial par1){
 		this.enumArmor = Optional.of(par1);
 		return this;
 	}
 	
+	public void setAttackModifier(float par1){
+		this.attackModifier = Optional.of(par1);
+	}
+
 	public UnsagaMaterial setBowModifier(int par1){
 		this.bowModifier = Optional.of(par1);
 		return this;
@@ -234,8 +257,8 @@ public class UnsagaMaterial {
 		this.renderColor = Optional.of(par1);
 		return this;
 	}
-
-	public UnsagaMaterial setSpecialArmorTexture(EnumUnsagaWeapon category,String par1,String par2){
+	
+	public UnsagaMaterial setSpecialArmorTexture(EnumUnsagaTools category,String par1,String par2){
 		if(this.specialArmorTextureMap==null){
 			this.specialArmorTextureMap = new HashMap();
 		}
@@ -246,20 +269,49 @@ public class UnsagaMaterial {
 		return this;
 	}
 	
-	public UnsagaMaterial setSpecialIcon(EnumUnsagaWeapon category,String name){
+	public UnsagaMaterial setSpecialIcon(EnumUnsagaTools category,String name){
 		if(specialIconMap==null)this.specialIconMap = new HashMap();
 		this.specialIconMap.put(category, name);
 		return this;
 	}
 	
-	public UnsagaMaterial setSpecialName(EnumUnsagaWeapon category,String name){
+	public UnsagaMaterial setSpecialName(EnumUnsagaTools category,String name){
 		if(specialNameMap==null)this.specialNameMap = new HashMap();
 		this.specialNameMap.put(category, name);
 		return this;
 	}
 	
-	public UnsagaMaterial setToolMaterial(EnumToolMaterial par1){
+	public UnsagaMaterial setToolMaterial(ToolMaterial par1){
 		this.enumTool = Optional.of(par1);
 		return this;
+	}
+	
+	public boolean isChildOwnedBy(UnsagaMaterial uns){
+		if(uns.hasSubMaterials()){
+			for(UnsagaMaterial u:uns.getSubMaterials().values()){
+				if(u==this){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public boolean setContainsThis(Set<UnsagaMaterial> set){
+		for(UnsagaMaterial u:set){
+			if(this.isChildOwnedBy(u)){
+				return true;
+			}
+			if(this==u){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+
+	@Override
+	public String toString(){
+		return super.toString()+this.name;
 	}
 }

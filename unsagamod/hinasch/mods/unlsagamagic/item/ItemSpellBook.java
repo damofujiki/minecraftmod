@@ -3,31 +3,35 @@ package hinasch.mods.unlsagamagic.item;
 import hinasch.lib.CSVText;
 import hinasch.lib.HSLibs;
 import hinasch.lib.UtilNBT;
+import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
+import hinasch.mods.unlsaga.core.FiveElements;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
 import hinasch.mods.unlsaga.misc.ability.Ability;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
-import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
-import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
-import hinasch.mods.unlsaga.misc.debuff.LivingStateTarget;
+import hinasch.mods.unlsaga.misc.debuff.Debuffs;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateTarget;
+import hinasch.mods.unlsaga.misc.translation.Translation;
+import hinasch.mods.unlsaga.misc.util.ChatMessageHandler;
 import hinasch.mods.unlsagamagic.UnsagaMagic;
-import hinasch.mods.unlsagamagic.misc.element.UnsagaElement.EnumElement;
 import hinasch.mods.unlsagamagic.misc.spell.Spell;
-import hinasch.mods.unlsagamagic.misc.spell.SpellRegistry;
+import hinasch.mods.unlsagamagic.misc.spell.Spells;
 import hinasch.mods.unlsagamagic.misc.spell.effect.InvokeSpell;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
@@ -41,11 +45,12 @@ public class ItemSpellBook extends Item{
 	protected static String MAGICKEY = "Unsaga.spell";
 	protected static String MIXKEY = "Unsaga.spellMixed";
 	protected static String SPELLSKEY = "Unsaga.spellscontain";
+	protected static String POSKEY = "Unsaga.spellPointer";
 	
 	public static ItemStack getAbilityItem(EntityPlayer ep,Ability ab){
 		if(ep.getExtendedProperties(ExtendedPlayerData.key)!=null){
 			ExtendedPlayerData data = (ExtendedPlayerData)ep.getExtendedProperties(ExtendedPlayerData.key);
-			for(ItemStack is:data.getItemStacks()){
+			for(ItemStack is:data.getAccessories()){
 				if(is!=null){
 					HelperAbility helper = new HelperAbility(is, ep);
 					if(helper.hasAbility(ab)){
@@ -58,7 +63,7 @@ public class ItemSpellBook extends Item{
 		return null;
 	}
 	
-	public static void setBlendedSpells(ItemStack is,List<Spell> spells){
+	public static void setBlendedSpellsHistory(ItemStack is,List<Spell> spells){
 		if(spells==null)return;
 		List<Integer> intlist = new ArrayList();
 		for(Spell spell:spells){
@@ -73,7 +78,7 @@ public class ItemSpellBook extends Item{
 		List<Integer> intlist = CSVText.csvToIntList(UtilNBT.readFreeStrTag(is, SPELLSKEY));
 		List<Spell> spelllist = new ArrayList();
 		for(Integer inte:intlist){
-			spelllist.add(SpellRegistry.getSpell(inte));
+			spelllist.add(Spells.getSpell(inte));
 		}
 		return spelllist;
 	}
@@ -85,7 +90,7 @@ public class ItemSpellBook extends Item{
 				ItemStack newstack = new ItemStack(UnsagaMagic.itemSpellBook,1);
 				ItemSpellBook.writeSpell(newstack, spell);
 				if(!world.isRemote){
-					ep.dropPlayerItem(newstack);
+					ep.entityDropItem(newstack,0.2F);
 				}
 				
 			}
@@ -123,7 +128,7 @@ public class ItemSpellBook extends Item{
 		return 1.0F;
 	}
 
-	public static ItemStack getFistMagicItem(EntityPlayer ep,EnumElement element){
+	public static ItemStack getFistMagicItem(EntityPlayer ep,FiveElements.EnumElement element){
 		switch(element){
 		case FIRE:
 			return getAbilityItem(ep,AbilityRegistry.fire);
@@ -143,7 +148,7 @@ public class ItemSpellBook extends Item{
 	
 	public static Spell getSpell(ItemStack is){
 		int spellnum = UtilNBT.readFreeTag(is, MAGICKEY);
-		return SpellRegistry.getSpell(spellnum);
+		return Spells.getSpell(spellnum);
 	}
 	
 	public static boolean hasMixed(ItemStack is){
@@ -158,14 +163,15 @@ public class ItemSpellBook extends Item{
 	}
 	
 	public static boolean writeSpellToBook(EntityPlayer ep,ItemStack is,Spell spell){
-		if(ep.inventory.hasItem(Item.book.itemID)){
-			ep.inventory.consumeInventoryItem(Item.arrow.itemID);
+		if(ep.inventory.hasItem(Items.book)){
+			ep.inventory.consumeInventoryItem(Items.book);
 			if(!ep.worldObj.isRemote){
 				
 				ItemStack newbook = new ItemStack(UnsagaMagic.itemSpellBook,1);
 				writeSpell(newbook,spell);
-				ep.addChatMessage("message.tablet.write");
-				ep.dropPlayerItem(newbook);
+				ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("message.tablet.write"));
+				//ep.addChatMessage("message.tablet.write");
+				ep.entityDropItem(newbook,0.2F);
 				
 
 				return true;
@@ -177,8 +183,8 @@ public class ItemSpellBook extends Item{
 		return false;
 	}
 	
-	public ItemSpellBook(int par1) {
-		super(par1);
+	public ItemSpellBook() {
+		super();
 		this.maxStackSize = 1;
 		this.setMaxDamage(100);
 
@@ -203,7 +209,7 @@ public class ItemSpellBook extends Item{
 	}
 	
 	@Override
-    public Icon getIconIndex(ItemStack par1ItemStack)
+    public IIcon getIconIndex(ItemStack par1ItemStack)
     {
         return this.getIconFromDamage(par1ItemStack.getItemDamage());
     }
@@ -219,9 +225,9 @@ public class ItemSpellBook extends Item{
 	}
 	
 	@Override
-    public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List)
+    public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
     {
-    	for(Spell spell:SpellRegistry.spellMap.values()){
+    	for(Spell spell:Spells.spellMap.values()){
     		ItemStack is = new ItemStack(this,1);
     		ItemSpellBook.writeSpell(is, spell);
     		par3List.add(is);
@@ -248,6 +254,14 @@ public class ItemSpellBook extends Item{
 		return par1ItemStack;
 	}
 	
+    @SideOnly(Side.CLIENT)
+    @Override
+    public int getColorFromItemStack(ItemStack par1ItemStack, int par2)
+    {
+    	
+        return ItemSpellBook.getSpell(par1ItemStack).element.getElementColor();
+    }
+    
 	@Override
 	public void onPlayerStoppedUsing(ItemStack is, World par2World,
 			EntityPlayer par3EntityPlayer, int par4) {
@@ -266,13 +280,13 @@ public class ItemSpellBook extends Item{
 			if(!par3EntityPlayer.capabilities.isCreativeMode && magicItem!=null)canInvoke = true;
 			
 			if(par3EntityPlayer.isSneaking()){
-				if(LivingDebuff.getLivingDebuff(par3EntityPlayer, DebuffRegistry.spellTarget).isPresent()){
-					LivingStateTarget debuff = (LivingStateTarget) LivingDebuff.getLivingDebuff(par3EntityPlayer, DebuffRegistry.spellTarget).get();
+				if(LivingDebuff.getLivingDebuff(par3EntityPlayer, Debuffs.spellTarget).isPresent()){
+					LivingStateTarget debuff = (LivingStateTarget) LivingDebuff.getLivingDebuff(par3EntityPlayer, Debuffs.spellTarget).get();
 					int targetid = debuff.targetid;
 					if(targetid>0){
 						EntityLivingBase target = (EntityLivingBase) par2World.getEntityByID(targetid);
 						if(target!=null){
-							Unsaga.debug(target.getEntityName());
+							Unsaga.debug(target.getCommandSenderName());
 							
 							if(!par2World.isRemote  && canInvoke){
 								InvokeSpell invokeSpell = new InvokeSpell(spell, par2World, par3EntityPlayer, is,target);
@@ -286,6 +300,7 @@ public class ItemSpellBook extends Item{
 				}
 				
 			}else{
+				//なぜか追突ケンのあと昌栄できない？
 				if(!par2World.isRemote  && canInvoke){
 					InvokeSpell invokeSpell = new InvokeSpell(spell, par2World, par3EntityPlayer, is);
 					invokeSpell.setMagicItem(magicItem);
@@ -298,8 +313,29 @@ public class ItemSpellBook extends Item{
 	}
 	
     @Override
-	public void registerIcons(IconRegister par1IconRegister) {
+	public void registerIcons(IIconRegister par1IconRegister) {
 		this.itemIcon = par1IconRegister.registerIcon(Unsaga.domain+":book_spell");
 
 	}
+    
+    public static void writePosition(ItemStack is,XYZPos pos){
+    	UtilNBT.setFreeTag(is, POSKEY, pos.toString());
+    }
+    
+    public static XYZPos readPosition(ItemStack is){
+    	if(UtilNBT.hasKey(is, POSKEY)){
+    		return XYZPos.strapOff(UtilNBT.readFreeStrTag(is, POSKEY));
+    	}
+    	return null;
+    }
+    @Override
+    public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
+    {
+    	if(ItemSpellBook.getSpell(par1ItemStack).isUsePointer() && par2EntityPlayer.isSneaking() && !par3World.isRemote){
+    		ChatMessageHandler.sendChatToPlayer(par2EntityPlayer, Translation.localize("msg.spell.setposition"));
+    		//par2EntityPlayer.addChatMessage(Translation.localize("msg.spell.setposition"));
+    		writePosition(par1ItemStack,new XYZPos(par4,par5,par6));
+    	}
+        return false;
+    }
 }

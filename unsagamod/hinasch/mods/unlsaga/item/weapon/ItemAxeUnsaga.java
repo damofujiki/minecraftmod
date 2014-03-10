@@ -4,70 +4,36 @@ import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
-import hinasch.mods.unlsaga.entity.EntityFlyingAxe;
+import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
+import hinasch.mods.unlsaga.entity.projectile.EntityFlyingAxe;
+import hinasch.mods.unlsaga.item.weapon.base.ItemAxeBase;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
-import hinasch.mods.unlsaga.misc.ability.IGainAbility;
-import hinasch.mods.unlsaga.misc.ability.skill.HelperSkill;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillAxe;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
-import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
-import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
-import hinasch.mods.unlsaga.misc.debuff.LivingState;
-import hinasch.mods.unlsaga.misc.debuff.LivingStateFlyingAxe;
-import hinasch.mods.unlsaga.misc.debuff.LivingStateTarget;
-import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.debuff.Debuffs;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingState;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateFlyingAxe;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateTarget;
+import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
-import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
-
-import java.util.HashMap;
-import java.util.List;
-
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.creativetab.CreativeTabs;
+import hinasch.mods.unlsaga.misc.util.LockOnHelper;
+import hinasch.mods.unlsaga.network.packet.PacketSkill;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
-import net.minecraft.item.EnumToolMaterial;
-import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 
-public class ItemAxeUnsaga extends ItemAxe implements IUnsagaMaterial,IGainAbility{
+public class ItemAxeUnsaga extends ItemAxeBase{
 
-	public final UnsagaMaterial unsMaterial;
-	protected final HashMap<String,Icon> iconMap = new HashMap();
-	protected final HelperUnsagaWeapon helper;
-	protected Icon[] icons;
-	public final float weapondamage;
-
-	public ItemAxeUnsaga(int par1, EnumToolMaterial par2EnumToolMaterial,UnsagaMaterial mat) {
-		super(par1, par2EnumToolMaterial);
-		this.unsMaterial = mat;
-		this.icons = new Icon[2];
-		this.weapondamage = par2EnumToolMaterial.getDamageVsEntity();
-		this.helper = new HelperUnsagaWeapon(this.unsMaterial,this.itemIcon,EnumUnsagaWeapon.AXE);
-		Unsaga.proxy.registerSpecialRenderer(this.itemID);
-		UnsagaItems.putItemMap(this.itemID,EnumUnsagaWeapon.AXE.toString()+"."+mat.name);
-		//UnsagaItems.registerValidTool(EnumUnsagaWeapon.SPEAR, mat, this.itemID);
-		// TODO 自動生成されたコンストラクター・スタブ
-	}
-
-	@Override
-	public boolean requiresMultipleRenderPasses()
-	{
-		return true;
-	}
-
-	@Override
-	public Icon getIconFromDamageForRenderPass(int par1, int par2)
-	{
-		if(par2==0){
-			return this.icons[0];
-		}
-		return this.icons[1];
+	
+	public ItemAxeUnsaga(UnsagaMaterial mat) {
+		super(mat);
+		Unsaga.proxy.registerSpecialRenderer(this);
+		UnsagaItems.putItemMap(this,EnumUnsagaTools.AXE.toString()+"."+mat.name);
 	}
 
 	@Override
@@ -83,59 +49,21 @@ public class ItemAxeUnsaga extends ItemAxe implements IUnsagaMaterial,IGainAbili
 
 
 	@Override
-	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
+	public int getMaxItemUseDuration(ItemStack par1ItemStack)
 	{
-		HelperSkill helper = new HelperSkill(stack,player);
-		if(helper.hasAbility(AbilityRegistry.fujiView) && player.isSneaking() && !LivingDebuff.hasDebuff(player, DebuffRegistry.cooling)){
-			SkillAxe fujiView = new SkillAxe();
-			if(!player.worldObj.isRemote){
-				fujiView.doFujiView(player, entity, player.worldObj);
-				stack.damageItem(AbilityRegistry.fujiView.damageWeapon, player);
-			}
-
-			LivingDebuff.addDebuff(player, DebuffRegistry.cooling, 10);
-
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.tomahawk, par1ItemStack)){
+			return 72000;
 		}
-		return false;
-	}
-
-
-
-	@Override
-	public int getColorFromItemStack(ItemStack par1ItemStack, int par2)
-	{
-		return helper.getColorFromItemStack(par1ItemStack, par2);
-	}
-
-	@Override
-	public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
-		helper.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
-	}
-
-	@Override
-	public void registerIcons(IconRegister par1IconRegister)
-	{
-		this.itemIcon = par1IconRegister.registerIcon(Unsaga.domain+":"+"axe");
-		this.icons[0] = par1IconRegister.registerIcon(Unsaga.domain+":"+"axe_1");
-		this.icons[1] = par1IconRegister.registerIcon(Unsaga.domain+":"+"axe_2");
-	}
-
-	@Override
-	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List)
-	{
-		helper.getSubItems(par1, par2CreativeTabs, par3List);
-
-	}
-
-	@Override
-	public EnumUnsagaWeapon getCategory() {
-		// TODO 自動生成されたメソッド・スタブ
-		return EnumUnsagaWeapon.AXE;
+		return 0;
 	}
 
 	@Override
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
 	{
+		if(this.unsMaterial==UnsagaMaterials.failed){
+			UnsagaMaterial unsuited = UnsagaItems.getRandomUnsuitedMaterial(UnsagaItems.getUnsuitedMaterial(this.getCategory()), this.itemRand);
+			HelperUnsagaWeapon.initWeapon(par1ItemStack, unsuited.name, unsuited.weight);
+		}
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.tomahawk, par1ItemStack)){
 			Unsaga.debug("トマホーク覚えてる");
 			par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
@@ -144,19 +72,23 @@ public class ItemAxeUnsaga extends ItemAxe implements IUnsagaMaterial,IGainAbili
 
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.skyDrive, par1ItemStack) && !par3EntityPlayer.onGround
 				&& !LivingDebuff.isCooling(par3EntityPlayer)){
-			if(!LivingDebuff.hasDebuff(par3EntityPlayer, DebuffRegistry.flyingAxe)){
+			if(!LivingDebuff.hasDebuff(par3EntityPlayer, Debuffs.flyingAxe)){
 				this.setReadyToSkyDrive(par3EntityPlayer);
 			}
-			if(LivingDebuff.hasDebuff(par3EntityPlayer, DebuffRegistry.flyingAxe) && par3EntityPlayer.isSneaking()){
-				SkillEffectHelper helper = new SkillEffectHelper(par2World,par3EntityPlayer,AbilityRegistry.skyDrive,par1ItemStack);
+			if(LivingDebuff.hasDebuff(par3EntityPlayer, Debuffs.flyingAxe) && par3EntityPlayer.isSneaking()){
+				LockOnHelper.searchEntityNear(par3EntityPlayer, Debuffs.weaponTarget);
+				ItemStack copyaxe = par1ItemStack.copy();
+				SkillEffectHelper helper = new SkillEffectHelper(par2World,par3EntityPlayer,AbilityRegistry.skyDrive,copyaxe);
 				EntityLivingBase target = null;
-				if(LivingDebuff.getLivingDebuff(par3EntityPlayer, DebuffRegistry.weaponTarget).isPresent()){
-					LivingStateTarget state = (LivingStateTarget)LivingDebuff.getLivingDebuff(par3EntityPlayer, DebuffRegistry.weaponTarget).get();
+				
+				if(LivingDebuff.getLivingDebuff(par3EntityPlayer, Debuffs.weaponTarget).isPresent()){
+					LivingStateTarget state = (LivingStateTarget)LivingDebuff.getLivingDebuff(par3EntityPlayer, Debuffs.weaponTarget).get();
 					target = (EntityLivingBase) par2World.getEntityByID(state.targetid);
 				}
 				if(target!=null){
 					helper.setTarget(target);
 				}
+				--par1ItemStack.stackSize;
 				helper.doSkill();
 			}
 
@@ -166,21 +98,7 @@ public class ItemAxeUnsaga extends ItemAxe implements IUnsagaMaterial,IGainAbili
 
 		return par1ItemStack;
 	}
-
-	protected void setReadyToSkyDrive(EntityPlayer ep){
-		ep.motionY += 1.0;
-		LivingDebuff.addLivingDebuff(ep, new LivingStateFlyingAxe(DebuffRegistry.flyingAxe,30,(int)this.damageVsEntity));
-		LivingDebuff.addLivingDebuff(ep, new LivingState(DebuffRegistry.antiFallDamage,30,true));
-	}
-	@Override
-	public int getMaxItemUseDuration(ItemStack par1ItemStack)
-	{
-		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.tomahawk, par1ItemStack)){
-			return 72000;
-		}
-		return 0;
-	}
-
+	
 	@Override
 	public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
 	{
@@ -196,8 +114,31 @@ public class ItemAxeUnsaga extends ItemAxe implements IUnsagaMaterial,IGainAbili
 
 
 		}
+		
+		if(par2EntityPlayer.isSneaking() && !par2EntityPlayer.onGround && HelperAbility.hasAbilityFromItemStack(AbilityRegistry.woodBreakerPhoenix, par1ItemStack)){
+			par2EntityPlayer.swingItem();
+			PacketSkill ps = new PacketSkill(PacketSkill.PACKETID.WOODBREAKER,new XYZPos(par4,par5,par6));
+			Unsaga.packetPipeline.sendToServer(ps);
+			
+		}
 
 
+		return false;
+	}
+	@Override
+	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
+	{
+		//HelperSkill helper = new HelperSkill(stack,player);
+		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.fujiView, stack) && player.isSneaking() && !LivingDebuff.hasDebuff(player, Debuffs.cooling)){
+			SkillAxe fujiView = new SkillAxe();
+			if(!player.worldObj.isRemote && entity instanceof EntityLivingBase){
+				SkillEffectHelper helper = new SkillEffectHelper(player.worldObj,player,AbilityRegistry.fujiView,stack);
+				helper.setTarget((EntityLivingBase) entity);
+				helper.doSkill();
+			}
+
+
+		}
 		return false;
 	}
 
@@ -225,7 +166,7 @@ public class ItemAxeUnsaga extends ItemAxe implements IUnsagaMaterial,IGainAbili
 
 			par1ItemStack.damageItem(AbilityRegistry.tomahawk.damageWeapon, par3EntityPlayer);
 			EntityFlyingAxe entityflyingaxe = new EntityFlyingAxe(par2World, par3EntityPlayer, f*1.1F,par1ItemStack,false);
-			entityflyingaxe.setDamage(this.damageVsEntity);
+			entityflyingaxe.setDamage(this.unsMaterial.getToolMaterial().getDamageVsEntity());
 
 			par2World.playSoundAtEntity(par3EntityPlayer, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 
@@ -249,9 +190,11 @@ public class ItemAxeUnsaga extends ItemAxe implements IUnsagaMaterial,IGainAbili
 		}
 	}
 
-	@Override
-	public int getMaxAbility() {
-		// TODO 自動生成されたメソッド・スタブ
-		return 1;
+
+
+	protected void setReadyToSkyDrive(EntityPlayer ep){
+		ep.motionY += 1.0;
+		LivingDebuff.addLivingDebuff(ep, new LivingStateFlyingAxe(Debuffs.flyingAxe,30,(int)this.unsMaterial.getToolMaterial().getDamageVsEntity()));
+		LivingDebuff.addLivingDebuff(ep, new LivingState(Debuffs.antiFallDamage,30,true));
 	}
 }

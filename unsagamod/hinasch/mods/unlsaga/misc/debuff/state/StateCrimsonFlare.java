@@ -1,0 +1,34 @@
+package hinasch.mods.unlsaga.misc.debuff.state;
+
+import hinasch.mods.unlsaga.misc.debuff.Debuff;
+import hinasch.mods.unlsaga.misc.debuff.Debuffs;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateCrimsonFlare;
+
+public class StateCrimsonFlare extends State{
+
+	public StateCrimsonFlare(int num, String nameEn) {
+		super(num, nameEn);
+		// TODO 自動生成されたコンストラクター・スタブ
+	}
+	
+	@Override
+	public LivingDebuff init(String[] strs){
+		Debuff debuff = Debuffs.getDebuff(Integer.valueOf(strs[0]));
+		int remain = Integer.valueOf(strs[1]);
+		boolean isOnlyAir = false;
+		int x = 0;
+		int y = 0;
+		int z = 0;
+		int amp = 1;
+		int entityid = -1;
+		if(strs.length>2){
+			x = Integer.valueOf(strs[2]);
+			y = Integer.valueOf(strs[3]);
+			z = Integer.valueOf(strs[4]);
+			amp = Integer.valueOf(strs[5]);
+			entityid = Integer.valueOf(strs[6]);
+		}
+		return new LivingStateCrimsonFlare(debuff,remain,x,y,z,amp,entityid);
+	}
+}

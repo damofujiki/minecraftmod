@@ -9,7 +9,7 @@ import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
@@ -35,7 +35,7 @@ public class RenderItemWeapon implements IItemRenderer{
 
 	public void renderItemDo(ItemRenderType type, ItemStack item, int pass,Entity entity) {
 		Minecraft mc = Minecraft.getMinecraft();
-		Icon icon = null;
+		IIcon icon = null;
 		
 		if(this.debugdata==null){
 			this.debugdata = Unsaga.proxy.getDebugUnsaga().get();

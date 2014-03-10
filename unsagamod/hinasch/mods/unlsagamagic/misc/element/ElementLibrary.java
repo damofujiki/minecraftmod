@@ -1,7 +1,9 @@
 package hinasch.mods.unlsagamagic.misc.element;
 
-import hinasch.lib.LibraryFactory;
-import hinasch.mods.unlsagamagic.misc.element.UnsagaElement.EnumElement;
+import hinasch.lib.LibraryBook;
+import hinasch.lib.LibraryShelf;
+import hinasch.mods.unlsaga.core.FiveElements;
+import hinasch.mods.unlsaga.core.FiveElements.EnumElement;
 import hinasch.mods.unlsagamagic.misc.spell.SpellMixTable;
 
 import java.util.HashMap;
@@ -9,10 +11,11 @@ import java.util.HashMap;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockOre;
 import net.minecraft.block.material.Material;
+import net.minecraft.init.Blocks;
 
 import com.google.common.base.Optional;
 
-public class ElementLibrary extends LibraryFactory{
+public class ElementLibrary extends LibraryShelf{
 
 
 	public HashMap<Material,SpellMixTable> element_material;
@@ -20,57 +23,100 @@ public class ElementLibrary extends LibraryFactory{
 	public HashMap<Class,SpellMixTable> element_class;
 	
 	public ElementLibrary(){
-		this.element_material = new HashMap();
-		this.element_class = new HashMap();
-		this.element_block = new HashMap();
+		//this.element_material = new HashMap();
+		//this.element_class = new HashMap();
+		//this.element_block = new HashMap();
 		
-		element_material.put(Material.water, new SpellMixTable(-0.05F,0,0,0.5F,0,0));
-		element_material.put(Material.snow, new SpellMixTable(-0.04F,0,0,0.5F,0,0));
-		element_material.put(Material.ice, new SpellMixTable(-0.04F,0,0,0.5F,0,0));
-		element_material.put(Material.craftedSnow, new SpellMixTable(-0.04F,0,0,0.8F,0,0));
-		element_material.put(Material.grass, new SpellMixTable(EnumElement.WOOD,0.1F));
-		element_material.put(Material.wood, new SpellMixTable(EnumElement.WOOD,0.05F));
-		element_material.put(Material.plants, new SpellMixTable(EnumElement.WOOD,0.02F));
-		element_material.put(Material.lava, new SpellMixTable(EnumElement.FIRE,0.08F));
-		element_material.put(Material.leaves, new SpellMixTable(EnumElement.WOOD,0.01F));
-		element_material.put(Material.iron, new SpellMixTable(EnumElement.METAL,1.0F));
+		put(Material.water, new SpellMixTable(-0.05F,0,0,0.5F,0,0));
+		put(Material.snow, new SpellMixTable(-0.04F,0,0,0.5F,0,0));
+		put(Material.ice, new SpellMixTable(-0.04F,0,0,0.5F,0,0));
+		put(Material.craftedSnow, new SpellMixTable(-0.04F,0,0,0.8F,0,0));
+		put(Material.grass, new SpellMixTable(FiveElements.EnumElement.WOOD,0.1F));
+		put(Material.wood, new SpellMixTable(FiveElements.EnumElement.WOOD,0.05F));
+		put(Material.plants, new SpellMixTable(FiveElements.EnumElement.WOOD,0.02F));
+		put(Material.lava, new SpellMixTable(FiveElements.EnumElement.FIRE,0.08F));
+		put(Material.leaves, new SpellMixTable(FiveElements.EnumElement.WOOD,0.01F));
+		put(Material.iron, new SpellMixTable(FiveElements.EnumElement.METAL,1.0F));
 		
-		element_block.put(Block.lavaStill, new SpellMixTable(EnumElement.FIRE,1.0F));
-		element_block.put(Block.lavaMoving, new SpellMixTable(EnumElement.FIRE,0.5F));
-		element_block.put(Block.fire, new SpellMixTable(EnumElement.FIRE,1.0F));
-		element_block.put(Block.waterMoving, new SpellMixTable(-0.04F,0,0,0.5F,0,0));
-		element_block.put(Block.waterStill, new SpellMixTable(-0.04F,0,0,0.8F,0,0));
-		element_block.put(Block.wood, new SpellMixTable(EnumElement.WOOD,0.1F));
-		element_block.put(Block.planks, new SpellMixTable(EnumElement.WOOD,0.1F));
-		element_block.put(Block.netherrack, new SpellMixTable(EnumElement.FORBIDDEN,0.01F));
-		element_block.put(Block.netherBrick, new SpellMixTable(EnumElement.FORBIDDEN,0.05F));
-		element_block.put(Block.whiteStone, new SpellMixTable(EnumElement.FORBIDDEN,0.1F));
+		put(Blocks.lava, new SpellMixTable(FiveElements.EnumElement.FIRE,1.0F));
+		put(Blocks.flowing_lava, new SpellMixTable(FiveElements.EnumElement.FIRE,0.5F));
+		put(Blocks.fire, new SpellMixTable(FiveElements.EnumElement.FIRE,1.0F));
+		put(Blocks.flowing_water, new SpellMixTable(-0.04F,0,0,0.5F,0,0));
+		put(Blocks.water, new SpellMixTable(-0.04F,0,0,0.8F,0,0));
+		put(Blocks.log, new SpellMixTable(FiveElements.EnumElement.WOOD,0.1F));
+		put(Blocks.log2, new SpellMixTable(FiveElements.EnumElement.WOOD,0.1F));
+		put(Blocks.planks, new SpellMixTable(FiveElements.EnumElement.WOOD,0.1F));
+		put(Blocks.netherrack, new SpellMixTable(FiveElements.EnumElement.FORBIDDEN,0.01F));
+		put(Blocks.nether_brick, new SpellMixTable(FiveElements.EnumElement.FORBIDDEN,0.05F));
+		put(Blocks.end_stone, new SpellMixTable(FiveElements.EnumElement.FORBIDDEN,0.1F));
 		
-		element_class.put(BlockOre.class, new SpellMixTable(EnumElement.METAL,0.2F));
+		put(BlockOre.class, new SpellMixTable(FiveElements.EnumElement.METAL,0.2F));
 		
 
 	}
+	
+	public void put(Object obj,SpellMixTable table){
+		this.addShelf(new ElementLibraryBook(obj,table));
+	}
+	@Override
+	public Optional<LibraryBook> find(Object object){
+		LibraryBook returnbook = null;
+		if(object instanceof Block){
+			Block block = (Block)object;
+			Material material = block.getMaterial();
+			for(LibraryBook book:libSet){
+				ElementLibraryBook bookelement = (ElementLibraryBook)book;
+				if(bookelement.childkey==bookelement.MATERIAL && material==bookelement.material){
+					returnbook = bookelement;
+				}
+				if(bookelement.childkey==bookelement.BLOCK && bookelement.block==block){
+					returnbook = bookelement;
+				}
+				if(bookelement.childkey==bookelement._CLASS && sameOrInstanceOf(bookelement._class,block.getClass())){
+					returnbook = bookelement;
+				}
+			}
+			
+		}
+		if(returnbook!=null){
+			return Optional.of(returnbook);
+		}
+		return Optional.absent();
+		//return super.find(object);
+	}
 
-	public Optional<SpellMixTable> findBlock(Block block){
-		if(element_block.containsKey(block)){
-			return Optional.of(element_block.get(block));
+	public boolean sameOrInstanceOf(Class class1,Class class2){
+		if(class1.isInstance(class2)){
+			return true;
 		}
-		return Optional.absent();
-	}
-	
-	public Optional<SpellMixTable> findClass(Class classblock){
-		if(element_class.containsKey(classblock)){
-			return Optional.of(element_class.get(classblock));
+		if(class2.isInstance(class1)){
+			return true;
 		}
-		return Optional.absent();
-	}
-	
-	public Optional<SpellMixTable> findMaterial(Material material){
-		if(element_material.containsKey(material)){
-			return Optional.of(element_material.get(material));
+		if(class1==class2){
+			return true;
 		}
-		return Optional.absent();
+		return false;
 	}
+//	public Optional<SpellMixTable> findBlock(Block block){
+//		if(element_block.containsKey(block)){
+//			return Optional.of(element_block.get(block));
+//		}
+//		return Optional.absent();
+//	}
+//	
+//	public Optional<SpellMixTable> findClass(Class classblock){
+//		if(element_class.containsKey(classblock)){
+//			return Optional.of(element_class.get(classblock));
+//		}
+//		return Optional.absent();
+//	}
+//	
+//	public Optional<SpellMixTable> findMaterial(Material material){
+//		if(element_material.containsKey(material)){
+//			return Optional.of(element_material.get(material));
+//		}
+//		return Optional.absent();
+//	}
 	//	public Optional<Library> findBlock(Object blockdata){
 	//
 	//		for(Library book:libSet){

@@ -1,9 +1,11 @@
 package hinasch.mods.unlsaga.misc.util;
 
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.core.init.MaterialList;
+import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.core.init.NoFuncItemList;
+import hinasch.mods.unlsaga.core.init.UnsagaConfigs;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.misc.module.HookUnsagaMagic;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -26,13 +28,13 @@ public class HelperChestUnsaga {
 	public HelperChestUnsaga(int chestLevel){
 		this.chestContents = new HashSet();
 		this.chestLevel = chestLevel;
-		if(Unsaga.module.isPresent())this.hook = new HookUnsagaMagic();
+		if(UnsagaConfigs.module.isMagicEnabled())this.hook = new HookUnsagaMagic();
 
 		this.buildContents();
 	}
 	
 	protected void buildContents(){
-		for(Iterator<UnsagaMaterial> ite=MaterialList.allMaterialMap.values().iterator();ite.hasNext();){
+		for(Iterator<UnsagaMaterial> ite=UnsagaMaterials.allMaterialMap.values().iterator();ite.hasNext();){
 			UnsagaMaterial us = ite.next();
 			if(us.getAssociatedItem().isPresent()){
 				ItemStack is = us.getAssociatedItem().get();
@@ -47,7 +49,7 @@ public class HelperChestUnsaga {
 			ItemStack is = NoFuncItemList.getItemStack(1, item.number);
 			addChestContent(is,us.rank);
 		}
-		if(Unsaga.module.isPresent()){
+		if(UnsagaConfigs.module.isMagicEnabled()){
 			ItemStack is = this.hook.getUnsagaMagicItem();
 			addChestContent(is,8);
 		}

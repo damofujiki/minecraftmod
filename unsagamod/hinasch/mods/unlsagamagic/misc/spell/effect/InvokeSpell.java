@@ -2,17 +2,16 @@ package hinasch.mods.unlsagamagic.misc.spell.effect;
 
 import hinasch.lib.HSLibs;
 import hinasch.lib.ScanHelper;
-import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
-import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
+import hinasch.mods.unlsaga.misc.debuff.Debuffs;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.translation.Translation;
+import hinasch.mods.unlsaga.misc.util.ChatUtil;
 import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsaga;
 import hinasch.mods.unlsagamagic.UnsagaMagic;
 import hinasch.mods.unlsagamagic.item.ItemSpellBook;
 import hinasch.mods.unlsagamagic.misc.element.UnsagaElement;
 import hinasch.mods.unlsagamagic.misc.spell.Spell;
-import hinasch.mods.unlsagamagic.misc.spell.SpellBlend;
 import hinasch.mods.unlsagamagic.misc.spell.SpellMixTable;
-import hinasch.mods.unlsagamagic.misc.spell.SpellRegistry;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
@@ -30,9 +29,11 @@ public class InvokeSpell {
 	protected Spell spell;
 	protected ItemStack spellbook;
 	protected UnsagaElement worldElement;
-	protected SpellEffect spellEffect;
+	//protected SpellEffect spellEffect;
 	protected EntityLivingBase target;
 	protected ItemStack magicItem;
+	protected AbstractSpell spellEffect;
+	//public boolean isSneak;
 	
 	public InvokeSpell(Spell spell,World world,EntityPlayer ep,ItemStack is){
 		this.spell = spell;
@@ -40,22 +41,40 @@ public class InvokeSpell {
 		this.world = world;
 		this.spellbook = is;
 		this.worldElement = UnsagaMagic.worldElement;
-		if(spell instanceof SpellBlend){
-			this.spellEffect = SpellRegistry.spellEffectBlend;
-		}else{
-			this.spellEffect = SpellRegistry.spellEffectNormal;
-		}
-		
+		this.spellEffect = this.spell.getSpellEffect();
+		this.spellEffect.setWorldHelper(world);
+		//this.isSneak = false;
+	}
+	
+
+	public AbstractSpell getSpellEffectInstance(){
+		try {
+			return this.spell.getSpellClass().newInstance();
+		} catch (InstantiationException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} catch (SecurityException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} 
+		return null;
 	}
 	
 	public void tryUnlockMagicLock(){
 		ScanHelper scan = new ScanHelper(this.invoker,3,3);
 		for(;scan.hasNext();scan.next()){
-			TileEntity te = this.world.getBlockTileEntity(scan.sx, scan.sy, scan.sz);
+			TileEntity te = this.world.getTileEntity(scan.sx, scan.sy, scan.sz);
 			if(te instanceof TileEntityChestUnsaga){
 				TileEntityChestUnsaga chest = (TileEntityChestUnsaga)te;
 				if(chest.tryUnlockMagicalLock()){
-					this.invoker.addChatMessage(Translation.localize("msg.chest.magiclock.unlocked"));
+					ChatUtil.addMessage(invoker, "msg.chest.magiclock.unlocked");
+					
 				}
 			}
 		}
@@ -79,7 +98,7 @@ public class InvokeSpell {
 	
 	public float getAmp(){
 		float amp = ItemSpellBook.getAmp(this.spellbook);
-		if(LivingDebuff.hasDebuff(invoker, DebuffRegistry.downMagic)){
+		if(LivingDebuff.hasDebuff(invoker, Debuffs.downMagic)){
 			amp = amp /2;
 			amp = MathHelper.clamp_float(amp, 0.1F, 10.0F);
 			
@@ -95,19 +114,22 @@ public class InvokeSpell {
 	}
 	
 	public int getCost(){
+		//todo:まわりの五行地も反映するように
 		int spellcost = this.spell.damegeItem;
 		return Math.round(((float)spellcost*ItemSpellBook.getCost(this.spellbook)));
 	}
 	public void run(){
 		if(!this.world.isRemote && this.tryInvoke()){
 			this.tryUnlockMagicLock();
-			this.invoker.addChatMessage(Translation.localize("msg.spell.succeeded")+"("+prob+"%)");
-			this.spellEffect.doEffect(this);
+			ChatUtil.addMessageNoLocalized(invoker, Translation.localize("msg.spell.succeeded")+"("+prob+"%)");
+			
+			this.spellEffect.doSpell(this);
 			if(this.getMagicItem().isPresent()){
 				this.getMagicItem().get().damageItem(this.getCost(), this.invoker);
 			}
 		}else{
-			this.invoker.addChatMessage(Translation.localize("msg.spell.failed")+"("+prob+"%)");
+			ChatUtil.addMessageNoLocalized(invoker, Translation.localize("msg.spell.failed")+"("+prob+"%)");
+
 		}
 	}
 	

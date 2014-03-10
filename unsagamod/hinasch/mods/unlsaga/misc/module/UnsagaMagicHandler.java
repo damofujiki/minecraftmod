@@ -2,12 +2,14 @@ package hinasch.mods.unlsaga.misc.module;
 
 import hinasch.mods.unlsagamagic.UnsagaMagic;
 import hinasch.mods.unlsagamagic.item.ItemTablet;
+import hinasch.mods.unlsagamagic.misc.spell.Deciphering;
 
 import java.util.Random;
 
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.event.entity.living.LivingDeathEvent;
 
 public class UnsagaMagicHandler {
 
@@ -40,4 +42,11 @@ public class UnsagaMagicHandler {
 	public ItemStack getRandomMagicTablet(Random rand){
 		return ItemTablet.getRandomMagicTablet(rand);
 	}
+	
+	public void progressDecipherOnLivingDeath(LivingDeathEvent e){
+		Deciphering.progressDecipheringOnFighted(e);
+	}
+
+
+
 }

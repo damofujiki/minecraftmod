@@ -1,37 +1,43 @@
 package hinasch.mods.unlsaga.block;
 
-import hinasch.mods.unlsaga.network.PacketHandler;
+import hinasch.lib.XYZPos;
+import hinasch.mods.unlsaga.Unsaga;
+import hinasch.mods.unlsaga.network.packet.PacketGuiOpen;
+import hinasch.mods.unlsaga.network.packet.PacketSyncChest;
 import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsaga;
 
 import java.util.Random;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.inventory.IInventory;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.network.PacketDispatcher;
-import cpw.mods.fml.common.network.Player;
 
 public class BlockChestUnsaga extends BlockContainer{
 
     private final Random random = new Random();
     
-	public BlockChestUnsaga(int par1,int providepower) {
-		super(par1, Material.wood);
+	public BlockChestUnsaga(int providepower) {
+		super(Material.wood);
+		
 		// TODO Auto-generated constructor stub
 	}
 
-	
+
+    
 	@Override
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerBlockIcons(IIconRegister par1IconRegister)
     {
         this.blockIcon = par1IconRegister.registerIcon("planks_oak");
     }
@@ -42,10 +48,12 @@ public class BlockChestUnsaga extends BlockContainer{
 	@Override
 	public boolean onBlockActivated(World par1World, int par2, int par3, int par4, EntityPlayer par5EntityPlayer, int par6, float par7, float par8, float par9)
 	{
+		Unsaga.debug("アクチベートされてます");
 
-		TileEntityChestUnsaga var10 = (TileEntityChestUnsaga)par1World.getBlockTileEntity(par2, par3, par4);
+		TileEntityChestUnsaga var10 = (TileEntityChestUnsaga)par1World.getTileEntity(par2, par3, par4);
 
 		if(var10 == null){
+			Unsaga.debug("タイルエンチチーがとれない");
 			return true;
 		}
 
@@ -54,14 +62,24 @@ public class BlockChestUnsaga extends BlockContainer{
 			return false;
 		}
 
-		if(!var10.worldObj.isRemote){
+		if(!var10.getWorldObj().isRemote){
+			Unsaga.debug("同期します");
 			int chestlevel = 0;
 			if(!var10.hasSetChestLevel()){
-				var10.initChestLevel(par5EntityPlayer);
+				var10.initChestLevel(par1World);
 			}
 			chestlevel = var10.getChestLevel();
-			PacketDispatcher.sendPacketToPlayer(PacketHandler.getChestSyncPacket(chestlevel, par2, par3, par4,false,var10.trapOccured,var10.unlocked,var10.defused,var10.magicLock,var10.hasItemSet), (Player) par5EntityPlayer);
-			PacketDispatcher.sendPacketToServer(PacketHandler.getChestGuiPacket(par2,par3,par4));
+			PacketSyncChest ps = new PacketSyncChest(new XYZPos(par2,par3,par4),chestlevel);
+			Unsaga.packetPipeline.sendTo(ps, (EntityPlayerMP) par5EntityPlayer);
+			Unsaga.debug("パケット送ります");
+			PacketGuiOpen pg = new PacketGuiOpen(Unsaga.guiNumber.chest,new XYZPos(par2,par3,par4));
+			Unsaga.packetPipeline.sendToServer(pg);
+			//PacketDispatcher.sendPacketToPlayer(PacketHandler.getChestSyncPacket(chestlevel, par2, par3, par4,false,var10.trapOccured,var10.unlocked,var10.defused,var10.magicLock,var10.hasItemSet), (Player) par5EntityPlayer);
+			//PacketDispatcher.sendPacketToServer(PacketHandler.getChestGuiPacket(par2,par3,par4));
+
+		}
+		if(var10.getWorldObj().isRemote){
+
 		}
 
 
@@ -101,7 +119,7 @@ public class BlockChestUnsaga extends BlockContainer{
     
 	private IInventory getInventory(World par1World, int par2, int par3,
 			int par4) {
-		Object object = (TileEntityChest)par1World.getBlockTileEntity(par2, par3, par4);
+		Object object = (TileEntityChest)par1World.getTileEntity(par2, par3, par4);
 		return (IInventory)object;
 	}
 
@@ -115,7 +133,7 @@ public class BlockChestUnsaga extends BlockContainer{
 
 
 	@Override
-	public TileEntity createNewTileEntity(World par1World)
+	public TileEntity createNewTileEntity(World par1World,int var2)
 	{
 		TileEntityChestUnsaga var1 = new TileEntityChestUnsaga();
 		var1.init(par1World);
@@ -127,22 +145,22 @@ public class BlockChestUnsaga extends BlockContainer{
 	{
 		int l = 0;
 
-		if (par1World.getBlockId(par2 - 1, par3, par4) == this.blockID)
+		if (par1World.getBlock(par2 - 1, par3, par4) == this)
 		{
 			++l;
 		}
 
-		if (par1World.getBlockId(par2 + 1, par3, par4) == this.blockID)
+		if (par1World.getBlock(par2 + 1, par3, par4) == this)
 		{
 			++l;
 		}
 
-		if (par1World.getBlockId(par2, par3, par4 - 1) == this.blockID)
+		if (par1World.getBlock(par2, par3, par4 - 1) == this)
 		{
 			++l;
 		}
 
-		if (par1World.getBlockId(par2, par3, par4 + 1) == this.blockID)
+		if (par1World.getBlock(par2, par3, par4 + 1) == this)
 		{
 			++l;
 		}
@@ -157,10 +175,10 @@ public class BlockChestUnsaga extends BlockContainer{
     }
 
 	@Override
-	public void breakBlock(World par1World, int par2, int par3, int par4, int par5, int par6)
+	public void breakBlock(World par1World, int par2, int par3, int par4, Block par5, int par6)
 	{
 
-		TileEntityChestUnsaga var10 = (TileEntityChestUnsaga)par1World.getBlockTileEntity(par2, par3, par4);
+		TileEntityChestUnsaga var10 = (TileEntityChestUnsaga)par1World.getTileEntity(par2, par3, par4);
 		if(var10==null){
 			return;
 		}
@@ -174,9 +192,9 @@ public class BlockChestUnsaga extends BlockContainer{
 
 	}
 	
-    public void breakChest(World par1World, int par2, int par3, int par4, int par5, int par6)
+    public void breakChest(World par1World, int par2, int par3, int par4, Block par5, int par6)
     {
-        TileEntityChest tileentitychest = (TileEntityChest)par1World.getBlockTileEntity(par2, par3, par4);
+        TileEntityChest tileentitychest = (TileEntityChest)par1World.getTileEntity(par2, par3, par4);
 
         if (tileentitychest != null)
         {
@@ -200,7 +218,7 @@ public class BlockChestUnsaga extends BlockContainer{
                         }
 
                         itemstack.stackSize -= k1;
-                        entityitem = new EntityItem(par1World, (double)((float)par2 + f), (double)((float)par3 + f1), (double)((float)par4 + f2), new ItemStack(itemstack.itemID, k1, itemstack.getItemDamage()));
+                        entityitem = new EntityItem(par1World, (double)((float)par2 + f), (double)((float)par3 + f1), (double)((float)par4 + f2), new ItemStack(itemstack.getItem(), k1, itemstack.getItemDamage()));
                         float f3 = 0.05F;
                         entityitem.motionX = (double)((float)this.random.nextGaussian() * f3);
                         entityitem.motionY = (double)((float)this.random.nextGaussian() * f3 + 0.2F);
@@ -214,7 +232,7 @@ public class BlockChestUnsaga extends BlockContainer{
                 }
             }
 
-            par1World.func_96440_m(par2, par3, par4, par5);
+            par1World.func_147453_f(par2, par3, par4, par5);
         }
 
        
@@ -222,9 +240,9 @@ public class BlockChestUnsaga extends BlockContainer{
     
 
 	@Override
-	public int idDropped(int par1, Random par2Random, int par3)
-	{
-		return -1;
+    public Item getItemDropped(int p_149650_1_, Random p_149650_2_, int p_149650_3_)
+    {
+		return null;
 	}
 
 	@Override
@@ -241,6 +259,10 @@ public class BlockChestUnsaga extends BlockContainer{
     {
         return 22;
     }
+
+
+
+
 
 
 

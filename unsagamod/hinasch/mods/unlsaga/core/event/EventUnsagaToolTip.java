@@ -1,28 +1,41 @@
 package hinasch.mods.unlsaga.core.event;
 
+import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.gui.GuiBartering;
 import hinasch.mods.unlsaga.client.gui.GuiSmithUnsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.bartering.MerchandiseInfo;
 import hinasch.mods.unlsaga.misc.smith.MaterialInfo;
-import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.translation.Translation;
+import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.player.ItemTooltipEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class EventUnsagaToolTip {
 
 	protected MaterialInfo info;
 	
-	@ForgeSubscribe
+	protected boolean isClientInGuiBartering(){
+		return Minecraft.getMinecraft().currentScreen instanceof GuiBartering;
+	}
+	
+	protected boolean isClientInGuiSmithing(){
+		return Minecraft.getMinecraft().currentScreen instanceof GuiSmithUnsaga;
+	}
+	
+	@SubscribeEvent
 	public void toolTipEvent(ItemTooltipEvent event){
-		if(Minecraft.getMinecraft().currentScreen instanceof GuiBartering){
-			this.bartering(event);
+		if(Unsaga.debug.get()){
+			event.toolTip.add(event.itemStack.getUnlocalizedName());
+		}
+		if(isClientInGuiBartering()){
+			this.addBarteringTips(event);
 			return;
 		}
-		if(!(Minecraft.getMinecraft().currentScreen instanceof GuiSmithUnsaga))return;
+		if(!isClientInGuiSmithing())return;
 		GuiSmithUnsaga guismith = (GuiSmithUnsaga)Minecraft.getMinecraft().currentScreen;
 		int currentcategory = guismith.getCurrentCategory();
 		ItemStack is = event.itemStack;
@@ -31,18 +44,11 @@ public class EventUnsagaToolTip {
 			
 			//if(info.getMaterial().isPresent()){
 				UnsagaMaterial material = info.getMaterial().get();
-				if(Minecraft.getMinecraft().gameSettings.language.equals("ja_JP")){
-					event.toolTip.add("素材使用可："+material.headerJp);
-				}else{
-					event.toolTip.add("Valid Material:"+material.headerEn);
-				}
-				if(UnsagaItems.isValidItemForMaterial(EnumUnsagaWeapon.toolArray.get(currentcategory), material)){
-					if(Minecraft.getMinecraft().gameSettings.language.equals("ja_JP")){
-						event.toolTip.add("ベース素材可："+EnumUnsagaWeapon.toolArray.get(currentcategory));
-					}else{
-						event.toolTip.add("can use for "+EnumUnsagaWeapon.toolArray.get(currentcategory)+" base");
-					}
-					
+				event.toolTip.add(Translation.localize("tips.validmaterial")+material.getLocalized());
+				
+				if(UnsagaItems.isValidItemForMaterial(EnumUnsagaTools.toolArray.get(currentcategory), material)){
+				event.toolTip.add(Translation.localize("tips.canuseforbase")+EnumUnsagaTools.toolArray.get(currentcategory).getLocalized());
+
 				}
 			//}
 			//MaterialLibrary info = MaterialLibrary.findInfo(event.itemStack).get();
@@ -51,7 +57,7 @@ public class EventUnsagaToolTip {
 		
 	}
 
-	protected void bartering(ItemTooltipEvent event) {
+	protected void addBarteringTips(ItemTooltipEvent event) {
 		// TODO 自動生成されたメソッド・スタブ
 		if(MerchandiseInfo.hasBuyPriceTag(event.itemStack)){
 			MerchandiseInfo merchandiseInfo = new MerchandiseInfo(event.itemStack);

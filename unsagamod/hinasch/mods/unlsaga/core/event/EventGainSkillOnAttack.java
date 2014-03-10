@@ -5,12 +5,12 @@ import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.ability.skill.HelperSkill;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class EventGainSkillOnAttack {
 
-	@ForgeSubscribe
+	@SubscribeEvent 
 	public void inspireEvent(LivingAttackEvent e){
 		if(e.source==null)return;
 		if(e.source.getEntity() instanceof EntityPlayer){

@@ -7,22 +7,22 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.MathHelper;
 
 public class ItemIngotsUnsaga extends Item{
 
-	private HashMap<Integer,Icon> iconMap = new HashMap();
+	private HashMap<Integer,IIcon> iconMap = new HashMap();
 	private String[] iconnames;
 	private int[] rendercolors;
 
 	
-	public ItemIngotsUnsaga(int par1) {
-		super(par1);
+	public ItemIngotsUnsaga() {
+		super();
 		this.setHasSubtypes(true);
 		this.setMaxDamage(0);
 		
@@ -32,7 +32,7 @@ public class ItemIngotsUnsaga extends Item{
 	}
 	
 	@Override
-    public Icon getIconFromDamage(int par1)
+    public IIcon getIconFromDamage(int par1)
     {
 
 		return iconMap.get(par1);
@@ -40,7 +40,7 @@ public class ItemIngotsUnsaga extends Item{
     
 
     @Override
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerIcons(IIconRegister par1IconRegister)
     {
         //this.itemIcon = par1IconRegister.registerIcon(UnsagaCore.domain+"ingot");
         for(Iterator<Integer> ite=NoFuncItemList.getList().keySet().iterator();ite.hasNext();){
@@ -95,7 +95,7 @@ public class ItemIngotsUnsaga extends Item{
 //    }
 	
 	@Override
-	public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List)
+	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
 	{
 		for (int var4 = 0; var4 < NoFuncItemList.length(); ++var4)
 		{

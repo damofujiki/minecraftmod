@@ -1,11 +1,11 @@
 package hinasch.mods.unlsaga.misc.ability;
 
-import hinasch.mods.unlsaga.core.init.MaterialList;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.misc.ability.skill.Skill;
-import hinasch.mods.unlsaga.misc.ability.skill.Skill.EnumDamageUnsaga;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillSword;
-import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.DamageHelper;
+import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -64,44 +64,45 @@ public class AbilityRegistry {
 	public static final Ability antiSleep = new Ability(30,"Anti Paralyze","マヒ防御");
 	public static final Ability antiBlind = new Ability(31,"Anti Blindness","暗闇防御");
 	public static final Ability protectionSlash = new Ability(32,"Slash Protection","斬撃防御");
-	public static final Ability protectionProjectile = new Ability(33,"Projectile Protection","射突防御");
+	//public static final Ability protectionProjectile = new Ability(33,"Projectile Protection","射突防御");
 	public static final Ability bodyGuard = new Ability(34,"Anti Debuff:Body","保護 体");
 	public static final Ability antiWither = new Ability(35,"Anti Wither","ウィザー耐性");
 	public static final Ability superHealing = new Ability(36,"Super Healing","超回復");
 
 	
-	public static final Skill kaleidoscope = new Skill(100,"Bopeep","変幻自在",20,6,EnumDamageUnsaga.SWORD,5);
-	public static final Skill slash = new Skill(101,"Slash","払い抜け",5,3,EnumDamageUnsaga.SWORD,3);
-	public static final Skill smash = new Skill(102,"Smash","スマッシュ",15,3,EnumDamageUnsaga.SWORD,8);
-	public static final Skill roundabout = new Skill(103,"Roundabout","転",0,0,EnumDamageUnsaga.SWORD,6);
-	public static final Skill chargeBlade = new Skill(104,"Charge Blade","追突剣",5,0,EnumDamageUnsaga.SWORDPUNCH,8);
-	public static final Skill gust = new Skill(105,"Gust","逆風の太刀",9,0,EnumDamageUnsaga.SWORD,5);
-	public static final Skill vandalize = new Skill(106,"Vandalize","ヴァンダライズ",10,0,EnumDamageUnsaga.SWORD,15);
-	public static final Skill tomahawk = new Skill(107,"Tomahawk","トマホーク",5,0,EnumDamageUnsaga.SWORDPUNCH,15);
-	public static final Skill fujiView = new Skill(108,"Fuji View","富嶽百景",8,0,EnumDamageUnsaga.SWORDPUNCH,15);
-	public static final Skill skyDrive = new Skill(109,"Skydrive","スカイドライブ",10,0,EnumDamageUnsaga.SWORDPUNCH,15);
-	public static final Skill woodBreakerPhoenix = new Skill(110,"Wood Breaker Phoenix","マキ割りフェニックス",10,0,EnumDamageUnsaga.SWORDPUNCH,15);
-	public static final Skill woodChopper = new Skill(110,"Wood Chopper","大木断",5,0,EnumDamageUnsaga.SWORDPUNCH,15);
-	public static final Skill aiming = new Skill(120,"Aiming","エイミング",10,2,EnumDamageUnsaga.SPEAR,15);
-	public static final Skill acupuncture = new Skill(121,"Acupuncture","独妙点穴",20,2,EnumDamageUnsaga.SPEAR,25);
-	public static final Skill swing = new Skill(122,"Swing","スウィング",20,2,EnumDamageUnsaga.SWORDPUNCH,15);
-	public static final Skill grassHopper = new Skill(123,"Grass Hopper","草伏せる",0,0,EnumDamageUnsaga.SWORD,5);
-	public static final Skill earthDragon = new Skill(133,"Earth Dragon","土竜撃",1,0,EnumDamageUnsaga.PUNCH,5);
-	public static final Skill skullCrash = new Skill(134,"Skull Crash","スカルクラッシュ",2,0,EnumDamageUnsaga.PUNCH,5);
-	public static final Skill pulvorizer = new Skill(135,"Pulvorizer","粉砕撃",5,0,EnumDamageUnsaga.PUNCH,5);
-	public static final Skill grandSlam = new Skill(136,"Grand Slam","グランドスラム",8,0,EnumDamageUnsaga.PUNCH,5);
-	public static final Skill gonger = new Skill(137,"Gonger","どら鳴らし",1,0,EnumDamageUnsaga.PUNCH,5);
+	public static final Skill kaleidoscope = new Skill(100,"Bopeep","変幻自在",20,6,DamageHelper.Type.SWORD,5);
+	public static final Skill slash = new Skill(101,"Slash","払い抜け",5,3,DamageHelper.Type.SWORD,3);
+	public static final Skill smash = new Skill(102,"Smash","スマッシュ",15,3,DamageHelper.Type.SWORD,8);
+	public static final Skill roundabout = new Skill(103,"Roundabout","転",0,0,DamageHelper.Type.SWORD,6);
+	public static final Skill chargeBlade = new Skill(104,"Charge Blade","追突剣",5,0,DamageHelper.Type.SWORDPUNCH,8);
+	public static final Skill gust = new Skill(105,"Gust","逆風の太刀",9,0,DamageHelper.Type.SWORD,5);
+	public static final Skill vandalize = new Skill(106,"Vandalize","ヴァンダライズ",10,0,DamageHelper.Type.SWORD,15);
+	public static final Skill tomahawk = new Skill(107,"Tomahawk","トマホーク",5,0,DamageHelper.Type.SWORDPUNCH,15);
+	public static final Skill fujiView = new Skill(108,"Fuji View","富嶽百景",8,0,DamageHelper.Type.SWORDPUNCH,15);
+	public static final Skill skyDrive = new Skill(109,"Skydrive","スカイドライブ",10,0,DamageHelper.Type.SWORDPUNCH,15);
+	public static final Skill woodBreakerPhoenix = new Skill(111,"Wood Breaker Phoenix","マキ割りフェニックス",10,0,DamageHelper.Type.SWORDPUNCH,15);
+	public static final Skill woodChopper = new Skill(110,"Wood Chopper","大木断",5,0,DamageHelper.Type.SWORDPUNCH,15);
+	public static final Skill aiming = new Skill(120,"Aiming","エイミング",10,2,DamageHelper.Type.SPEAR,15);
+	public static final Skill acupuncture = new Skill(121,"Acupuncture","独妙点穴",20,2,DamageHelper.Type.SPEAR,25);
+	public static final Skill swing = new Skill(122,"Swing","スウィング",-10,2,DamageHelper.Type.SWORDPUNCH,15);
+	public static final Skill grassHopper = new Skill(123,"Grass Hopper","草伏せ",-50,0,DamageHelper.Type.SWORD,5);
+	public static final Skill earthDragon = new Skill(133,"Earth Dragon","土竜撃",-13,0,DamageHelper.Type.PUNCH,5);
+	public static final Skill skullCrash = new Skill(134,"Skull Crash","スカルクラッシュ",1,0,DamageHelper.Type.PUNCH,5);
+	public static final Skill pulvorizer = new Skill(135,"Pulvorizer","粉砕撃",5,0,DamageHelper.Type.PUNCH,5);
+	public static final Skill grandSlam = new Skill(136,"Grand Slam","グランドスラム",2,0,DamageHelper.Type.PUNCH,5);
+	public static final Skill gonger = new Skill(137,"Gonger","どら鳴らし",1,0,DamageHelper.Type.PUNCH,5);
+	public static final Skill rockCrusher = new Skill(138,"Rockcrusher","削岩撃",1,0,DamageHelper.Type.PUNCH,5);
 	
-	public static final Skill doubleShot = new Skill(140,"Double Shot","ニ連射",2,2,EnumDamageUnsaga.SPEAR,5);
-	public static final Skill tripleShot = new Skill(141,"Triple Shot","三連射",2,2,EnumDamageUnsaga.SPEAR,9);
-	public static final Skill zapper = new Skill(142,"Zapper","ザップショット",2,0,EnumDamageUnsaga.SPEAR,15);
-	public static final Skill exorcist = new Skill(143,"Exorcist","破魔の矢",10,0,EnumDamageUnsaga.SPEAR,5);
-	public static final Skill shadowStitching = new Skill(144,"Shadow Stitching","影縫い",2,0,EnumDamageUnsaga.SPEAR,3);
-	
+	public static final Skill doubleShot = new Skill(150,"Double Shot","ニ連射",2,2,DamageHelper.Type.SPEAR,5);
+	public static final Skill tripleShot = new Skill(151,"Triple Shot","三連射",2,2,DamageHelper.Type.SPEAR,9);
+	public static final Skill zapper = new Skill(152,"Zapper","ザップショット",5,0,DamageHelper.Type.SPEAR,15);
+	public static final Skill exorcist = new Skill(153,"Exorcist","破魔の矢",5,0,DamageHelper.Type.SPEAR,5);
+	public static final Skill shadowStitching = new Skill(154,"Shadow Stitching","影縫い",2,0,DamageHelper.Type.SPEAR,3);
+	//TODO 一部の技、攻撃力が増えるものだけでなく下るものもあるようにする
 	public static final HashSet<Ability> healDowns = Sets.newHashSet(healDown5,healDown10,healDown15,healDown20,healDown25);
 	public static final HashSet<Ability> healUps = Sets.newHashSet(healUp5,healUp10);
 	
-	public static final HashSet<Skill> requireCoolingSet = Sets.newHashSet(vandalize,skyDrive,grandSlam);
+	public static final HashSet<Skill> requireCoolingSet = Sets.newHashSet(vandalize,skyDrive,grandSlam,zapper);
 	
 	public static AbilityRegistry getInstance(){
 		if(instance==null){
@@ -112,122 +113,127 @@ public class AbilityRegistry {
 	protected AbilityRegistry(){
 		this.inheritAbilityMap = new HashMap();
 		this.normalAbilityMap = new HashMap();
+		addInheritAbility(EnumUnsagaTools.SWORD,UnsagaMaterials.dragonHeart,Lists.newArrayList(superHealing));
+		addInheritAbility(EnumUnsagaTools.STAFF,UnsagaMaterials.dragonHeart,Lists.newArrayList(superHealing));
+		addInheritAbility(EnumUnsagaTools.AXE,UnsagaMaterials.dragonHeart,Lists.newArrayList(superHealing));
+		addInheritAbility(EnumUnsagaTools.SPEAR,UnsagaMaterials.dragonHeart,Lists.newArrayList(superHealing));
+		addInheritAbility(EnumUnsagaTools.BOW,UnsagaMaterials.dragonHeart,Lists.newArrayList(superHealing));
 		
-		addInheritAbility(EnumUnsagaWeapon.ARMOR,MaterialList.cloth,Lists.newArrayList(healDown5));
-		addInheritAbility(EnumUnsagaWeapon.ARMOR,MaterialList.categorywood,Lists.newArrayList(healDown5));
-		addInheritAbility(EnumUnsagaWeapon.ARMOR,MaterialList.stone,Lists.newArrayList(healDown20));
-		addInheritAbility(EnumUnsagaWeapon.ARMOR,MaterialList.leathers,Lists.newArrayList(healDown5));
-		addInheritAbility(EnumUnsagaWeapon.ARMOR,MaterialList.bestial,Lists.newArrayList(healDown10));
-		addInheritAbility(EnumUnsagaWeapon.ARMOR,MaterialList.silver,Lists.newArrayList(healDown15));
-		addInheritAbility(EnumUnsagaWeapon.ARMOR,MaterialList.metal,Lists.newArrayList(healDown25));
-		addInheritAbility(EnumUnsagaWeapon.ARMOR,MaterialList.hydra,Lists.newArrayList(healDown10));
-		addInheritAbility(EnumUnsagaWeapon.ARMOR,MaterialList.fairieSilver,Lists.newArrayList(healDown15));
-		addInheritAbility(EnumUnsagaWeapon.ARMOR,MaterialList.obsidian,Lists.newArrayList(healDown25));
-		addInheritAbility(EnumUnsagaWeapon.ARMOR,MaterialList.steels,Lists.newArrayList(healDown25));
-		addInheritAbility(EnumUnsagaWeapon.ARMOR,MaterialList.liveSilk,Lists.newArrayList(healDown5));
-		addInheritAbility(EnumUnsagaWeapon.ARMOR,MaterialList.damascus,Lists.newArrayList(healDown25));
+		addInheritAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.cloth,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.categorywood,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.stone,Lists.newArrayList(healDown20));
+		addInheritAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.leathers,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.bestial,Lists.newArrayList(healDown10));
+		addInheritAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.silver,Lists.newArrayList(healDown15));
+		addInheritAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.metals,Lists.newArrayList(healDown25));
+		addInheritAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.hydra,Lists.newArrayList(healDown10));
+		addInheritAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.fairieSilver,Lists.newArrayList(healDown15));
+		addInheritAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.obsidian,Lists.newArrayList(healDown25));
+		addInheritAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.steels,Lists.newArrayList(healDown25));
+		addInheritAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.liveSilk,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.damascus,Lists.newArrayList(healDown25));
 		
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.cloth,Lists.newArrayList(lifeGuard));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.liveSilk,Lists.newArrayList(lifeGuard,antiWither));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.categorywood,Lists.newArrayList(supportFire,lifeGuard));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.meteorite,Lists.newArrayList(blastProtection));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.stone,Lists.newArrayList(lifeGuard));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.leathers,Lists.newArrayList(lifeGuard));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.fur,Lists.newArrayList(lifeGuard));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.crocodileLeather,Lists.newArrayList(lifeGuard));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.carnelian,Lists.newArrayList(supportFire));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.opal,Lists.newArrayList(supportMetal));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.topaz,Lists.newArrayList(supportEarth));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.ravenite,Lists.newArrayList(supportWater));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.lazuli,Lists.newArrayList(supportWood));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.silver,Lists.newArrayList(supportWater));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.meteoricIron,Lists.newArrayList(blastProtection));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.metal,Lists.newArrayList(bodyGuard));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.steel1,Lists.newArrayList(bodyGuard));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.hydra,Lists.newArrayList(fireProtection,antiPoison));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.fairieSilver,Lists.newArrayList(antiDebuff,blastProtection));
-		addAbility(EnumUnsagaWeapon.ARMOR,MaterialList.damascus,Lists.newArrayList(bodyGuard));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.cloth,Lists.newArrayList(lifeGuard));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.liveSilk,Lists.newArrayList(lifeGuard,antiWither));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.categorywood,Lists.newArrayList(supportFire,lifeGuard));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.meteorite,Lists.newArrayList(blastProtection));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.stone,Lists.newArrayList(lifeGuard));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.leathers,Lists.newArrayList(lifeGuard));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.fur,Lists.newArrayList(lifeGuard));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.crocodileLeather,Lists.newArrayList(lifeGuard));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.carnelian,Lists.newArrayList(supportFire));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.opal,Lists.newArrayList(supportMetal));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.topaz,Lists.newArrayList(supportEarth));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.ravenite,Lists.newArrayList(supportWater));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.lazuli,Lists.newArrayList(supportWood));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.silver,Lists.newArrayList(supportWater));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.meteoricIron,Lists.newArrayList(blastProtection));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.metals,Lists.newArrayList(bodyGuard));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.steel1,Lists.newArrayList(bodyGuard));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.hydra,Lists.newArrayList(fireProtection,antiPoison));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.fairieSilver,Lists.newArrayList(antiDebuff,blastProtection));
+		addAbility(EnumUnsagaTools.ARMOR,UnsagaMaterials.damascus,Lists.newArrayList(bodyGuard));
 		
 		
-		addInheritAbility(EnumUnsagaWeapon.HELMET,MaterialList.stone,Lists.newArrayList(healDown5));
-		addInheritAbility(EnumUnsagaWeapon.HELMET,MaterialList.metal,Lists.newArrayList(healDown5));
-		addInheritAbility(EnumUnsagaWeapon.HELMET,MaterialList.hydra,Lists.newArrayList(healDown5));
-		addInheritAbility(EnumUnsagaWeapon.HELMET,MaterialList.steels,Lists.newArrayList(healDown5));
-		addInheritAbility(EnumUnsagaWeapon.HELMET,MaterialList.corundums,Lists.newArrayList(healDown5));
-		addInheritAbility(EnumUnsagaWeapon.HELMET,MaterialList.obsidian,Lists.newArrayList(healDown5));
-		addInheritAbility(EnumUnsagaWeapon.HELMET,MaterialList.diamond,Lists.newArrayList(healDown5));
-		addInheritAbility(EnumUnsagaWeapon.HELMET,MaterialList.damascus,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.stone,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.metals,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.hydra,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.steels,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.corundums,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.obsidian,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.diamond,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.damascus,Lists.newArrayList(healDown5));
 		
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.cloth,Lists.newArrayList(supportFire));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.liveSilk,Lists.newArrayList(supportFire));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.fur,Lists.newArrayList(supportMetal));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.leathers,Lists.newArrayList(supportMetal));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.stone,Lists.newArrayList(antiBlind,magicGuard));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.metal,Lists.newArrayList(antiBlind,magicGuard));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.silver,Lists.newArrayList(supportWater));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.hydra,Lists.newArrayList(antiPoison,fireProtection));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.meteoricIron,Lists.newArrayList(antiBlind));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.corundum1,Lists.newArrayList(fireProtection));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.corundum2,Lists.newArrayList(defuse,unlock));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.steels,Lists.newArrayList(antiBlind,magicGuard));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.fairieSilver,Lists.newArrayList(supportWater,defuse,unlock));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.obsidian,Lists.newArrayList(antiBlind,magicGuard));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.diamond,Lists.newArrayList(antiDebuff));
-		addAbility(EnumUnsagaWeapon.HELMET,MaterialList.damascus,Lists.newArrayList(antiBlind,magicGuard));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.cloth,Lists.newArrayList(supportFire));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.liveSilk,Lists.newArrayList(supportFire));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.fur,Lists.newArrayList(supportMetal));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.leathers,Lists.newArrayList(supportMetal));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.stone,Lists.newArrayList(antiBlind,magicGuard));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.metals,Lists.newArrayList(antiBlind,magicGuard));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.silver,Lists.newArrayList(supportWater));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.hydra,Lists.newArrayList(antiPoison,fireProtection));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.meteoricIron,Lists.newArrayList(antiBlind));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.corundum1,Lists.newArrayList(fireProtection));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.corundum2,Lists.newArrayList(defuse,unlock));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.steels,Lists.newArrayList(antiBlind,magicGuard));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.fairieSilver,Lists.newArrayList(supportWater,defuse,unlock));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.obsidian,Lists.newArrayList(antiBlind,magicGuard));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.diamond,Lists.newArrayList(antiDebuff));
+		addAbility(EnumUnsagaTools.HELMET,UnsagaMaterials.damascus,Lists.newArrayList(antiBlind,magicGuard));
 		
-		addInheritAbility(EnumUnsagaWeapon.LEGGINS,MaterialList.copperOre,Lists.newArrayList(dummy));
-		addInheritAbility(EnumUnsagaWeapon.LEGGINS,MaterialList.ironOre,Lists.newArrayList(dummy));
-		addInheritAbility(EnumUnsagaWeapon.LEGGINS,MaterialList.stone,Lists.newArrayList(healDown5));
-		addInheritAbility(EnumUnsagaWeapon.LEGGINS,MaterialList.quartz,Lists.newArrayList(healDown10));
-		addInheritAbility(EnumUnsagaWeapon.LEGGINS,MaterialList.copper,Lists.newArrayList(healDown10));
-		addInheritAbility(EnumUnsagaWeapon.LEGGINS,MaterialList.lead,Lists.newArrayList(healDown10));
-		addInheritAbility(EnumUnsagaWeapon.LEGGINS,MaterialList.meteoricIron,Lists.newArrayList(healDown10));
-		addInheritAbility(EnumUnsagaWeapon.LEGGINS,MaterialList.hydra,Lists.newArrayList(healDown5));
-		addInheritAbility(EnumUnsagaWeapon.LEGGINS,MaterialList.obsidian,Lists.newArrayList(healDown10));
+		addInheritAbility(EnumUnsagaTools.LEGGINS,UnsagaMaterials.copperOre,Lists.newArrayList(dummy));
+		addInheritAbility(EnumUnsagaTools.LEGGINS,UnsagaMaterials.ironOre,Lists.newArrayList(dummy));
+		addInheritAbility(EnumUnsagaTools.LEGGINS,UnsagaMaterials.stone,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.LEGGINS,UnsagaMaterials.quartz,Lists.newArrayList(healDown10));
+		addInheritAbility(EnumUnsagaTools.LEGGINS,UnsagaMaterials.copper,Lists.newArrayList(healDown10));
+		addInheritAbility(EnumUnsagaTools.LEGGINS,UnsagaMaterials.lead,Lists.newArrayList(healDown10));
+		addInheritAbility(EnumUnsagaTools.LEGGINS,UnsagaMaterials.meteoricIron,Lists.newArrayList(healDown10));
+		addInheritAbility(EnumUnsagaTools.LEGGINS,UnsagaMaterials.hydra,Lists.newArrayList(healDown5));
+		addInheritAbility(EnumUnsagaTools.LEGGINS,UnsagaMaterials.obsidian,Lists.newArrayList(healDown10));
 		
-		addAbility(EnumUnsagaWeapon.LEGGINS,MaterialList.metal,Lists.newArrayList(bodyGuard));
-		addAbility(EnumUnsagaWeapon.LEGGINS,MaterialList.iron,Lists.newArrayList(supportWater,blastProtection));
-		addAbility(EnumUnsagaWeapon.BOOTS,MaterialList.meteoricIron,Lists.newArrayList(bodyGuard));
-		addAbility(EnumUnsagaWeapon.BOOTS,MaterialList.hydra,Lists.newArrayList(fireProtection,antiPoison));
-		addAbility(EnumUnsagaWeapon.BOOTS,MaterialList.obsidian,Lists.newArrayList(skillGuard));
+		addAbility(EnumUnsagaTools.LEGGINS,UnsagaMaterials.metals,Lists.newArrayList(bodyGuard));
+		addAbility(EnumUnsagaTools.LEGGINS,UnsagaMaterials.iron,Lists.newArrayList(supportWater,blastProtection));
+		addAbility(EnumUnsagaTools.BOOTS,UnsagaMaterials.meteoricIron,Lists.newArrayList(bodyGuard));
+		addAbility(EnumUnsagaTools.BOOTS,UnsagaMaterials.hydra,Lists.newArrayList(fireProtection,antiPoison));
+		addAbility(EnumUnsagaTools.BOOTS,UnsagaMaterials.obsidian,Lists.newArrayList(skillGuard));
 		
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.categorywood,Lists.newArrayList(healUp5,supportFire));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.bone,Lists.newArrayList(healDown5,supportWood,lifeGuard));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.stone,Lists.newArrayList(healUp5,supportMetal));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.bestial,Lists.newArrayList(healUp5));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.carnelian,Lists.newArrayList(healUp5,fire));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.opal,Lists.newArrayList(healUp5,metal));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.topaz,Lists.newArrayList(healUp5,earth));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.ravenite,Lists.newArrayList(healUp5,water));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.lazuli,Lists.newArrayList(healUp5,wood));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.meteorite,Lists.newArrayList(healUp5,supportFire,supportEarth,supportMetal));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.angelite,Lists.newArrayList(healUp10,supportWood,lifeGuard,divination));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.demonite,Lists.newArrayList(healDown20,supportForbidden,forbidden));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.silver,Lists.newArrayList(healUp5,supportWater));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.corundum1,Lists.newArrayList(healUp5,supportWater,water));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.corundum2,Lists.newArrayList(healUp5,supportFire,fire));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.obsidian,Lists.newArrayList(healUp5,supportMetal,defuse,unlock));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.diamond,Lists.newArrayList(healUp5,supportFire,defuse,antiSleep,unlock));
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.metal,Lists.newArrayList(healUp5,supportWater));		
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.steels,Lists.newArrayList(healUp5,supportWater));	
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.meteoricIron,Lists.newArrayList(healUp5,supportMetal,supportWater,supportWood));		
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.fairieSilver,Lists.newArrayList(healUp10,defuse,unlock,supportWater));	
-		addAbility(EnumUnsagaWeapon.ACCESSORY,MaterialList.damascus,Lists.newArrayList(healUp5,supportWater,lifeGuard));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.categorywood,Lists.newArrayList(healUp5,supportFire));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.bone,Lists.newArrayList(healDown5,supportWood,lifeGuard));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.stone,Lists.newArrayList(healUp5,supportMetal));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.bestial,Lists.newArrayList(healUp5));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.carnelian,Lists.newArrayList(healUp5,fire));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.opal,Lists.newArrayList(healUp5,metal));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.topaz,Lists.newArrayList(healUp5,earth));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.ravenite,Lists.newArrayList(healUp5,water));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.lazuli,Lists.newArrayList(healUp5,wood));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.meteorite,Lists.newArrayList(healUp5,supportFire,supportEarth,supportMetal));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.angelite,Lists.newArrayList(healUp10,supportWood,lifeGuard,divination));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.demonite,Lists.newArrayList(healDown20,supportForbidden,forbidden));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.silver,Lists.newArrayList(healUp5,supportWater));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.corundum1,Lists.newArrayList(healUp5,supportWater,water));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.corundum2,Lists.newArrayList(healUp5,supportFire,fire));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.obsidian,Lists.newArrayList(healUp5,supportMetal,defuse,unlock));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.diamond,Lists.newArrayList(healUp5,supportFire,defuse,antiSleep,unlock));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.metals,Lists.newArrayList(healUp5,supportWater));		
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.steels,Lists.newArrayList(healUp5,supportWater));	
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.meteoricIron,Lists.newArrayList(healUp5,supportMetal,supportWater,supportWood));		
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.fairieSilver,Lists.newArrayList(healUp10,defuse,unlock,supportWater));	
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.damascus,Lists.newArrayList(healUp5,supportWater,lifeGuard));
 		this.registerSkill();
 	}
 	
 	public void registerSkill(){
 		//vandalize.setMethod(skillSword.getClass().getMethod("doVandelize", parameterTypes));
-		addSkill(EnumUnsagaWeapon.SWORD,true,newSkillList(vandalize,smash,gust));
-		addSkill(EnumUnsagaWeapon.SWORD,false,newSkillList(kaleidoscope,roundabout,chargeBlade));
-		addSkill(EnumUnsagaWeapon.AXE,false,newSkillList(tomahawk,skyDrive,woodChopper));
-		addSkill(EnumUnsagaWeapon.AXE,true,newSkillList(fujiView,woodBreakerPhoenix,woodChopper));
-		addSkill(EnumUnsagaWeapon.SPEAR,false,newSkillList(swing,grassHopper));
-		addSkill(EnumUnsagaWeapon.SPEAR,true,newSkillList(aiming,acupuncture));
-		addSkill(EnumUnsagaWeapon.BOW,false,newSkillList(doubleShot,tripleShot,shadowStitching));
-		addSkill(EnumUnsagaWeapon.BOW,true,newSkillList(zapper,exorcist));
-		addSkill(EnumUnsagaWeapon.STAFF,false,newSkillList(skullCrash,pulvorizer,gonger));
-		addSkill(EnumUnsagaWeapon.STAFF,true,newSkillList(grandSlam,earthDragon));
+		addSkill(EnumUnsagaTools.SWORD,true,newSkillList(vandalize,smash,gust));
+		addSkill(EnumUnsagaTools.SWORD,false,newSkillList(kaleidoscope,roundabout,chargeBlade));
+		addSkill(EnumUnsagaTools.AXE,false,newSkillList(tomahawk,skyDrive,woodChopper));
+		addSkill(EnumUnsagaTools.AXE,true,newSkillList(fujiView,woodBreakerPhoenix,woodChopper));
+		addSkill(EnumUnsagaTools.SPEAR,false,newSkillList(swing,grassHopper));
+		addSkill(EnumUnsagaTools.SPEAR,true,newSkillList(aiming,acupuncture));
+		addSkill(EnumUnsagaTools.BOW,false,newSkillList(doubleShot,tripleShot,shadowStitching));
+		addSkill(EnumUnsagaTools.BOW,true,newSkillList(zapper,exorcist));
+		addSkill(EnumUnsagaTools.STAFF,false,newSkillList(skullCrash,pulvorizer,gonger,rockCrusher));
+		addSkill(EnumUnsagaTools.STAFF,true,newSkillList(gonger,grandSlam,earthDragon));
 	}
 	
 
@@ -240,20 +246,20 @@ public class AbilityRegistry {
 		return newlist;
 	}
 	
-	public void addAbility(EnumUnsagaWeapon category,UnsagaMaterial material,List<Ability> abilityList){
+	public void addAbility(EnumUnsagaTools category,UnsagaMaterial material,List<Ability> abilityList){
 		this.normalAbilityMap.put(category.toString()+"."+material.name,abilityList);
 	}
 	
-	public void addSkill(EnumUnsagaWeapon category,boolean heavy,List<Ability> abilityList){
+	public void addSkill(EnumUnsagaTools category,boolean heavy,List<Ability> abilityList){
 		String keyweight = (heavy ? "HEAVY" : "LIGHT");
 		this.normalAbilityMap.put(category.toString()+"."+keyweight,abilityList);
 	}
 	
-	public void addInheritAbility(EnumUnsagaWeapon category,UnsagaMaterial material,List<Ability> abilityList){
+	public void addInheritAbility(EnumUnsagaTools category,UnsagaMaterial material,List<Ability> abilityList){
 		this.inheritAbilityMap.put(category.toString()+"."+material.name,abilityList);
 	}
 	
-	protected Optional<List<Ability>> getAbilityList(EnumUnsagaWeapon category,UnsagaMaterial material){
+	private Optional<List<Ability>> getAbilityList(EnumUnsagaTools category,UnsagaMaterial material){
 		if(!this.normalAbilityMap.isEmpty()){
 			if(this.normalAbilityMap.get(category.toString()+"."+material.name)!=null){
 				return Optional.of(this.normalAbilityMap.get(category.toString()+"."+material.name));
@@ -262,7 +268,7 @@ public class AbilityRegistry {
 		return Optional.absent();
 	}
 	
-	public Optional<List<Ability>> getSkillList(EnumUnsagaWeapon category,boolean heavy){
+	public Optional<List<Ability>> getSkillList(EnumUnsagaTools category,boolean heavy){
 		String keyweight = (heavy ? "HEAVY" : "LIGHT");
 		if(!this.normalAbilityMap.isEmpty()){
 			if(this.normalAbilityMap.get(category.toString()+"."+keyweight)!=null){
@@ -272,7 +278,7 @@ public class AbilityRegistry {
 		return Optional.absent();
 	}
 	
-	protected Optional<List<Ability>> getInheritAbilityList(EnumUnsagaWeapon category,UnsagaMaterial material){
+	private Optional<List<Ability>> getInheritAbilityList(EnumUnsagaTools category,UnsagaMaterial material){
 		if(!this.inheritAbilityMap.isEmpty()){
 			if(this.inheritAbilityMap.get(category.toString()+"."+material.name)!=null){
 				return Optional.of(this.inheritAbilityMap.get(category.toString()+"."+material.name));
@@ -282,7 +288,7 @@ public class AbilityRegistry {
 		return Optional.absent();
 	}
 	
-	public Optional<List<Ability>> getInheritAbilities(EnumUnsagaWeapon category,UnsagaMaterial material){
+	public Optional<List<Ability>> getInheritAbilities(EnumUnsagaTools category,UnsagaMaterial material){
 		if(getInheritAbilityList(category,material).isPresent()){
 			return getInheritAbilityList(category,material);
 		}
@@ -295,7 +301,7 @@ public class AbilityRegistry {
 		return Optional.absent();
 	}
 	
-	public Optional<List<Ability>> getAbilities(EnumUnsagaWeapon category,UnsagaMaterial material){
+	public Optional<List<Ability>> getAbilities(EnumUnsagaTools category,UnsagaMaterial material){
 		if(getAbilityList(category,material).isPresent()){
 			return getAbilityList(category,material);
 		}
@@ -308,14 +314,14 @@ public class AbilityRegistry {
 		return Optional.absent();
 	}
 	
-	public boolean hasInherit(EnumUnsagaWeapon category,UnsagaMaterial material,Ability ability){
+	public boolean hasInherit(EnumUnsagaTools category,UnsagaMaterial material,Ability ability){
 		if(getInheritAbilities(category,material).isPresent()){
 			return getInheritAbilities(category,material).get().contains(ability);
 		}
 		return false;
 	}
 	
-	public int getInheritHealAmount(EnumUnsagaWeapon category,UnsagaMaterial material,Collection<Ability> ability){
+	public int getInheritHealAmount(EnumUnsagaTools category,UnsagaMaterial material,Collection<Ability> ability){
 		if(getInheritAbilities(category,material).isPresent()){
 			//Unsaga.debug(getInheritAbilities(category,material).get().toString());
 			int healpoint = 0;
@@ -352,4 +358,6 @@ public class AbilityRegistry {
 		}
 		return output;
 	}
+	
+
 }

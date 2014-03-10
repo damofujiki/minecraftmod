@@ -20,6 +20,9 @@ public class GuiBlender extends GuiContainer
 {
 
 
+	public static final int BUTTON_UNDO = -3;
+	public static final int BUTTON_BLEND = -2;
+	
 	private EntityPlayer ep;
 	private ResourceLocation resourceGui = new ResourceLocation(Unsaga.domain+":textures/gui/blender.png");
 	private ContainerBlender containerblender;
@@ -46,8 +49,8 @@ public class GuiBlender extends GuiContainer
 
 		// ボタンを追加
 		// GuiButton(ボタンID, ボタンの始点X, ボタンの始点Y, ボタンの幅, ボタンの高さ, ボタンに表示する文字列)
-		buttonList.add(new GuiButton(-2, i + 2, j + 16, 48, 20 , Translation.localize("gui.blender.button.blend")));
-		buttonList.add(new GuiButton(-3, i + 2, j + 38, 48, 20 , Translation.localize("gui.blender.button.undo")));
+		buttonList.add(new GuiButton(BUTTON_BLEND, i + 2, j + 16, 48, 20 , Translation.localize("gui.blender.button.blend")));
+		buttonList.add(new GuiButton(BUTTON_UNDO, i + 2, j + 38, 48, 20 , Translation.localize("gui.blender.button.undo")));
 	}
 
 	@Override
@@ -55,9 +58,9 @@ public class GuiBlender extends GuiContainer
 	{
 
 		//fontRenderer.drawString("Magic Blender", 58, 6, 0x404040);
-		fontRenderer.drawString(this.containerblender.getCurrentElement().toString(), 8, 6, 0x404040);
+		fontRendererObj.drawString(this.containerblender.getCurrentElement().toString(), 8, 6, 0x404040);
 
-		fontRenderer.drawString("Result:"+getSpellStr(), 8, (ySize - 96) + 2, 0x404040);
+		fontRendererObj.drawString("Result:"+getSpellStr(), 8, (ySize - 96) + 2, 0x404040);
 	}
 
 	protected String getSpellStr(){

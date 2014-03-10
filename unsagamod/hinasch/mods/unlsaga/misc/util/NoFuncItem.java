@@ -29,7 +29,7 @@ public class NoFuncItem {
 	public NoFuncItem(int number,String par1,String par2,String par3,String par4,int par5,UnsagaMaterial material,int meta,int damage){
 		this(number,par1,par2,par3,par4,par5,material);
 		this.forgedamage = damage;
-		material.associate(new ItemStack(UnsagaItems.itemNoFunc.itemID,1,meta));
+		material.associate(new ItemStack(UnsagaItems.itemMaterials,1,meta));
 	}
 	
 

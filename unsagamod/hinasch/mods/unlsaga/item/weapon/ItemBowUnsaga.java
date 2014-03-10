@@ -1,115 +1,46 @@
 package hinasch.mods.unlsaga.item.weapon;
 
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.core.init.MaterialList;
+import hinasch.mods.unlsaga.core.event.ExtendedEntityTag;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
-import hinasch.mods.unlsaga.entity.EntityArrowUnsaga;
+import hinasch.mods.unlsaga.item.weapon.base.ItemBowBase;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
-import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
-import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
-import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
-import hinasch.mods.unlsaga.misc.debuff.LivingStateBow;
-import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
-import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
-
-import java.util.List;
-
-import net.minecraft.client.renderer.texture.IconRegister;
-import net.minecraft.creativetab.CreativeTabs;
+import hinasch.mods.unlsaga.misc.debuff.Debuffs;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateBow;
+import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.EnumAction;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBow;
+import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.player.ArrowLooseEvent;
-import net.minecraftforge.event.entity.player.ArrowNockEvent;
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
 
-public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial,IGainAbility
+public class ItemBowUnsaga extends ItemBowBase
 {
-    public static final String[] bowPullIconNameArray = new String[] {"pull0", "pull1", "pull2"};
-    @SideOnly(Side.CLIENT)
-    private Icon[] iconArray;
-    protected UnsagaMaterial material;
-	protected final HelperUnsagaWeapon helper;
 
-    public ItemBowUnsaga(int par1,UnsagaMaterial material)
+
+	public final static String ARROW_ZAPPER = "zapper";
+	public final static String ARROW_EXORCIST = "exorcist";
+	public final static String ARROW_STITCH = "stitch";
+    public ItemBowUnsaga(UnsagaMaterial material)
     {
-        super(par1);
-        this.maxStackSize = 1;
-        this.material = material;
-        this.helper = new HelperUnsagaWeapon(this.material, this.itemIcon, EnumUnsagaWeapon.BOW);
-		Unsaga.proxy.registerSpecialRenderer(this.itemID);
-        UnsagaItems.putItemMap(this.itemID,EnumUnsagaWeapon.BOW.toString()+"."+material.name);
-        //UnsagaItems.registerValidTool(EnumUnsagaWeapon.SPEAR, mat, this.itemID);
+        super(material);
+		Unsaga.proxy.registerSpecialRenderer(this);
+        UnsagaItems.putItemMap(this,EnumUnsagaTools.BOW.toString()+"."+material.name);
     }
-    
 
-    @Override
-    public int getColorFromItemStack(ItemStack par1ItemStack, int par2)
-    {
-    	return helper.getColorFromItemStack(par1ItemStack, par2);
-    }
-    
-    @Override
-    public Icon getIcon(ItemStack stack, int renderPass, EntityPlayer player, ItemStack usingItem, int useRemaining)
-    {
-        if (usingItem != null && usingItem.itemID == this.itemID)
-        {
-            int j = stack.getMaxItemUseDuration() - useRemaining;
-
-            if (j >= 18)
-            {
-                return this.iconArray[2];
-            }
-
-            if (j > 13)
-            {
-                return this.iconArray[1];
-            }
-
-            if (j > 0)
-            {
-                return this.iconArray[0];
-            }
-        }
-        
-        return this.getIcon(stack, renderPass);
-    }
-    
-	@Override
-    public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
-		helper.addInformation(par1ItemStack, par2EntityPlayer, par3List, par4);
-	}
-	
-    @Override
-    public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List)
-    {
-    	helper.getSubItems(par1, par2CreativeTabs, par3List);
-        
-    }
-    
-    public int getStrengthModifier(ItemStack is){
-    	UnsagaMaterial material = HelperUnsagaWeapon.getMaterial(is);
-    	if(material==MaterialList.dummy){
-    		return 0;
-    	}
-    	return material.getBowModifier();
-    }
 
     /**
      * called when the player releases the use item button. Args: itemstack, world, entityplayer, itemInUseCount
      */
+    @Override
     public void onPlayerStoppedUsing(ItemStack par1ItemStack, World par2World, EntityPlayer player, int par4)
     {
         int j = this.getMaxItemUseDuration(par1ItemStack) - par4;
@@ -126,7 +57,7 @@ public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial,IGainAbili
 
         boolean flag = player.capabilities.isCreativeMode || EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, par1ItemStack) > 0;
 
-        if (flag || player.inventory.hasItem(Item.arrow.itemID))
+        if (flag || player.inventory.hasItem(Items.arrow))
         {
             float f = (float)j / 20.0F;
             f = (f * f + f * 2.0F) / 3.0F;
@@ -143,30 +74,37 @@ public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial,IGainAbili
 
             if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.doubleShot,par1ItemStack ) && player.isSneaking()){
         		Unsaga.debug("呼ばれてますonstopping");
-            	LivingDebuff.addLivingDebuff(player, new LivingStateBow(DebuffRegistry.bowDouble,10,false,2,"double", f));
+            	LivingDebuff.addLivingDebuff(player, new LivingStateBow(Debuffs.bowDouble,10,false,2,"double", f));
             	return;
             }
             if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.tripleShot,par1ItemStack ) && player.isSneaking()){
-            	LivingDebuff.addLivingDebuff(player, new LivingStateBow(DebuffRegistry.bowDouble,10,false,3,"triple", f));
+            	LivingDebuff.addLivingDebuff(player, new LivingStateBow(Debuffs.bowDouble,10,false,3,"triple", f));
             	return;
             }
 
-            EntityArrowUnsaga entityarrow = new EntityArrowUnsaga(par2World, player, f * 2.0F);
+            EntityArrow entityarrow = new EntityArrow(par2World, player, f * 2.0F);
 
+            String addTagKey = "";
             if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.zapper,par1ItemStack ) && player.isSneaking()){
             	skilleffect = new SkillEffectHelper(par2World, player, AbilityRegistry.zapper, par1ItemStack);
             	skilleffect.setCharge(f);
-            	entityarrow.setZapper(true);
+            	addTagKey = ARROW_ZAPPER;
+
+            	//entityarrow.setZapper(true);
             }
             if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.exorcist,par1ItemStack ) && player.isSneaking()){
             	skilleffect = new SkillEffectHelper(par2World, player, AbilityRegistry.exorcist, par1ItemStack);
             	skilleffect.setCharge(f);
-            	entityarrow.setExorcist(true);
+            	addTagKey = ARROW_EXORCIST;
+
+            	//entityarrow.setExorcist(true);
             }
             if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.shadowStitching,par1ItemStack ) && player.isSneaking()){
             	skilleffect = new SkillEffectHelper(par2World, player, AbilityRegistry.shadowStitching, par1ItemStack);
             	skilleffect.setCharge(f);
-            	entityarrow.setShadowStitch(true);
+            	addTagKey = ARROW_STITCH;
+
+            	//entityarrow.setShadowStitch(true);
             }
             if (f == 1.0F)
             {
@@ -213,97 +151,18 @@ public class ItemBowUnsaga extends ItemBow implements IUnsagaMaterial,IGainAbili
             }
             else
             {
-                player.inventory.consumeInventoryItem(Item.arrow.itemID);
+                player.inventory.consumeInventoryItem(Items.arrow);
             }
 
             if (!par2World.isRemote)
             {
                 par2World.spawnEntityInWorld(entityarrow);
+                if(!addTagKey.equals("")){
+                	ExtendedEntityTag.addTagToEntity(entityarrow,addTagKey);
+                }
             }
         }
     }
 
-    public ItemStack onEaten(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
-    {
-        return par1ItemStack;
-    }
 
-    /**
-     * How long it takes to use or consume an item
-     */
-    public int getMaxItemUseDuration(ItemStack par1ItemStack)
-    {
-        return 72000;
-    }
-
-    /**
-     * returns the action that specifies what animation to play when the items is being used
-     */
-    public EnumAction getItemUseAction(ItemStack par1ItemStack)
-    {
-        return EnumAction.bow;
-    }
-
-    /**
-     * Called whenever this item is equipped and the right mouse button is pressed. Args: itemStack, world, entityPlayer
-     */
-    public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
-    {
-        ArrowNockEvent event = new ArrowNockEvent(par3EntityPlayer, par1ItemStack);
-        MinecraftForge.EVENT_BUS.post(event);
-        if (event.isCanceled())
-        {
-            return event.result;
-        }
-
-        if (par3EntityPlayer.capabilities.isCreativeMode || par3EntityPlayer.inventory.hasItem(Item.arrow.itemID))
-        {
-            par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
-        }
-
-        return par1ItemStack;
-    }
-
-    /**
-     * Return the enchantability factor of the item, most of the time is based on material.
-     */
-    public int getItemEnchantability()
-    {
-        return this.material.getToolMaterial().getEnchantability();
-    }
-
-    @SideOnly(Side.CLIENT)
-    public void registerIcons(IconRegister par1IconRegister)
-    {
-        this.itemIcon = par1IconRegister.registerIcon(Unsaga.domain+":"+"bow_white_standby");
-        this.iconArray = new Icon[bowPullIconNameArray.length];
-
-        for (int i = 0; i < this.iconArray.length; ++i)
-        {
-            this.iconArray[i] = par1IconRegister.registerIcon(Unsaga.domain+":"+"bow_white_" + bowPullIconNameArray[i]);
-        }
-    }
-
-    @SideOnly(Side.CLIENT)
-
-    /**
-     * used to cycle through icons based on their used duration, i.e. for the bow
-     */
-    public Icon getItemIconForUseDuration(int par1)
-    {
-        return this.iconArray[par1];
-    }
-    
-	@Override
-	public EnumUnsagaWeapon getCategory() {
-		// TODO 自動生成されたメソッド・スタブ
-		return EnumUnsagaWeapon.BOW;
-	}
-
-
-	@Override
-	public int getMaxAbility() {
-		// TODO 自動生成されたメソッド・スタブ
-		return 1;
-	}
 }

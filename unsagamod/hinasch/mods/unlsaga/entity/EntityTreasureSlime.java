@@ -1,28 +1,47 @@
 package hinasch.mods.unlsaga.entity;
 
-import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.SharedMonsterAttributes;
-import net.minecraft.entity.monster.IMob;
+import hinasch.mods.unlsaga.entity.ai.AIFireStorm;
+import hinasch.mods.unlsaga.entity.ai.AIStore;
+import hinasch.mods.unlsaga.entity.ai.AIThrowProjectile;
+import hinasch.mods.unlsaga.entity.ai.IThrowableAttack;
+import hinasch.mods.unlsaga.entity.projectile.EntityFireArrow;
+import hinasch.mods.unlsaga.entity.projectile.EntitySolutionLiquid;
+import hinasch.mods.unlsaga.misc.debuff.Debuffs;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
+import net.minecraft.enchantment.Enchantment;
+import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.IRangedAttackMob;
+import net.minecraft.entity.ai.EntityAIArrowAttack;
+import net.minecraft.entity.ai.EntityAIHurtByTarget;
+import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
+import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
 import net.minecraft.world.chunk.Chunk;
 
-public class EntityTreasureSlime extends EntityLiving implements IMob
+public class EntityTreasureSlime extends EntityMob implements IRangedAttackMob,IThrowableAttack
 {
     public float squishAmount;
     public float squishFactor;
     public float prevSquishFactor;
 
+    public AIStore aiStore;
 
+    public int attackcounter;
+    
     public int slimeLevel;
     /** the time between each jump of the slime */
     private int slimeJumpDelay;
-
+    private EntityAIArrowAttack aiArrowAttack = new EntityAIArrowAttack(this, 1.0D, 20, 60, 15.0F);
     public EntityTreasureSlime(World par1World)
     {
         super(par1World);
@@ -30,7 +49,22 @@ public class EntityTreasureSlime extends EntityLiving implements IMob
         this.yOffset = 0.0F;
         this.slimeJumpDelay = this.rand.nextInt(20) + 10;
         this.setSlimeSize(i);
+        this.attackcounter = 0;
+        this.tasks.addTask(1, aiArrowAttack);
+        this.targetTasks.addTask(1, new EntityAIHurtByTarget(this, false));
+        this.targetTasks.addTask(2, new EntityAINearestAttackableTarget(this, EntityPlayer.class, 0, true));
+        this.aiStore = new AIStore(this,par1World.rand);
+        if(this.slimeLevel>25){
+        	this.aiStore.addAI(new AIThrowProjectile("firearrow",par1World,this,5).setMinMaxDistance(0.3D, 18.0D));
+        }
         
+        this.aiStore.addAI(new AIThrowProjectile("liquid",par1World,this,8).setMinMaxDistance(0.0D, 8.0D));
+        if(this.slimeLevel>45){
+        	 this.aiStore.addAI(new AIFireStorm("fireStorm",this));
+        }
+       
+        this.experienceValue = 8;
+
     }
     
     public EntityTreasureSlime(World par1World,int chestlevel)
@@ -45,12 +79,18 @@ public class EntityTreasureSlime extends EntityLiving implements IMob
         this.dataWatcher.addObject(16, new Byte((byte)1));
     }
 
+    @Override
+    protected boolean isAIEnabled()
+    {
+        return false;
+    }
+    
     protected void setSlimeSize(int par1)
     {
         this.dataWatcher.updateObject(16, new Byte((byte)par1));
         this.setSize(0.6F * (float)par1, 0.6F * (float)par1);
         this.setPosition(this.posX, this.posY, this.posZ);
-        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute((double)(par1 * par1));
+        //this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setAttribute((double)(par1 * par1));
         this.setHealth(this.getTreasureSlimeMaxHealth());
         this.experienceValue = par1;
     }
@@ -76,6 +116,7 @@ public class EntityTreasureSlime extends EntityLiving implements IMob
         super.writeEntityToNBT(par1NBTTagCompound);
         par1NBTTagCompound.setInteger("Size", this.getSlimeSize() - 1);
         par1NBTTagCompound.setInteger("SlimeLevel", this.slimeLevel);
+        par1NBTTagCompound.setInteger("attackCounter", this.attackcounter);
     }
 
     /**
@@ -86,6 +127,7 @@ public class EntityTreasureSlime extends EntityLiving implements IMob
         super.readEntityFromNBT(par1NBTTagCompound);
         this.setSlimeSize(par1NBTTagCompound.getInteger("Size") + 1);
         this.slimeLevel = par1NBTTagCompound.getInteger("SlimeLevel");
+        this.attackcounter = par1NBTTagCompound.getInteger("attackCounter");
     }
 
     /**
@@ -109,7 +151,24 @@ public class EntityTreasureSlime extends EntityLiving implements IMob
      */
     public void onUpdate()
     {
-        if (!this.worldObj.isRemote && this.worldObj.difficultySetting == 0 && this.getSlimeSize() > 0)
+    	if(!LivingDebuff.hasDebuff(this, Debuffs.lockSlime)){
+    		this.aiStore.updateAITick();
+    	}
+    	
+//        this.attackcounter += 1;
+//        EntityPlayer entityplayer = this.worldObj.getClosestVulnerablePlayerToEntity(this, 16.0D);
+//        //Unsaga.debug(this.attackTime);
+//        if(this.attackcounter>100 && !LivingDebuff.hasDebuff(this, DebuffRegistry.lockSlime)){
+//        	if(entityplayer!=null){
+//        		this.attackEntityWithRangedAttack(entityplayer, 0.5F);
+//        	}
+//        	
+//        	this.attackcounter= 0;
+//        }
+        
+        
+        
+        if (!this.worldObj.isRemote && this.worldObj.difficultySetting == EnumDifficulty.EASY && this.getSlimeSize() > 0)
         {
             this.isDead = true;
         }
@@ -119,6 +178,7 @@ public class EntityTreasureSlime extends EntityLiving implements IMob
         boolean flag = this.onGround;
         super.onUpdate();
         int i;
+
 
         if (this.onGround && !flag)
         {
@@ -158,6 +218,7 @@ public class EntityTreasureSlime extends EntityLiving implements IMob
     {
         this.despawnEntity();
         EntityPlayer entityplayer = this.worldObj.getClosestVulnerablePlayerToEntity(this, 16.0D);
+
 
         if (entityplayer != null)
         {
@@ -207,32 +268,32 @@ public class EntityTreasureSlime extends EntityLiving implements IMob
         return this.rand.nextInt(20) + 10;
     }
 
-    protected EntityTreasureSlime createInstance()
-    {
-        return new EntityTreasureSlime(this.worldObj,this.slimeLevel);
-    }
+//    protected EntityTreasureSlime createInstance()
+//    {
+//        return new EntityTreasureSlime(this.worldObj,this.slimeLevel);
+//    }
 
     /**
      * Will get destroyed next tick.
      */
     public void setDead()
     {
-        int i = this.getSlimeSize();
-
-        if (!this.worldObj.isRemote && i > 1 && this.getHealth() <= 0.0F)
-        {
-            int j = 2 + this.rand.nextInt(3);
-
-            for (int k = 0; k < j; ++k)
-            {
-                float f = ((float)(k % 2) - 0.5F) * (float)i / 4.0F;
-                float f1 = ((float)(k / 2) - 0.5F) * (float)i / 4.0F;
-                EntityTreasureSlime entityslime = this.createInstance();
-                entityslime.setSlimeSize(i / 2);
-                entityslime.setLocationAndAngles(this.posX + (double)f, this.posY + 0.5D, this.posZ + (double)f1, this.rand.nextFloat() * 360.0F, 0.0F);
-                this.worldObj.spawnEntityInWorld(entityslime);
-            }
-        }
+//        int i = this.getSlimeSize();
+//
+//        if (!this.worldObj.isRemote && i > 1 && this.getHealth() <= 0.0F)
+//        {
+//            int j = 2 + this.rand.nextInt(3);
+//
+//            for (int k = 0; k < j; ++k)
+//            {
+//                float f = ((float)(k % 2) - 0.5F) * (float)i / 4.0F;
+//                float f1 = ((float)(k / 2) - 0.5F) * (float)i / 4.0F;
+//                EntityTreasureSlime entityslime = this.createInstance();
+//                entityslime.setSlimeSize(i / 2);
+//                entityslime.setLocationAndAngles(this.posX + (double)f, this.posY + 0.5D, this.posZ + (double)f1, this.rand.nextFloat() * 360.0F, 0.0F);
+//                this.worldObj.spawnEntityInWorld(entityslime);
+//            }
+//        }
 
         super.setDead();
     }
@@ -290,17 +351,17 @@ public class EntityTreasureSlime extends EntityLiving implements IMob
         return "mob.slime." + (this.getSlimeSize() > 1 ? "big" : "small");
     }
 
-    /**
-     * Returns the item ID for the item the mob drops on death.
-     */
-    protected int getDropItemId()
+
+    @Override
+    protected Item getDropItem()
     {
-        return this.getSlimeSize() == 1 ? Item.slimeBall.itemID : 0;
+        return this.getSlimeSize() == 1 ? Items.slime_ball: null;
     }
 
     /**
      * Checks if the entity's current position is a valid location to spawn this entity.
      */
+    @Override
     public boolean getCanSpawnHere()
     {
         Chunk chunk = this.worldObj.getChunkFromBlockCoords(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posZ));
@@ -311,7 +372,7 @@ public class EntityTreasureSlime extends EntityLiving implements IMob
         }
         else
         {
-            if (this.getSlimeSize() == 1 || this.worldObj.difficultySetting > 0)
+            if (this.getSlimeSize() == 1 || this.worldObj.difficultySetting == EnumDifficulty.EASY)
             {
                 BiomeGenBase biomegenbase = this.worldObj.getBiomeGenForCoords(MathHelper.floor_double(this.posX), MathHelper.floor_double(this.posZ));
 
@@ -362,6 +423,64 @@ public class EntityTreasureSlime extends EntityLiving implements IMob
     {
         return this.getSlimeSize() > 2;
     }
+
+	@Override
+	public void attackEntityWithRangedAttack(EntityLivingBase entitylivingbase,
+			float f) {
+        EntityFireArrow entityFireArrow = new EntityFireArrow(this.worldObj, this, entitylivingbase, 1.5F,1.0F);
+        int i = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, this.getHeldItem());
+        int j = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, this.getHeldItem());
+        entityFireArrow.setDamage((double)(f * 2.0F) + this.rand.nextGaussian() * 0.25D + (double)((float)this.worldObj.difficultySetting.getDifficultyId() * 0.11F));
+
+        if (i > 0)
+        {
+        	entityFireArrow.setDamage(entityFireArrow.getDamage() + (double)i * 0.5D + 0.5D);
+        }
+
+        if (j > 0)
+        {
+        	entityFireArrow.setKnockbackStrength(j);
+        }
+
+
+        this.playSound("mob.ghast.fireball", 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+        if(!this.worldObj.isRemote){
+        	this.worldObj.spawnEntityInWorld(entityFireArrow);
+        }
+        
+		
+	}
+
+	@Override
+	public Entity getNewThrowableInstance(AIThrowProjectile parent,EntityLivingBase target,float f) {
+
+		Entity throwable = null;
+		if(parent.getName().equals("firearrow")){
+	        EntityFireArrow entityFireArrow = new EntityFireArrow(this.worldObj, this, target, 1.5F,1.0F);
+	        int i = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, this.getHeldItem());
+	        int j = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, this.getHeldItem());
+	        entityFireArrow.setDamage((double)(f * 2.0F) + this.rand.nextGaussian() * 0.25D + (double)((float)this.worldObj.difficultySetting.getDifficultyId() * 0.11F));
+
+	        if (i > 0)
+	        {
+	        	entityFireArrow.setDamage(entityFireArrow.getDamage() + (double)i * 0.5D + 0.5D);
+	        }
+
+	        if (j > 0)
+	        {
+	        	entityFireArrow.setKnockbackStrength(j);
+	        }
+	        throwable = entityFireArrow;
+	        this.playSound("mob.ghast.fireball", 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));
+		}
+		if(parent.getName().equals("liquid")){
+			EntitySolutionLiquid liquid = new EntitySolutionLiquid(this.worldObj,this);
+			throwable = liquid;
+		}
+
+		return throwable;
+	}
     
+
 
 }

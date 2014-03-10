@@ -8,7 +8,7 @@ import net.minecraft.item.ItemStack;
 
 public class InventoryEquipment implements IInventory{
 
-	protected ItemStack[] theInventory = new ItemStack[2];
+	protected ItemStack[] theInventory = new ItemStack[3];
 	protected EntityPlayer thePlayer;
 	
 	
@@ -61,17 +61,9 @@ public class InventoryEquipment implements IInventory{
         }
 	}
 
-	@Override
-	public String getInvName() {
-		// TODO 自動生成されたメソッド・スタブ
-		return "unsaga.player.equipment";
-	}
 
-	@Override
-	public boolean isInvNameLocalized() {
-		// TODO 自動生成されたメソッド・スタブ
-		return false;
-	}
+
+
 
 	@Override
 	public int getInventoryStackLimit() {
@@ -79,11 +71,7 @@ public class InventoryEquipment implements IInventory{
 		return 1;
 	}
 
-	@Override
-	public void onInventoryChanged() {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
+
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
@@ -92,23 +80,21 @@ public class InventoryEquipment implements IInventory{
 		return entityplayer.openContainer != entityplayer.inventoryContainer;
 	}
 
-	@Override
-	public void openChest() {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
+
 
 	@Override
-	public void closeChest() {
+	public void closeInventory() {
 		// TODO 自動生成されたメソッド・スタブ
 		Unsaga.debug("データ書き込みました");
 		if(this.thePlayer.getExtendedProperties("unsaga.equipment")==null){
 			ExtendedPlayerData newdata = new ExtendedPlayerData();
-			newdata.setItemStack(this.getStackInSlot(0), this.getStackInSlot(1));
+			newdata.setAccessories(this.getStackInSlot(0), this.getStackInSlot(1));
+			newdata.setTablet(this.getStackInSlot(2));
 			this.thePlayer.registerExtendedProperties("unsaga.equipment", newdata);
 		}else{
 			ExtendedPlayerData data = (ExtendedPlayerData) this.thePlayer.getExtendedProperties("unsaga.equipment");
-			data.setItemStack(this.getStackInSlot(0),this.getStackInSlot(1));
+			data.setAccessories(this.getStackInSlot(0),this.getStackInSlot(1));
+			data.setTablet(this.getStackInSlot(2));
 		}
 
 	}
@@ -118,5 +104,30 @@ public class InventoryEquipment implements IInventory{
 		// TODO 自動生成されたメソッド・スタブ
 		return false;
 	}
+
+	@Override
+	public String getInventoryName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return "unsaga.inventory.equipment";
+	}
+
+	@Override
+	public boolean hasCustomInventoryName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return false;
+	}
+
+	@Override
+	public void markDirty() {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void openInventory() {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
 
 }

@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
@@ -47,7 +47,7 @@ public class RenderItemMusket implements IItemRenderer{
 		// TODO Auto-generated method stub
 
 		Minecraft mc = Minecraft.getMinecraft();
-		Icon icon = item.getItem().getIconFromDamage(0);
+		IIcon icon = item.getItem().getIconFromDamage(0);
 		if(this.debugdata==null){
 			this.debugdata = Unsaga.proxy.getDebugUnsaga().get();
 		}

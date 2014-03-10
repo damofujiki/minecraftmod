@@ -1,0 +1,52 @@
+package hinasch.mods.unlsagamagic.misc.spell.effect;
+
+import hinasch.mods.unlsaga.Unsaga;
+import hinasch.mods.unlsaga.misc.util.ChatUtil;
+
+import java.util.List;
+
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.world.World;
+
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
+public abstract class SpellDetectEntity extends AbstractSpell{
+	
+	public boolean isAmplified;
+	public SpellDetectEntity(){
+		
+	}
+	public SpellDetectEntity(World world) {
+		super(world);
+		// TODO 自動生成されたコンストラクター・スタブ
+	}
+
+	@Override
+	public void doSpell(InvokeSpell spell) {
+		double range = 50.0D;
+		this.isAmplified = spell.getAmp()>1.5F;
+		
+		AxisAlignedBB bb = spell.invoker.boundingBox.expand(range, range,range);
+		List<EntityLivingBase> entlist = spell.world.getEntitiesWithinAABB(EntityLivingBase.class, bb);
+		StringBuilder strbuilder = new StringBuilder();
+		Multimap<String,Integer> entityList =  ArrayListMultimap.create();
+		for(EntityLivingBase ent:entlist){
+			Unsaga.debug(spell.spell.nameJp);
+
+			this.addEntityList(spell, entityList, ent);
+		}
+		
+		for(String key:entityList.keySet()){
+			strbuilder.append(key).append(":").append(entityList.get(key)).append("m").append("/");
+		}
+		String stri = new String(strbuilder);
+		if(!spell.world.isRemote && !stri.equals("")){
+			ChatUtil.addMessageNoLocalized(spell.invoker, new String(strbuilder));
+			//spell.invoker.addChatMessage(new String(strbuilder));
+		}
+	}
+		
+	abstract public void addEntityList(InvokeSpell invoke,Multimap<String,Integer> entityList,EntityLivingBase entity);
+}

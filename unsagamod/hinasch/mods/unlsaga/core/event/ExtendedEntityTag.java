@@ -1,16 +1,18 @@
 package hinasch.mods.unlsaga.core.event;
 
 import hinasch.lib.CSVText;
+import hinasch.mods.unlsaga.Unsaga;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class ExtendedEntityTag implements IExtendedEntityProperties{
 
@@ -40,10 +42,10 @@ public class ExtendedEntityTag implements IExtendedEntityProperties{
 
 	}
 
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void attachDataEvent(EntityConstructing e){
 	
-		if(e.entity instanceof Entity){
+		if(e.entity instanceof EntityArrow){
 			Entity ent = (Entity)e.entity;
 			ent.registerExtendedProperties(tagKEY, new ExtendedEntityTag());
 		}
@@ -60,13 +62,40 @@ public class ExtendedEntityTag implements IExtendedEntityProperties{
 	}
 	
 	public boolean hasTag(String par1){
-		return this.taglist.contains(par1);
+		for(String str:taglist){
+			if(str.equals(par1)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public static boolean hasTag(Entity entity,String par1){
 		if(entity.getExtendedProperties(tagKEY)!=null){
 			ExtendedEntityTag tag = (ExtendedEntityTag)entity.getExtendedProperties(tagKEY);
 			return tag.hasTag(par1);
+		}
+		return false;
+	}
+	
+	public static void addTagToEntity(Entity entity,String tag){
+		
+		ExtendedEntityTag tags = (ExtendedEntityTag) entity.getExtendedProperties(tagKEY);
+		if(tags!=null){
+			Unsaga.debug("タグとれました");
+			tags.addTag(tag);
+		}else{
+			Unsaga.debug("タグとれませんでした、タグつけてみます");
+			entity.registerExtendedProperties(tagKEY, new ExtendedEntityTag());
+			tags = (ExtendedEntityTag) entity.getExtendedProperties(tagKEY);
+			tags.addTag(tag);
+		}
+	}
+	
+	public static boolean entityHasTag(Entity entity,String tag){
+		ExtendedEntityTag tags = (ExtendedEntityTag) entity.getExtendedProperties(tagKEY);
+		if(tags!=null){
+			return tags.hasTag(tag);
 		}
 		return false;
 	}

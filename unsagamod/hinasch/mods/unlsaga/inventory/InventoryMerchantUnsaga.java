@@ -2,19 +2,14 @@ package hinasch.mods.unlsaga.inventory;
 
 
 
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.event.ExtendedMerchantData;
 import hinasch.mods.unlsaga.misc.bartering.MerchandiseInfo;
-
-import java.util.Random;
-
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.village.Village;
 
 public class InventoryMerchantUnsaga implements IInventory{
 
@@ -22,13 +17,16 @@ public class InventoryMerchantUnsaga implements IInventory{
 
 	protected ItemStack[] bartering = new ItemStack[10];
 	protected ItemStack[] merchandise = new ItemStack[10];
+	protected ItemStack result;
 	protected EntityPlayer theCustomer;
 	protected IMerchant theMerchant;
 	protected EntityVillager villager;
+	protected MerchantHelper helper;
 
 	public InventoryMerchantUnsaga(EntityPlayer ep,IMerchant merchant){
 		this.theCustomer = ep;
 		this.theMerchant = merchant;
+		this.helper = new MerchantHelper(this);
 		//サーバー側だけEntityVillagerを保持
 		if(this.theMerchant instanceof EntityVillager){
 			this.villager = (EntityVillager)merchant;
@@ -39,49 +37,13 @@ public class InventoryMerchantUnsaga implements IInventory{
 
 		//サーバー側だけ情報を保存・読み込み
 		if(!ep.worldObj.isRemote){
-			EntityVillager villager = (EntityVillager)merchant;
-			if(villager.getExtendedProperties(ExtendedMerchantData.VILLAGER)!=null){
-				ExtendedMerchantData data = (ExtendedMerchantData) villager.getExtendedProperties(ExtendedMerchantData.VILLAGER);
-
-				if(!data.hasMerchandiceInitialized()){
-					this.changeMerchandiseStock(villager.getRNG());
-					data.recentPurchaseDate = villager.worldObj.getTotalWorldTime();
-					data.markMerchandiceInitialized(true);
-				}else{
-					for(int i=0;i<9;++i){
-						this.setMerchandise(i, data.getMerchantInventory(i));
-
-					}
-				}
-
-
-				if((villager.worldObj.getTotalWorldTime() - data.recentPurchaseDate)>=24000){
-					this.changeMerchandiseStock(villager.getRNG());
-				}
-			}
-			
-			
+			this.helper.initMerhcnadiseStock(merchant);
 		}
 		
 
 
 	}
 	
-	public void changeMerchandiseStock(Random rand){
-		for(int i=0;i<9;++i){
-			EntityVillager villager = (EntityVillager)this.theMerchant;
-			XYZPos po = XYZPos.entityPosToXYZ(villager);
-			Village village = villager.worldObj.villageCollectionObj.findNearestVillage(po.x, po.y, po.z, 300);
-			int repu = 1;
-			if(village!=null){
-				repu = village.getReputationForPlayer(this.theCustomer.getCommandSenderName());
-			}
-			ItemStack mis = MerchandiseInfo.getRandomMerchandise(rand,repu);
-			MerchandiseInfo.setBuyPriceTag(mis,MerchandiseInfo.getPrice(mis)*3);
-			this.setMerchandise(i, mis);
-
-		}
-	}
 	
 	public int getCurrentPriceToSell(){
 		int price = 0;
@@ -106,13 +68,16 @@ public class InventoryMerchantUnsaga implements IInventory{
 	@Override
 	public ItemStack getStackInSlot(int i) {
 		// TODO 自動生成されたメソッド・スタブ
-
-		if(i>9){
+		if(i==30){
+			return this.result;
+		}
+		if(i!=30 && i>9){
 			return this.merchandise[i-10];
 		}
 		if(i<=9){
 			return this.bartering[i];
 		}
+
 		return null;
 	}
 
@@ -185,13 +150,20 @@ public class InventoryMerchantUnsaga implements IInventory{
 
 	@Override
 	public ItemStack getStackInSlotOnClosing(int i) {
-		if(i<=9){
+		if(i!=30 && i<=9){
 			if(this.bartering[i]!=null){
 				ItemStack is = this.bartering[i];
 				this.bartering[i] = null;
 				return is;
 			}
 			return null;
+		}
+		if(i==30){
+			if(this.result!=null){
+				ItemStack is = this.result;
+				this.result = null;
+				return is;
+			}
 		}
 		return null;
 
@@ -207,7 +179,7 @@ public class InventoryMerchantUnsaga implements IInventory{
 				itemstack.stackSize = this.getInventoryStackLimit();
 			}
 		}
-		if(i>9){
+		if(i!=30 && i>9){
 			
 
 			this.merchandise[i-10] = itemstack;
@@ -219,22 +191,25 @@ public class InventoryMerchantUnsaga implements IInventory{
 
 		}
 
+		if(i==30){
+			this.result = itemstack;
+
+			if (itemstack != null && itemstack.stackSize > this.getInventoryStackLimit())
+			{
+				itemstack.stackSize = this.getInventoryStackLimit();
+			}
+		}
 
 
 
 	}
 
 	@Override
-	public String getInvName() {
+	public String getInventoryName() {
 		// TODO 自動生成されたメソッド・スタブ
 		return "unsaga.merchant.inventory";
 	}
 
-	@Override
-	public boolean isInvNameLocalized() {
-		// TODO 自動生成されたメソッド・スタブ
-		return false;
-	}
 
 	@Override
 	public int getInventoryStackLimit() {
@@ -242,11 +217,7 @@ public class InventoryMerchantUnsaga implements IInventory{
 		return 64;
 	}
 
-	@Override
-	public void onInventoryChanged() {
-		// TODO 自動生成されたメソッド・スタブ
 
-	}
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
@@ -254,29 +225,13 @@ public class InventoryMerchantUnsaga implements IInventory{
 		return this.theCustomer == entityplayer;
 	}
 
-	@Override
-	public void openChest() {
-		// TODO 自動生成されたメソッド・スタブ
 
-	}
 
 	@Override
-	public void closeChest() {
+	public void closeInventory() {
 		Unsaga.debug("データ書き込みました");
 		if(!this.theCustomer.worldObj.isRemote){
-			if(this.villager.getExtendedProperties(KEY)==null){
-				ExtendedMerchantData newdata = new ExtendedMerchantData();
-				for(int i=0;i<9;i++){
-					newdata.setMerchantInventory(i, this.getMerchandise(i));
-				}
-
-				this.villager.registerExtendedProperties(KEY, newdata);
-			}else{
-				ExtendedMerchantData data = (ExtendedMerchantData) this.villager.getExtendedProperties(KEY);
-				for(int i=0;i<9;i++){
-					data.setMerchantInventory(i, this.getMerchandise(i));
-				}
-			}
+			this.helper.registerMerchandiseStock();
 		}
 
 	}
@@ -286,5 +241,27 @@ public class InventoryMerchantUnsaga implements IInventory{
 		// TODO 自動生成されたメソッド・スタブ
 		return false;
 	}
+
+
+
+	@Override
+	public boolean hasCustomInventoryName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return false;
+	}
+
+	@Override
+	public void markDirty() {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void openInventory() {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+
 
 }

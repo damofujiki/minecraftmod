@@ -1,6 +1,6 @@
 package hinasch.mods.unlsaga.inventory;
 
-import hinasch.mods.unlsaga.item.etc.ItemAccessory;
+import hinasch.mods.unlsaga.item.armor.ItemAccessory;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.inventory.Slot;
 import net.minecraft.item.Item;

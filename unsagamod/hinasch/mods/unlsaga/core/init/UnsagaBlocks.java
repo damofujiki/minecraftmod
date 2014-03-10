@@ -1,60 +1,66 @@
 package hinasch.mods.unlsaga.core.init;
 
-import hinasch.mods.tsukiyotake.lib.PropertyCustom;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.block.BlockChestUnsaga;
+import hinasch.mods.unlsaga.block.BlockDataUnsaga;
 import hinasch.mods.unlsaga.block.BlockFallStone;
+import hinasch.mods.unlsaga.block.BlockOreUnsagaNew;
+import hinasch.mods.unlsaga.item.etc.ItemBlockOreUnsaga;
 import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsaga;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraftforge.common.Configuration;
+import net.minecraftforge.common.config.Configuration;
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class UnsagaBlocks {
 
-	public static int blockFallStoneID;
-	public static int blockChestUnsagaID;
-	public static int blockBlenderID;
-	public static int blockUnsagaOresID;
-	
+
 	public static Block blockFallStone;
 	public static Block blockChestUnsaga;
 	public static Block blockBlender;
-	public static Block blockUnsagaOres;
+	public static Block blockAir;
+	public static Block[] blocksOreUnsaga;
 	
 	public static Class<? extends TileEntity> tileEntityChestUnsaga;
-
+	public static Class<? extends ItemBlock> classItemBlockOre;
 	//public static Class<? extends ItemBlockOreUnsaga> classItemBlockOre;
 	
 	public static void loadConfig(Configuration config) {
-		PropertyCustom prop = new PropertyCustom(new String[]{"BlockID.FallingStone","BlockID.Chest.Unsaga","BlockID.Ores"
-				});
-		prop.setValues(new Integer[]{1000,1001,1002});
-		prop.setCategoriesAll(config.CATEGORY_BLOCK);
-		prop.buildProps(config);
-		
-		blockFallStoneID = prop.getProp(0).getInt();
-		blockChestUnsagaID = prop.getProp(1).getInt();
-		blockUnsagaOresID = prop.getProp(2).getInt();
-				
+//		PropertyCustom prop = new PropertyCustom(new String[]{"BlockID.FallingStone","BlockID.Chest.Unsaga","BlockID.Ores"
+//				,"BlockID.AirBlock"});
+//		prop.setValues(new Integer[]{1000,1001,1002,1003});
+//		prop.setCategoriesAll(config.CATEGORY_BLOCK);
+//		prop.buildProps(config);
+//		
+//		blockFallStoneID = prop.getProp(0).getInt();
+//		blockChestUnsagaID = prop.getProp(1).getInt();
+//		blockUnsagaOresID = prop.getProp(2).getInt();
+//		blockAirID = prop.getProp(3).getInt();
 	}
 
 	public static void registerValues() {
 
-		blockChestUnsaga = new BlockChestUnsaga(blockChestUnsagaID,0).setUnlocalizedName("unsaga.chest").setCreativeTab(Unsaga.tabUnsaga);
-		blockFallStone = new BlockFallStone(blockFallStoneID,16,Material.rock).setHardness(2.0F).setResistance(10.0F).setStepSound(Block.soundStoneFootstep)
-				.setUnlocalizedName("unsaga.stonefalling").setCreativeTab(Unsaga.tabUnsaga);
+		blockChestUnsaga = new BlockChestUnsaga(0).setBlockName("unsaga.chest").setHardness(2.5F).setCreativeTab(Unsaga.tabUnsaga);
+		blockFallStone = new BlockFallStone(Material.rock).setHardness(2.0F).setResistance(10.0F).setStepSound(Block.soundTypeStone)
+				.setBlockName("unsaga.stonefalling").setCreativeTab(Unsaga.tabUnsaga);
+		//blockAir = new BlockNothing(blockAirID,Material.air).setHardness(100.0F).setUnlocalizedName("unsaga.nothing");
+		blocksOreUnsaga = new Block[BlockDataUnsaga.unlocalizedNames.size()];
+		for(int i=0;i<blocksOreUnsaga.length;i++){
+			blocksOreUnsaga[i] = new BlockOreUnsagaNew(i).setHardness(3.0F).setResistance(5.0F).setStepSound(Block.soundTypeStone)
+					.setBlockName(BlockDataUnsaga.unlocalizedNames.get(i)).setCreativeTab(Unsaga.tabUnsaga);
+			GameRegistry.registerBlock(blocksOreUnsaga[i], ItemBlockOreUnsaga.class,BlockDataUnsaga.unlocalizedNames.get(i),Unsaga.modid);
+		}
+		//blockOreUnsaga = new BlockOreUnsaga().setHardness(3.0F).setResistance(5.0F).setStepSound(Block.soundTypeStone)
+		//		.setBlockName("unsaga.ore").setCreativeTab(Unsaga.tabUnsaga);
 		tileEntityChestUnsaga = TileEntityChestUnsaga.class;
 		
+
 		GameRegistry.registerTileEntity(tileEntityChestUnsaga, "unsaga.tileEntityChestUnsaga");
-		GameRegistry.registerBlock(blockChestUnsaga,"unsaga.chest");
-		GameRegistry.registerBlock(blockFallStone,"unsaga.fallstone");
+		//GameRegistry.registerTileEntity(TileEntityShapeMemory.class, "unsaga.tileEntityShapeMemory");
+		GameRegistry.registerBlock(blockChestUnsaga,ItemBlock.class,"bonuschest",Unsaga.modid);
+		GameRegistry.registerBlock(blockFallStone,ItemBlock.class,"fallstone",Unsaga.modid);
 	}
 
-
-	public static void setLocalize(){
-		//HSLibs.langSet("Bonus Chest", "宝箱", blockChestUnsaga);
-		//HSLibs.langSet("Fall Cobblestone", "落ちる丸石", blockFallStone);
-	}
 }

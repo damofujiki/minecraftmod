@@ -1,76 +1,44 @@
 package hinasch.mods.unlsagamagic.event;
 
-import hinasch.lib.HSLibs;
-import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsagamagic.UnsagaMagic;
+import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
+import hinasch.mods.unlsaga.core.init.UnsagaConfigs;
 import hinasch.mods.unlsagamagic.item.ItemTablet;
-import hinasch.mods.unlsagamagic.misc.element.UnsagaElement.EnumElement;
-import hinasch.mods.unlsagamagic.misc.spell.Spell;
-import hinasch.mods.unlsagamagic.misc.spell.SpellMixTable;
-
-import java.util.EnumSet;
-
+import hinasch.mods.unlsagamagic.misc.spell.Deciphering;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
-import cpw.mods.fml.common.ITickHandler;
-import cpw.mods.fml.common.TickType;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
-public class EventDecipherAtSleep implements ITickHandler{
+public class EventDecipherAtSleep {
 
-	@Override
-	public void tickStart(EnumSet<TickType> type, Object... tickData) {
-		if (type.equals(EnumSet.of(TickType.PLAYER))) {
-			onPlayerTick((EntityPlayer) tickData[0]);
-		}
 
-	}
 	
-	private void onPlayerTick(EntityPlayer entityPlayer) {
-		int sleepTimer = entityPlayer.getSleepTimer();
-		if(sleepTimer == 99){
-			onPlayerSleep(entityPlayer.worldObj,entityPlayer);
+	@SubscribeEvent
+	public void onPlayerTick(LivingUpdateEvent e) {
+		if(e.entityLiving instanceof EntityPlayer){
+			EntityPlayer entityPlayer = (EntityPlayer)e.entityLiving;
+			int sleepTimer = entityPlayer.getSleepTimer();
+			if(sleepTimer == 99){
+				onPlayerSleep(entityPlayer.worldObj,entityPlayer);
+			}
 		}
+
 	}
 
 	public void onPlayerSleep(World world,EntityPlayer ep){
 
-		if(ep.getHeldItem()!=null){
-			ItemStack is = ep.getHeldItem();
-			if(is.getItem() instanceof ItemTablet && !world.isRemote){
-				if(ItemTablet.isDeciphered(is)){
-					UnsagaMagic.worldElement.figureElements(world, ep);
-					SpellMixTable table = UnsagaMagic.worldElement.getWorldElements();
-					Spell spell = ItemTablet.getSpell(is);
-					int difficultySpell = spell.difficultyDecipher;
-					EnumElement elementMagic = spell.element;
-					int elementpoint = table.getInt(elementMagic);
-					int progressDecipher = (elementpoint*3) / HSLibs.exceptZero(difficultySpell/2);
-					if(progressDecipher<2)progressDecipher=2;
-					progressDecipher *= 2;
-					Unsaga.debug("解読度:"+progressDecipher);
-					ItemTablet.progressDeciphering(ep, is, progressDecipher);
+		if(!UnsagaConfigs.decipherAtSleep)return;
+		if(ep.getExtendedProperties(ExtendedPlayerData.key)!=null){
+			ExtendedPlayerData data = (ExtendedPlayerData)ep.getExtendedProperties(ExtendedPlayerData.key);
+			if(data.getTablet()!=null && data.getTablet().getItem() instanceof ItemTablet){
+				ItemStack tablet = data.getTablet();
+				if(!ItemTablet.isDeciphered(tablet)){
+					Deciphering.progressDeciphering(world, ep, tablet);
 				}
-
 			}
 		}
+
 	}
 
-	@Override
-	public void tickEnd(EnumSet<TickType> type, Object... tickData) {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
-
-	@Override
-	public EnumSet<TickType> ticks() {
-		// TODO 自動生成されたメソッド・スタブ
-		return EnumSet.of(TickType.PLAYER);
-	}
-
-	@Override
-	public String getLabel() {
-		// TODO 自動生成されたメソッド・スタブ
-		return "unsagaMagic";
-	}
 }

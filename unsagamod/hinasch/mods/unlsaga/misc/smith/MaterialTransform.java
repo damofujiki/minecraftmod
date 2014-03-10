@@ -1,7 +1,7 @@
 package hinasch.mods.unlsaga.misc.smith;
 
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.core.init.MaterialList;
+import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 
 import java.util.HashMap;
@@ -43,7 +43,7 @@ public class MaterialTransform {
 		for(Iterator<MaterialTransform> ite = store.iterator();ite.hasNext();){
 			MaterialTransform trans = ite.next();
 			if(matchElement(inputs,trans.required)){
-				Unsaga.debug(trans.transformto.jpName+"になりそう");
+				Unsaga.debug(trans.transformto.getUnlocalizedName()+"になりそう");
 				if(rand.nextInt(100)<=trans.probability){
 					transformed = trans.transformto;
 				}
@@ -82,19 +82,20 @@ public class MaterialTransform {
 	
 	static{
 		store = new HashSet();
-		store.add(new MaterialTransform(MaterialList.iron,MaterialList.categorywood,MaterialList.steel1,85));
-		store.add(new MaterialTransform(MaterialList.steel1,MaterialList.categorywood,MaterialList.steel2,15));
-		store.add(new MaterialTransform(MaterialList.iron,MaterialList.categorywood,MaterialList.steel2,15));
-		store.add(new MaterialTransform(MaterialList.ironOre,MaterialList.categorywood,MaterialList.steel2,15));
-		store.add(new MaterialTransform(MaterialList.silver,MaterialList.bestial,MaterialList.fairieSilver,15));
-		store.add(new MaterialTransform(MaterialList.steel2,MaterialList.debris2,MaterialList.damascus,100));
-		store.add(new MaterialTransform(MaterialList.debris,MaterialList.debris,MaterialList.debris2,100));
-		store.add(new MaterialTransform(MaterialList.debris,MaterialList.bestial,MaterialList.debris2,100));
-		store.add(new MaterialTransform(MaterialList.stone,MaterialList.categorywood,MaterialList.debris,15));
-		store.add(new MaterialTransform(MaterialList.stone,MaterialList.silver,MaterialList.debris,15));
-		store.add(new MaterialTransform(MaterialList.stone,MaterialList.obsidian,MaterialList.debris,15));
-		store.add(new MaterialTransform(MaterialList.copperOre,MaterialList.categorywood,MaterialList.copper,100));
-		store.add(new MaterialTransform(MaterialList.ironOre,MaterialList.categorywood,MaterialList.iron,100));
-		store.add(new MaterialTransform(MaterialList.meteorite,MaterialList.bone,MaterialList.meteoricIron,15));
+		store.add(new MaterialTransform(UnsagaMaterials.iron,UnsagaMaterials.categorywood,UnsagaMaterials.steel1,85));
+		store.add(new MaterialTransform(UnsagaMaterials.steel1,UnsagaMaterials.categorywood,UnsagaMaterials.steel2,15));
+		store.add(new MaterialTransform(UnsagaMaterials.iron,UnsagaMaterials.categorywood,UnsagaMaterials.steel2,15));
+		store.add(new MaterialTransform(UnsagaMaterials.ironOre,UnsagaMaterials.categorywood,UnsagaMaterials.steel2,15));
+		store.add(new MaterialTransform(UnsagaMaterials.silver,UnsagaMaterials.bestial,UnsagaMaterials.fairieSilver,15));
+		store.add(new MaterialTransform(UnsagaMaterials.steel2,UnsagaMaterials.debris2,UnsagaMaterials.damascus,100));
+		store.add(new MaterialTransform(UnsagaMaterials.debris,UnsagaMaterials.debris,UnsagaMaterials.debris2,100));
+		store.add(new MaterialTransform(UnsagaMaterials.debris,UnsagaMaterials.bestial,UnsagaMaterials.debris2,100));
+		store.add(new MaterialTransform(UnsagaMaterials.stone,UnsagaMaterials.categorywood,UnsagaMaterials.debris,15));
+		store.add(new MaterialTransform(UnsagaMaterials.stone,UnsagaMaterials.silver,UnsagaMaterials.debris,15));
+		store.add(new MaterialTransform(UnsagaMaterials.stone,UnsagaMaterials.obsidian,UnsagaMaterials.debris,15));
+		store.add(new MaterialTransform(UnsagaMaterials.copperOre,UnsagaMaterials.categorywood,UnsagaMaterials.copper,100));
+		store.add(new MaterialTransform(UnsagaMaterials.ironOre,UnsagaMaterials.categorywood,UnsagaMaterials.iron,100));
+		store.add(new MaterialTransform(UnsagaMaterials.meteorite,UnsagaMaterials.bone,UnsagaMaterials.meteoricIron,15));
+		store.add(new MaterialTransform(UnsagaMaterials.dragonHeart,UnsagaMaterials.iron,UnsagaMaterials.dragonHeart,100));
 	}
 }

@@ -3,58 +3,80 @@ package hinasch.mods.unlsaga.block;
 import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockSand;
+import net.minecraft.block.BlockFalling;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
-import net.minecraft.entity.item.EntityFallingSand;
-import net.minecraft.util.Icon;
+import net.minecraft.entity.item.EntityFallingBlock;
+import net.minecraft.init.Blocks;
+import net.minecraft.item.Item;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockFallStone extends BlockSand
+public class BlockFallStone extends BlockFalling
 {
     /** Do blocks fall instantly to where they stop or do they fall over time */
     public static boolean fallInstantly = false;
 
     
-    public BlockFallStone(int par1, int par2)
+    public BlockFallStone()
     {
-        super(par1, Material.sand);
+        super(Material.sand);
         this.setCreativeTab(CreativeTabs.tabBlock);
     }
 
-    public BlockFallStone(int par1, int par2, Material par3Material)
+    public BlockFallStone(Material par3Material)
     {
-        super(par1, par3Material);
+        super(par3Material);
     }
+    
+    public int tickRate(World par1World)
+    {
+        return 2;
+    }
+    
+//    @Override
+//    public TileEntity createTileEntity(World world, int metadata)
+//    {
+//    	int blockid = Block.cobblestone.blockID;
+//    	if(metadata==3){
+//    		blockid = Block.dirt.blockID;
+//    	}
+//    	if(metadata==5){
+//    		blockid = Block.netherrack.blockID;
+//    	}
+//        return new TileEntityShapeMemory(blockid,0,200);
+//    }
+//    
 
+	
     @SideOnly(Side.CLIENT)
     @Override
-    public void registerIcons(IconRegister par1IconRegister)
+    public void registerBlockIcons(IIconRegister par1IconRegister)
     {
         this.blockIcon = par1IconRegister.registerIcon("stonebrick");
 
     }
     
     @Override
-    public Icon getIcon(int par1, int par2)
+    public IIcon getIcon(int par1, int par2)
     {
     	if(par2==5){
-    		return Block.netherrack.getBlockTextureFromSide(0);
+    		return Blocks.netherrack.getBlockTextureFromSide(0);
     	}
     	if(par2==3){
-    		return Block.dirt.getBlockTextureFromSide(0);
+    		return Blocks.dirt.getBlockTextureFromSide(0);
     	}
-        return Block.cobblestone.getBlockTextureFromSide(0);
+        return Blocks.cobblestone.getBlockTextureFromSide(0);
     }
 
     
     @Override
     public void onBlockAdded(World par1World, int par2, int par3, int par4)
     {
-        par1World.scheduleBlockUpdate(par2, par3, par4, this.blockID, this.tickRate());
+        par1World.scheduleBlockUpdate(par2, par3, par4, this, this.tickRate());
     }
 
     /**
@@ -62,9 +84,9 @@ public class BlockFallStone extends BlockSand
      * their own) Args: x, y, z, neighbor blockID
      */
     @Override
-    public void onNeighborBlockChange(World par1World, int par2, int par3, int par4, int par5)
+    public void onNeighborBlockChange(World par1World, int par2, int par3, int par4, Block par5)
     {
-        par1World.scheduleBlockUpdate(par2, par3, par4, this.blockID, this.tickRate());
+        par1World.scheduleBlockUpdate(par2, par3, par4, this, this.tickRate());
     }
 
     /**
@@ -85,6 +107,7 @@ public class BlockFallStone extends BlockSand
     
     private void tryToFall(World par1World, int par2, int par3, int par4)
     {
+    	int metadata = par1World.getBlockMetadata(par2, par3, par4);
         if (canFallBelow(par1World, par2, par3 - 1, par4) && par3 >= 0)
         {
             byte var8 = 32;
@@ -93,14 +116,14 @@ public class BlockFallStone extends BlockSand
             {
                 if (!par1World.isRemote)
                 {
-                    EntityFallingSand var9 = new EntityFallingSand(par1World, (double)((float)par2 + 0.5F), (double)((float)par3 + 0.5F), (double)((float)par4 + 0.5F), this.blockID, par1World.getBlockMetadata(par2, par3, par4));
+                    EntityFallingBlock var9 = new EntityFallingBlock(par1World, (double)((float)par2 + 0.5F), (double)((float)par3 + 0.5F), (double)((float)par4 + 0.5F), this, par1World.getBlockMetadata(par2, par3, par4));
                     this.onStartFalling(var9);
                     par1World.spawnEntityInWorld(var9);
                 }
             }
             else
             {
-                par1World.setBlock(par2, par3, par4, 0, 0, 4);
+                par1World.setBlockToAir(par2, par3, par4);
 
                 while (canFallBelow(par1World, par2, par3 - 1, par4) && par3 > 0)
                 {
@@ -109,7 +132,7 @@ public class BlockFallStone extends BlockSand
 
                 if (par3 > 0)
                 {
-                    par1World.setBlock(par2, par3, par4, this.blockID, 0, 4);
+                    par1World.setBlock(par2, par3, par4, this, metadata, 3);
                 }
             }
         }
@@ -118,7 +141,7 @@ public class BlockFallStone extends BlockSand
     /**
      * Called when the falling block entity for this block is created
      */
-    protected void onStartFalling(EntityFallingSand par1EntityFallingSand) {}
+    protected void onStartFalling(EntityFallingBlock par1EntityFallingSand) {}
 
     /**
      * How many world ticks before ticking
@@ -134,19 +157,19 @@ public class BlockFallStone extends BlockSand
      */
     public static boolean canFallBelow(World par0World, int par1, int par2, int par3)
     {
-        int var4 = par0World.getBlockId(par1, par2, par3);
+        Block var4 = par0World.getBlock(par1, par2, par3);
 
-        if (var4 == 0)
+        if (var4.isAir(par0World, par1, par2, par3))
         {
             return true;
         }
-        else if (var4 == Block.fire.blockID)
+        else if (var4 == Blocks.fire)
         {
             return true;
         }
         else
         {
-            Material var5 = Block.blocksList[var4].blockMaterial;
+            Material var5 = var4.getMaterial();
             return var5 == Material.water ? true : var5 == Material.lava;
         }
     }
@@ -157,22 +180,22 @@ public class BlockFallStone extends BlockSand
     public void onFinishFalling(World par1World, int par2, int par3, int par4, int par5) {
     	
     	if(par1World.getBlockMetadata(par2, par3, par4)==5){
-    		par1World.setBlock(par2, par3, par4, Block.netherrack.blockID, 0, 2);
+    		par1World.setBlock(par2, par3, par4, Blocks.netherrack, 0, 2);
     		return;
     	}
     	if(par1World.getBlockMetadata(par2, par3, par4)==3){
-    		par1World.setBlock(par2, par3, par4, Block.dirt.blockID, 0, 2);
+    		par1World.setBlock(par2, par3, par4, Blocks.dirt, 0, 2);
     		return;
     	}
     	
-    		par1World.setBlock(par2, par3, par4, Block.cobblestone.blockID, 0, 2);
+    		par1World.setBlock(par2, par3, par4, Blocks.cobblestone, 0, 2);
     	
     }
     
     @Override
-    public int idDropped(int par1, Random par2Random, int par3)
+    public Item getItemDropped(int par1, Random par2Random, int par3)
     {
-        return 0;
+        return null;
     }
 
 }

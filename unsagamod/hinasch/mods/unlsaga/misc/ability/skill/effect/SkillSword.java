@@ -3,13 +3,16 @@ package hinasch.mods.unlsaga.misc.ability.skill.effect;
 import hinasch.lib.HSLibs;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
-import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
-import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
-import hinasch.mods.unlsaga.misc.debuff.LivingState;
+import hinasch.mods.unlsaga.misc.debuff.Debuffs;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingState;
+import hinasch.mods.unlsaga.misc.util.rangedamage.CauseKnockBack;
 
 import java.util.Random;
 
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.Vec3;
 
 public class SkillSword extends SkillEffect{
@@ -23,10 +26,10 @@ public class SkillSword extends SkillEffect{
 	}
 	
 	public void doGust(SkillEffectHelper helper){
-		helper.ownerSkill.playSound("mob.wither.shoot", 0.5F, 1.8F / (helper.ownerSkill.getRNG().nextFloat() * 0.4F + 1.2F));
-		Vec3 lookvec = helper.ownerSkill.getLookVec();
-		helper.ownerSkill.setVelocity(lookvec.xCoord*2.5, 0, lookvec.zCoord*2.5);
-		LivingDebuff.addLivingDebuff(helper.ownerSkill, new LivingState(DebuffRegistry.gust,50,false));
+		helper.owner.playSound("mob.wither.shoot", 0.5F, 1.8F / (helper.owner.getRNG().nextFloat() * 0.4F + 1.2F));
+		Vec3 lookvec = helper.owner.getLookVec();
+		helper.owner.setVelocity(lookvec.xCoord*2.5, 0, lookvec.zCoord*2.5);
+		LivingDebuff.addLivingDebuff(helper.owner, new LivingState(Debuffs.gust,100,false));
 		return;
 	}
 
@@ -35,11 +38,11 @@ public class SkillSword extends SkillEffect{
 		
 		EntityLivingBase entity = parent.target;
 		if(!parent.world.isRemote){
-			if(HSLibs.isEntityLittleMaidAvatar(parent.ownerSkill)){
-				parent.world.createExplosion(HSLibs.getLMMFromAvatar(parent.ownerSkill), entity.posX, entity.posY, entity.posZ, 1.5F,false);
+			if(HSLibs.isEntityLittleMaidAvatar(parent.owner)){
+				parent.world.createExplosion(HSLibs.getLMMFromAvatar(parent.owner), entity.posX, entity.posY, entity.posZ, 1.5F,false);
 				return;
 			}
-			parent.world.createExplosion(parent.ownerSkill, entity.posX, entity.posY, entity.posZ, 1.5F,false);
+			parent.world.createExplosion(parent.owner, entity.posX, entity.posY, entity.posZ, 1.5F,false);
 
 		}
 
@@ -48,29 +51,33 @@ public class SkillSword extends SkillEffect{
 
 	public void doKaleidoscope(SkillEffectHelper parent){
 		Unsaga.lpHandler.tryHurtLP(parent.target, parent.getAttackDamageLP());
-		Random random = parent.ownerSkill.getRNG();
-		LivingDebuff.addLivingDebuff(parent.ownerSkill,new LivingState(DebuffRegistry.antiFallDamage,10,true));
-		LivingDebuff.addLivingDebuff(parent.ownerSkill, new LivingState(DebuffRegistry.kalaidoscope,10,true));
-		parent.ownerSkill.playSound("mob.wither.shoot", 0.5F, 1.8F / (parent.ownerSkill.getRNG().nextFloat() * 0.4F + 1.2F));
+		Random random = parent.owner.getRNG();
+		LivingDebuff.addLivingDebuff(parent.owner,new LivingState(Debuffs.antiFallDamage,10,true));
+		LivingDebuff.addLivingDebuff(parent.owner, new LivingState(Debuffs.kalaidoscope,10,true));
+		parent.owner.playSound("mob.wither.shoot", 0.5F, 1.8F / (parent.owner.getRNG().nextFloat() * 0.4F + 1.2F));
 		double newposY = parent.target.posY + random.nextInt(4)+12;
 		//ep.posY = newposY;
-		parent.ownerSkill.motionY = 0.8;
+		parent.owner.motionY = 0.8;
 
 
-		double disX = parent.target.posX-parent.ownerSkill.posX;
-		double disZ =parent.target.posZ-parent.ownerSkill.posZ;
+		double disX = parent.target.posX-parent.owner.posX;
+		double disZ =parent.target.posZ-parent.owner.posZ;
 		double distance = Math.sqrt(Math.pow(disX, 2)+Math.pow(disZ,2));
 
-		parent.ownerSkill.motionX = (disX*0.08);
-		parent.ownerSkill.motionZ = (disZ*0.08);
+		parent.owner.motionX = (disX*0.08);
+		parent.owner.motionZ = (disZ*0.08);
 
 
 	}
 
 	public void doRearBlade(SkillEffectHelper parent){
-		parent.ownerSkill.hurtResistantTime = 5;
-		parent.ownerSkill.playSound("mob.wither.shoot", 0.5F, 1.8F / (parent.ownerSkill.getRNG().nextFloat() * 0.4F + 1.2F));
-		LivingDebuff.addLivingDebuff(parent.ownerSkill, new LivingState(DebuffRegistry.rushBlade,1, false));
+		//parent.owner.hurtResistantTime = 5;
+		parent.owner.playSound("mob.wither.shoot", 0.5F, 1.8F / (parent.owner.getRNG().nextFloat() * 0.4F + 1.2F));
+		CauseKnockBack knock = new CauseKnockBack(parent.world, 1.5F);
+		knock.setSkillEffectHelper(parent);
+		AxisAlignedBB bb = parent.owner.boundingBox.expand(2.0D, 1.0D, 2.0D);
+		parent.causeRangeDamage(knock, parent.world,bb , parent.getAttackDamage(), DamageSource.causePlayerDamage(parent.owner), false);
+		//LivingDebuff.addLivingDebuff(parent.owner, new LivingState(DebuffRegistry.rushBlade,1, false));
 
 		//parent.ownerSkill.moveEntityWithHeading(parent.ownerSkill.moveStrafing,-parent.ownerSkill.moveForward);
 

@@ -7,7 +7,7 @@ import net.minecraft.item.ItemStack;
 
 public class InventorySmithUnsaga implements IInventory{
 
-	protected ItemStack[] invSlot = new ItemStack[4];
+	public ItemStack[] invSlot = new ItemStack[4];
 	protected IMerchant theSmith;
 	public InventorySmithUnsaga(EntityPlayer ep, IMerchant theMerchant) {
 		// TODO 自動生成されたコンストラクター・スタブ
@@ -76,16 +76,12 @@ public class InventorySmithUnsaga implements IInventory{
 	}
 
 	@Override
-	public String getInvName() {
+	public String getInventoryName() {
 		// TODO 自動生成されたメソッド・スタブ
 		return "unsaga.smith.inventory";
 	}
 
-	@Override
-	public boolean isInvNameLocalized() {
-		// TODO 自動生成されたメソッド・スタブ
-		return false;
-	}
+
 
 	@Override
 	public int getInventoryStackLimit() {
@@ -93,11 +89,7 @@ public class InventorySmithUnsaga implements IInventory{
 		return 1;
 	}
 
-	@Override
-	public void onInventoryChanged() {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
+
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
@@ -105,14 +97,10 @@ public class InventorySmithUnsaga implements IInventory{
 		return this.theSmith.getCustomer() == entityplayer;
 	}
 
-	@Override
-	public void openChest() {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
+
 
 	@Override
-	public void closeChest() {
+	public void closeInventory() {
 
 		
 	}
@@ -122,5 +110,26 @@ public class InventorySmithUnsaga implements IInventory{
 		// TODO 自動生成されたメソッド・スタブ
 		return false;
 	}
+
+
+
+	@Override
+	public boolean hasCustomInventoryName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return false;
+	}
+
+	@Override
+	public void markDirty() {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void openInventory() {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
 
 }

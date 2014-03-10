@@ -2,9 +2,10 @@ package hinasch.mods.unlsaga.misc.util;
 
 import hinasch.lib.UtilNBT;
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.core.init.MaterialList;
+import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
-import hinasch.mods.unlsaga.item.etc.ItemAccessory;
+import hinasch.mods.unlsaga.item.IUnsagaMaterial;
+import hinasch.mods.unlsaga.item.armor.ItemAccessory;
 import hinasch.mods.unlsaga.item.weapon.ItemBowUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemStaffUnsaga;
 import hinasch.mods.unlsaga.misc.ability.Ability;
@@ -15,21 +16,22 @@ import java.util.Iterator;
 import java.util.List;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.IconRegister;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 
 public class HelperUnsagaWeapon {
 	
 	protected UnsagaMaterial materialItem;
-	protected Icon itemIcon;
+	protected IIcon itemIcon;
 	//protected HashMap<String,Icon> iconMap;
 	protected AbilityRegistry ar = Unsaga.abilityRegistry;
-	protected EnumUnsagaWeapon category;
+	protected EnumUnsagaTools category;
 	
-	public HelperUnsagaWeapon(UnsagaMaterial materialItem,Icon itemIcon,EnumUnsagaWeapon category){
+	public HelperUnsagaWeapon(UnsagaMaterial materialItem,IIcon itemIcon,EnumUnsagaTools category){
 		this.materialItem = materialItem;
 		this.category = category;
 		this.itemIcon = itemIcon;
@@ -43,7 +45,7 @@ public class HelperUnsagaWeapon {
 //    		IUnsagaWeapon iu = (IUnsagaWeapon)is.getItem();
 //    		return iu.unsMaterial.weight;
 //    	}
-    	return MaterialList.dummy.weight;
+    	return getMaterial(is).weight;
     }
     
 
@@ -56,7 +58,7 @@ public class HelperUnsagaWeapon {
     	if(par1ItemStack.getItem() instanceof ItemStaffUnsaga){
     		UnsagaMaterial mate = getMaterial(par1ItemStack);
     		if(mate.isChild){
-    			if(mate.getParentMaterial()==MaterialList.categorywood){
+    			if(mate.getParentMaterial()==UnsagaMaterials.categorywood){
     				multipass = false;
     			}
     		}
@@ -74,7 +76,7 @@ public class HelperUnsagaWeapon {
         return 0xFFFFFF;
     }
 	
-    public void getSubItems(int par1, CreativeTabs par2CreativeTabs, List par3List)
+    public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
     {
     	if(materialItem.hasSubMaterials()){
     		
@@ -97,20 +99,33 @@ public class HelperUnsagaWeapon {
     
 
 
-    
+
+    //getMaterial(From ItemStack) if material is MaterialList.failed ,returns Material from NBT.
     public static UnsagaMaterial getMaterial(ItemStack is){
-    	if(UtilNBT.hasKey(is, "material")){
-    		return MaterialList.getMaterial(UtilNBT.readFreeStrTag(is, "material"));
+    	if(is.getItem() instanceof IUnsagaMaterial){
+    		IUnsagaMaterial iu = (IUnsagaMaterial)is.getItem();
+    		if(iu.getMaterial()==UnsagaMaterials.failed){
+    			if(UtilNBT.hasKey(is, "material")){
+    				return UnsagaMaterials.getMaterial(UtilNBT.readFreeStrTag(is, "material"));
+    			}else{
+    				return UnsagaMaterials.feather;
+    			}
+    		}
+    		return ((IUnsagaMaterial)is.getItem()).getMaterial();
     	}
-//    	if(is.getItem() instanceof IUnsagaWeapon){
-//    		IUnsagaWeapon iu = (IUnsagaWeapon)is.getItem();
-//    		return iu.unsMaterial;
+    	return UnsagaMaterials.dummy;
+//    	if(UtilNBT.hasKey(is, "material")){
+//    		return MaterialList.getMaterial(UtilNBT.readFreeStrTag(is, "material"));
 //    	}
-    	return MaterialList.dummy;
+////    	if(is.getItem() instanceof IUnsagaWeapon){
+////    		IUnsagaWeapon iu = (IUnsagaWeapon)is.getItem();
+////    		return iu.unsMaterial;
+////    	}
+//    	return MaterialList.dummy;
     }
     
 
-    public static Icon registerIcons(IconRegister par1IconRegister,UnsagaMaterial material,String category)
+    public static IIcon registerIcons(IIconRegister par1IconRegister,UnsagaMaterial material,String category)
     {
 
     	return par1IconRegister.registerIcon(Unsaga.domain+":"+category+"_"+material.iconname);
@@ -132,11 +147,8 @@ public class HelperUnsagaWeapon {
     public void addInformation(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4) {
     	String lang = Minecraft.getMinecraft().gameSettings.language;
 		if(par1ItemStack!=null){
-			if(lang.equals("ja_JP")){
-				par3List.add(this.getMaterial(par1ItemStack).jpName);
-			}else{
-				par3List.add(this.getMaterial(par1ItemStack).headerEn);
-			}
+				par3List.add(this.getMaterial(par1ItemStack).getLocalized());
+
 			
 			if(Unsaga.debug.get()){
 				par3List.add("Weight:"+HelperUnsagaWeapon.getCurrentWeight(par1ItemStack));
@@ -148,28 +160,40 @@ public class HelperUnsagaWeapon {
 					par3List.add("W:Light");
 				}
 			}
-			if(ar.getInheritAbilities(this.category, this.materialItem).isPresent()){
-				String str = "";
-				for(Iterator<Ability> ite=ar.getInheritAbilities(this.category, this.materialItem).get().iterator();ite.hasNext();){
-					Ability abi = ite.next();
-					str = str + abi.getName(lang);
-				}
-				par3List.add(str);
+
+			displayAbilities(par1ItemStack, par2EntityPlayer, par3List, par4);
+		}
+    }
+    
+    public void displayAbilities(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, List par3List, boolean par4){
+    	String lang = Minecraft.getMinecraft().gameSettings.language;
+    	if(ar.getInheritAbilities(this.category, this.materialItem).isPresent()){
+			String str = "";
+			for(Iterator<Ability> ite=ar.getInheritAbilities(this.category, this.materialItem).get().iterator();ite.hasNext();){
+				Ability abi = ite.next();
+				str = str + abi.getName(lang);
 			}
-			if(HelperAbility.canGainAbility(par1ItemStack)){
-				HelperAbility helperab = new HelperAbility(par1ItemStack,par2EntityPlayer);
-				if(helperab.getGainedAbilities().isPresent()){
-					for(Ability abi:helperab.getGainedAbilities().get()){
-						par3List.add(abi.getName(lang));
-					}
+			par3List.add(str);
+		}
+		if(HelperAbility.canGainAbility(par1ItemStack)){
+			HelperAbility helperab = new HelperAbility(par1ItemStack,par2EntityPlayer);
+			if(helperab.getGainedAbilities().isPresent()){
+				for(Ability abi:helperab.getGainedAbilities().get()){
+					par3List.add(abi.getName(lang));
 				}
 			}
 		}
     }
 		
-    
+    //TODO マテリアルシステム見直し
     public static void initWeapon(ItemStack is,String mat,int weight){
-		UtilNBT.setFreeTag(is, "material", mat);
+    	if(is.getItem() instanceof IUnsagaMaterial){
+    		IUnsagaMaterial iu = (IUnsagaMaterial)is.getItem();
+    		if(iu.getMaterial()==UnsagaMaterials.failed){
+    			UtilNBT.setFreeTag(is, "material", mat);
+    		}
+    	}
+		
 		UtilNBT.setFreeTag(is, "weight", weight);
 		return;
     }

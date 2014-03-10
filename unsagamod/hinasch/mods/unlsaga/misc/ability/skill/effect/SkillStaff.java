@@ -1,31 +1,34 @@
 package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
+import hinasch.lib.HSLibs;
+import hinasch.lib.PairID;
 import hinasch.lib.ScanHelper;
 import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
-import hinasch.mods.unlsaga.misc.debuff.DebuffRegistry;
-import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
-import hinasch.mods.unlsaga.misc.debuff.LivingStateGrandSlam;
-import hinasch.mods.unlsaga.misc.util.CauseAddVelocity;
+import hinasch.mods.unlsaga.misc.util.ChatUtil;
+import hinasch.mods.unlsaga.misc.util.DamageSourceUnsaga;
+import hinasch.mods.unlsaga.misc.util.rangedamage.CauseAddVelocity;
+import hinasch.mods.unlsaga.misc.util.rangedamage.CauseExplode;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import net.minecraft.block.Block;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
-
-import com.google.common.collect.Sets;
 
 public class SkillStaff extends SkillEffect{
 
-	private HashSet<Material> canBreakBlocks = Sets.newHashSet(Material.ground,Material.sand,Material.grass,Material.ice,Material.rock);
+	//private HashSet<Material> canBreakBlocks = Sets.newHashSet(Material.ground,Material.sand,Material.grass,Material.ice,Material.rock);
+
+	//private HashSet<Block> breakBlocks = Sets.newHashSet(Blocks.cobblestone,Blocks.stone,Blocks.whiteStone,Blocks.netherrack,Blocks.sandstone);
 	//hardness 2.0F 以下、Material rock ground
 	@Override
 	public void selector(SkillEffectHelper parent){
@@ -36,13 +39,13 @@ public class SkillStaff extends SkillEffect{
 		if(parent.skill==AbilityRegistry.grandSlam)this.doGrandSlam(parent);
 		if(parent.skill==AbilityRegistry.skullCrash)this.doSkullCrash(parent);
 		if(parent.skill==AbilityRegistry.gonger)this.doBellRinger(parent);
-		
+		if(parent.skill==AbilityRegistry.rockCrusher)this.doRockcrusher(parent);
 	}
 	
 	public void doBellRinger(SkillEffectHelper parent){
-		parent.ownerSkill.swingItem();
+		parent.owner.swingItem();
 		XYZPos up = parent.usepoint;
-		parent.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (parent.ownerSkill.worldObj.rand.nextFloat() - parent.ownerSkill.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+		parent.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (parent.owner.worldObj.rand.nextFloat() - parent.owner.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
 		parent.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
 
 		boolean sw = false;
@@ -51,7 +54,7 @@ public class SkillStaff extends SkillEffect{
 		for(int i=0;i<40;i++){
 			if(parent.usepoint.y-i>0){
 				if(parent.world.isAirBlock(parent.usepoint.x, parent.usepoint.y-i, parent.usepoint.z)){
-					if(detectRoom(parent.world,parent.ownerSkill,parent.usepoint.x,parent.usepoint.y-i,parent.usepoint.z)){
+					if(detectRoom(parent.world,parent.owner,parent.usepoint.x,parent.usepoint.y-i,parent.usepoint.z)){
 
 						sw=true;
 					}
@@ -82,7 +85,8 @@ public class SkillStaff extends SkillEffect{
 			}
 		}
 		if(numair>=8){
-			ep.addChatMessage("detect airblocks:"+String.valueOf(numair));
+			ChatUtil.addMessageNoLocalized(ep, "detect airblocks:"+String.valueOf(numair));
+			//ep.addChatMessage("detect airblocks:"+String.valueOf(numair));
 			return true;
 		}
 		return false;
@@ -90,90 +94,121 @@ public class SkillStaff extends SkillEffect{
 	}
 	
 	public void doGrandSlam(SkillEffectHelper parent){
-		parent.ownerSkill.swingItem();
+		Vec3 lookvec = parent.owner.getLookVec();
+		parent.owner.swingItem();
+		Random rand = parent.world.rand;
+		World world = parent.world;
 		XYZPos up = parent.usepoint;
-		parent.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (parent.ownerSkill.worldObj.rand.nextFloat() - parent.ownerSkill.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+		//XYZPos up = new XYZPos(parent.usepoint.x+(int)lookvec.xCoord*5,parent.usepoint.y,parent.usepoint.z+(int)lookvec.zCoord*5);
+		parent.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (parent.owner.worldObj.rand.nextFloat() - parent.owner.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
 		parent.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
 
-		ScanHelper scan = new ScanHelper(parent.usepoint.x,parent.usepoint.y+4,parent.usepoint.z,4,4);
-		StringBuilder csv = new StringBuilder();
-		scan.setWorld(parent.world);
-		for(;scan.hasNext();scan.next()){
-			if(scan.isAirBlock()){
-				csv.append(0);
-			}else{
-				csv.append(scan.getID());
-				parent.world.setBlockToAir(scan.sx, scan.sy, scan.sz);
-			}
-			if(scan.hasNext())csv.append("\\.");
-			//if(canBlockBreak(parent,new XYZPos(scan.sx,scan.sy,scan.sz))){
-			
-				//Block.blocksList[scan.getID()].dropBlockAsItem(parent.world,scan.sx,scan.sy,scan.sz,scan.getID(),scan.getMetadata());
-			//}
+
+		if(parent.owner.onGround){
+			parent.owner.motionY += 0.02;
 		}
 		
-		LivingDebuff.addLivingDebuff(parent.ownerSkill, new LivingStateGrandSlam(DebuffRegistry.grandSlam,5,false,parent.usepoint,new String(csv)));
 		
+		AxisAlignedBB bb = HSLibs.getBounding(up, 10.0D, 3.0D);
+		CauseExplode explode = new CauseExplode(parent,1);
 		
+		parent.causeRangeDamage(explode, world, bb, parent.getAttackDamage(), DamageSource.causePlayerDamage(parent.owner), false);
+
 	}
-	
-	public static void restoreBrokenBlocks(XYZPos pos,String psv){
-		if(psv!=null && !psv.equals("")){
-			int index = 0;
-			String[] strs = psv.split("\\.");
-			ScanHelper scan = new ScanHelper(pos.x,pos.y+4,pos.z,4,4);
-			for(;scan.hasNext();scan.next()){
-				if(index>strs.length-1){
-					scan.setBlockHere(Integer.valueOf(strs[index]), 0, 2);
-				}
-			}
-		}
-	}
-	private boolean canBlockBreak(SkillEffectHelper parent,XYZPos xyz){
-		if(this.canBreakBlocks.contains(parent.world.getBlockMaterial(xyz.x, xyz.y, xyz.z))){
-			int blockid = parent.world.getBlockId(xyz.x, xyz.y, xyz.z);
-			Block block = Block.blocksList[blockid];
-			if(parent.world.getBlockMetadata(xyz.x, xyz.y, xyz.z)!=0){
-				return false;
-			}
-			if(block.getBlockHardness(parent.world, xyz.x, xyz.y, xyz.z)<=2.0F){
-				return true;
-			}
-		}
-		return false;
-	}
+
 	public void doPulverizer(SkillEffectHelper helper){
 
 	
+		helper.owner.swingItem();
 		XYZPos up = helper.usepoint;
-		helper.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (helper.ownerSkill.worldObj.rand.nextFloat() - helper.ownerSkill.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+		helper.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (helper.owner.worldObj.rand.nextFloat() - helper.owner.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
 		helper.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
 		ScanHelper scan = new ScanHelper(helper.usepoint.x,helper.usepoint.y,helper.usepoint.z,3,3);
 		scan.setWorld(helper.world);
-		//System.out.print("kiteru1");
 		for(;scan.hasNext();scan.next()){
-			//System.out.print(world.getBlockId(scan.sx, scan.sy, scan.sz));
-
-			// System.out.print("kiteru3");
-
-
 			if(!helper.world.isRemote){
-				if(scan.getID()==Block.stone.blockID || scan.getID()==Block.cobblestone.blockID){
-					int id = scan.getID();
-					Block.blocksList[id].harvestBlock(helper.world, helper.ownerSkill, scan.sx, scan.sy, scan.sz, 0);
-					scan.setBlockHere(0);
+				boolean flag = false;
+				float hardness = scan.getBlock().getBlockHardness(helper.world, scan.sx, scan.sy, scan.sz);
+				if(HSLibs.canBreakAndEffectiveBlock(helper.world,helper.owner,"pickaxe",scan.getAsXYZPos())){
+					flag = true;
 				}
-				
+				if(flag){
+					Block id = scan.getBlock();
+					id.dropXpOnBlockBreak(helper.world, scan.sx, scan.sy, scan.sz, id.getExpDrop(helper.world, scan.getMetadata(), 0));
+					HSLibs.playBlockBreakSFX(helper.world, scan.getAsXYZPos(), new PairID(id,scan.getMetadata()));
+					
+				}
 			}
 		}
 
 		return;
 
 	}
+	//TODO 破壊したブロックの数に応じて破損
+	public void doRockcrusher(SkillEffectHelper parent){
+		List<XYZPos> scheduledBreak = new ArrayList();
+		int harvestLevel = parent.weapon.getItem().getHarvestLevel(parent.weapon, "pickaxe");
+		World world = parent.world;
+		parent.owner.swingItem();
+		XYZPos up = parent.usepoint;
+		parent.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (parent.owner.worldObj.rand.nextFloat() - parent.owner.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+		parent.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
+		PairID compareBlock = HSLibs.getBlockDatas(world, up);
+		scheduledBreak.add(up);
+		if(HSLibs.isOreBlock(compareBlock) && parent.owner.canHarvestBlock(compareBlock.blockObj)){
+			
+			if(world.isRemote){
+				return;
+			}
+			ScannerBreakBlock scannerBreak = new ScannerBreakBlock(compareBlock, up);
+			scannerBreak.doScan(world, 5);
+//			for(int i=0;i<5;i++){
+//				List<XYZPos> removeList = new ArrayList();
+//				List<XYZPos> addList = new ArrayList();
+//				for(XYZPos pos:scheduledBreak){
+//					Block block = world.getBlock(pos.x, pos.y, pos.z);
+//					if(block!=Blocks.air){
+//						block.dropXpOnBlockBreak(parent.world, up.x, up.y, up.z, block.getExpDrop(parent.world, compareBlock.metadata, 0));
+//						HSLibs.playBlockBreakSFX(world, pos, compareBlock);
+//					}
+//
+//					removeList.add(pos);
+//					for(XYZPos round:XYZPos.around){
+//						XYZPos addedPos = pos.add(round);
+//						PairID roundBlockData = HSLibs.getBlockDatas(world, addedPos);
+//						if(roundBlockData.equals(compareBlock)){
+//							addList.add(addedPos);
+//						}
+//						if((compareBlock.blockObj instanceof BlockRedstoneOre) && (roundBlockData.blockObj instanceof BlockRedstoneOre)){
+//							addList.add(addedPos);
+//						}
+//					}
+//				}
+//				
+//				for(XYZPos rm:removeList){
+//					scheduledBreak.remove(rm);
+//				}
+//				
+//				for(XYZPos ad:addList){
+//					scheduledBreak.add(ad);
+//				}
+//
+//			}
+			//this.BreakChainReaction(parent.world,parent.owner,up, new PairID(blockUsePoint,meta),0);
+		}else{
+			if(compareBlock.blockObj.getHarvestLevel(compareBlock.metadata)<=harvestLevel+1){
+				
+				compareBlock.blockObj.dropXpOnBlockBreak(parent.world, up.x, up.y, up.z, compareBlock.blockObj.getExpDrop(parent.world, compareBlock.metadata, 0));
+				HSLibs.playBlockBreakSFX(world, up, compareBlock);
+			}
+		}
+		
+	}
+	
+
 	
 	public void doSkullCrash(SkillEffectHelper helper){
-		LivingHurtEvent e = (LivingHurtEvent)helper.parent;
-		helper.playSoundServer("random.explode");
+		helper.playSound("random.explode");
 		//ep.worldObj.playSoundEffect(en.posX, en.posY, en.posZ, "random.explode", 4.0F, (1.0F + (ep.worldObj.rand.nextFloat() -ep.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
 
 		helper.spawnParticle("largeexplode",helper.target);
@@ -181,27 +216,24 @@ public class SkillStaff extends SkillEffect{
 
 		helper.addPotionChance(40, helper.target, Potion.weakness.id, 160, 1);
 		if(helper.target instanceof EntitySkeleton){
-
-			e.ammount += helper.getAttackDamage()+4;
-			//UtilSkill.tryLPHurt(40, 2, en, ep);
-
-
+			helper.attack(helper.target, null,1.0F);
 		}else{
-
-			e.ammount += helper.getAttackDamage();
-
+			helper.attack(helper.target, null,0.7F);
 		}
+		
+		
+
 	}
 	
 	public void doEarthDragon(SkillEffectHelper helper){
-		helper.ownerSkill.swingItem();
+		helper.owner.swingItem();
 		XYZPos up = helper.usepoint;
-		helper.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (helper.ownerSkill.worldObj.rand.nextFloat() - helper.ownerSkill.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+		helper.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (helper.owner.worldObj.rand.nextFloat() - helper.owner.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
 		helper.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
 
-		AxisAlignedBB bb = helper.ownerSkill.boundingBox.expand(8.0D, 8.0D, 8.0D);
+		AxisAlignedBB bb = helper.owner.boundingBox.expand(8.0D, 8.0D, 8.0D);
 		CauseAddVelocity cause = new CauseAddVelocity(helper.world,helper);
-		DamageSource ds = DamageSource.causePlayerDamage(helper.ownerSkill);
+		DamageSource ds = new DamageSourceUnsaga(null,helper.owner,helper.getAttackDamageLP(),helper.getDamageType().MAGIC);
 		cause.setSkillEffectHelper(helper);
 		helper.causeRangeDamage(cause, helper.world, bb, helper.getAttackDamage(),ds , false);
 

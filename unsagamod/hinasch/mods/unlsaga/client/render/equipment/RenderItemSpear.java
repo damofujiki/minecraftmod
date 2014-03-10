@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.ItemRenderer;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.entity.Entity;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraftforge.client.IItemRenderer;
 
 import org.lwjgl.opengl.GL11;
@@ -36,7 +36,7 @@ public class RenderItemSpear implements IItemRenderer{
 
 		
 		Minecraft mc = Minecraft.getMinecraft();
-		Icon icon = item.getItem().getIconFromDamageForRenderPass(0, pass);
+		IIcon icon = item.getItem().getIconFromDamageForRenderPass(0, pass);
 
 		//mc.renderEngine.bindTexture(UnsagaCore.fullpath+"/textures/items/spear_stone.png");
 		Tessellator tessellator = Tessellator.instance;

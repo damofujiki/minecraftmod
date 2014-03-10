@@ -3,6 +3,7 @@ package hinasch.mods.unlsaga.misc.smith;
 import java.util.HashSet;
 import java.util.Iterator;
 
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.oredict.OreDictionary;
@@ -13,19 +14,20 @@ public class ValidPayment {
 	
 	public static HashSet<ValidPayment> validPayList = new HashSet();
 
-	public static ValidPayment payEmerald = new ValidPayment("item",Item.emerald,EnumPayValues.HIGH);
-	public static ValidPayment payGold = new ValidPayment("item",Item.ingotGold,EnumPayValues.MID);
-	public static ValidPayment payGoldNugget = new ValidPayment("item",Item.goldNugget,EnumPayValues.LOW);
+	public static ValidPayment payEmerald = new ValidPayment("item",Items.emerald,EnumPayValues.HIGH);
+	public static ValidPayment payGold = new ValidPayment("item",Items.gold_ingot,EnumPayValues.MID);
+	public static ValidPayment payGoldFromKey = new ValidPayment("dict","ingotGold",EnumPayValues.MID);
+	public static ValidPayment payGoldNugget = new ValidPayment("item",Items.gold_nugget,EnumPayValues.LOW);
 	
 	public EnumPayValues value;
 	public String key;
-	public int id;
+	public Item itemObj;
 	public String oreDictKey;
 	
 	public ValidPayment(String par1,Object par2,EnumPayValues par3){
 		if(par1.equals("item")){
 			Item item = (Item)par2;
-			this.id = item.itemID;
+			this.itemObj = item;
 		}
 		if(par1.equals("dict")){
 			this.oreDictKey = (String)par2;
@@ -49,7 +51,7 @@ public class ValidPayment {
 	
 	public boolean compare(ItemStack is){
 		if(this.key.equals("item")){
-			if(is.getItem().itemID == this.id){
+			if(is.getItem() == this.itemObj){
 				return true;
 			}
 		}

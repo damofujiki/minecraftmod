@@ -2,8 +2,8 @@ package hinasch.mods.unlsaga.client.gui;
 
 import hinasch.mods.unlsaga.DebugUnsaga;
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.inventory.ContainerSmithUnsaga;
-import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
+import hinasch.mods.unlsaga.inventory.container.ContainerSmithUnsaga;
+import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.client.gui.GuiButton;
@@ -79,7 +79,7 @@ public class GuiSmithUnsaga extends GuiContainer{
 			
 			if(par1GuiButton.id==CATEGORY){
 				this.currentCategory += 1;
-				if(this.currentCategory>=EnumUnsagaWeapon.toolArray.size()){
+				if(this.currentCategory>=EnumUnsagaTools.toolArray.size()){
 					this.currentCategory = 0;
 				}
 			}
@@ -96,8 +96,8 @@ public class GuiSmithUnsaga extends GuiContainer{
 	{
 
 
-		fontRenderer.drawString("Forging Weapons", 8, 5, 0x404040);
-		fontRenderer.drawString(EnumUnsagaWeapon.toolArray.get(this.currentCategory).toString(), 8, 42, 0x404040);
+		fontRendererObj.drawString("Forging Weapons", 8, 5, 0x404040);
+		fontRendererObj.drawString(EnumUnsagaTools.toolArray.get(this.currentCategory).toString(), 8, 42, 0x404040);
 		//fontRenderer.drawString("Result:"+getSpellStr(), 8, (ySize - 96) + 2, 0x404040);
 	}
 	

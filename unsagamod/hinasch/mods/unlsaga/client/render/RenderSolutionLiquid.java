@@ -1,13 +1,13 @@
 package hinasch.mods.unlsaga.client.render;
 
 
-import hinasch.mods.unlsaga.entity.EntitySolutionLiquid;
+import hinasch.mods.unlsaga.entity.projectile.EntitySolutionLiquid;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.texture.TextureMap;
 import net.minecraft.entity.Entity;
-import net.minecraft.item.Item;
-import net.minecraft.util.Icon;
+import net.minecraft.init.Items;
+import net.minecraft.util.IIcon;
 import net.minecraft.util.ResourceLocation;
 
 import org.lwjgl.opengl.GL11;
@@ -30,7 +30,7 @@ public class RenderSolutionLiquid extends Render
 
     public void doRenderFlyingAxe(EntitySolutionLiquid axe, double par2, double par4, double par6, float par8, float par9)
     {
-    	Icon icon = Item.slimeBall.getIconFromDamage(0);
+    	IIcon icon = Items.slime_ball.getIconFromDamage(0);
         GL11.glPushMatrix();
         this.bindEntityTexture(axe);
         GL11.glTranslatef((float)par2, (float)par4, (float)par6);

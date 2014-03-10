@@ -1,7 +1,7 @@
 package hinasch.mods.unlsaga.client.gui;
 
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.inventory.ContainerEquipment;
+import hinasch.mods.unlsaga.inventory.container.ContainerEquipment;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -65,7 +65,7 @@ public class GuiEquipment extends GuiContainer{
 	{
 
 
-		fontRenderer.drawString("Accessory", 8, 6, 0x404040);
+		fontRendererObj.drawString("Accessory", 8, 6, 0x404040);
 		
 		//fontRenderer.drawString("Result:"+getSpellStr(), 8, (ySize - 96) + 2, 0x404040);
 	}

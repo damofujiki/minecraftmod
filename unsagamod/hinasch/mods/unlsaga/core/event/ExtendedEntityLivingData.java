@@ -1,8 +1,9 @@
 package hinasch.mods.unlsaga.core.event;
 
 import hinasch.lib.CSVText;
+import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.debuff.Debuff;
-import hinasch.mods.unlsaga.misc.debuff.LivingDebuff;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 
 import java.util.HashSet;
 import java.util.List;
@@ -12,11 +13,12 @@ import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraftforge.common.IExtendedEntityProperties;
-import net.minecraftforge.event.ForgeSubscribe;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 
 import com.google.common.base.Optional;
+
+import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class ExtendedEntityLivingData implements IExtendedEntityProperties{
 
@@ -56,7 +58,7 @@ public class ExtendedEntityLivingData implements IExtendedEntityProperties{
 	
 	}
 
-	@ForgeSubscribe
+	@SubscribeEvent
 	public void attachDataEvent(EntityConstructing e){
 	
 		if(e.entity instanceof EntityLivingBase){
@@ -65,7 +67,7 @@ public class ExtendedEntityLivingData implements IExtendedEntityProperties{
 		}
 	}
 	
-	@ForgeSubscribe
+	@SubscribeEvent
     public void onLivingUpdate(LivingUpdateEvent e)
     {
         if(e.entityLiving.getExtendedProperties(KEY)!=null){
@@ -98,6 +100,7 @@ public class ExtendedEntityLivingData implements IExtendedEntityProperties{
 	}
 
 	public HashSet<LivingDebuff> strListToDebuffSet(List<String> list){
+		Unsaga.debug("復元中");
 		HashSet<LivingDebuff> output = new HashSet();
 		for(String str:list){
 			output.add(LivingDebuff.buildFromString(str));

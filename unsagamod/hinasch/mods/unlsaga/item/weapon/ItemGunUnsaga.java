@@ -1,21 +1,23 @@
 package hinasch.mods.unlsaga.item.weapon;
 
 
-import hinasch.mods.bunaforest.lib.UtilNBT;
+import hinasch.lib.UtilNBT;
 import hinasch.mods.unlsaga.Unsaga;
+import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
-import hinasch.mods.unlsaga.entity.EntityBarrett;
-import hinasch.mods.unlsaga.misc.util.EnumUnsagaWeapon;
-import hinasch.mods.unlsaga.misc.util.IUnsagaMaterial;
-import net.minecraft.client.renderer.texture.IconRegister;
+import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.entity.projectile.EntityBarrett;
+import hinasch.mods.unlsaga.item.IUnsagaMaterial;
+import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
+import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.item.Item;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.Icon;
+import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
 
@@ -29,13 +31,21 @@ public class ItemGunUnsaga extends ItemBow implements IUnsagaMaterial{
 	protected final int FIRE = 0x0000;
 
 
-	public ItemGunUnsaga(int par1,String par2) {
-		super(par1);
+	public ItemGunUnsaga(String par2) {
+		super();
 		this.iconname = par2;
 		this.setMaxDamage(384);
-		Unsaga.proxy.registerMusketRenderer(this.itemID);
+		Unsaga.proxy.registerMusketRenderer(this);
 	}
 
+	
+	@Override
+    public boolean getIsRepairable(ItemStack par1ItemStack, ItemStack par2ItemStack)
+    {
+        return true;
+    }
+	
+	
 	@Override
 	public void onPlayerStoppedUsing(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer, int par4)
 	{
@@ -109,7 +119,7 @@ public class ItemGunUnsaga extends ItemBow implements IUnsagaMaterial{
 			}
 			else
 			{
-				par3EntityPlayer.inventory.consumeInventoryItem(Item.arrow.itemID);
+				par3EntityPlayer.inventory.consumeInventoryItem(Items.arrow);
 			}
 
 			if (!par2World.isRemote)
@@ -149,8 +159,10 @@ public class ItemGunUnsaga extends ItemBow implements IUnsagaMaterial{
 //	}
 
 	public int getReload(ItemStack is){
-		UtilNBT.checkNBTTag(is);
-		UtilNBT.initStateTag(is);
+
+		if(!UtilNBT.hasiInitState(is)){
+			UtilNBT.setState(is, FIRE);
+		}
 		return UtilNBT.readState(is);
 	}
 	
@@ -229,7 +241,7 @@ public class ItemGunUnsaga extends ItemBow implements IUnsagaMaterial{
 				boolean linfinity = EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, itemstack) > 0;
 				int lk = getReload(itemstack);
 				if(!linfinity){
-					entityplayer.inventory.consumeInventoryItem(UnsagaItems.itemBarrett.itemID);
+					entityplayer.inventory.consumeInventoryItem(UnsagaItems.itemBarrett);
 				}
 				itemstack.setItemDamage(itemstack.getItemDamage() - 1);
 			}
@@ -251,12 +263,12 @@ public class ItemGunUnsaga extends ItemBow implements IUnsagaMaterial{
 	}
 	
 	@Override
-	public void registerIcons(IconRegister par1){
+	public void registerIcons(IIconRegister par1){
 		this.itemIcon = par1.registerIcon(Unsaga.domain+":"+this.iconname);
 	}
 
 	@Override
-	public Icon getItemIconForUseDuration(int par1)
+	public IIcon getItemIconForUseDuration(int par1)
 	{
 		return this.itemIcon;
 	}
@@ -275,7 +287,7 @@ public class ItemGunUnsaga extends ItemBow implements IUnsagaMaterial{
 	
 	protected boolean canReload(ItemStack is,EntityPlayer ep){
 		if (ep.capabilities.isCreativeMode) return true;
-		if(ep.inventory.hasItem(UnsagaItems.itemBarrett.itemID)) return true;
+		if(ep.inventory.hasItem(UnsagaItems.itemBarrett)) return true;
 		return false;
 	}
 	
@@ -303,8 +315,15 @@ public class ItemGunUnsaga extends ItemBow implements IUnsagaMaterial{
 		}
 	
 	@Override
-	public EnumUnsagaWeapon getCategory() {
+	public EnumUnsagaTools getCategory() {
 		// TODO 自動生成されたメソッド・スタブ
-		return null;
+		return EnumUnsagaTools.GUN;
+	}
+
+
+	@Override
+	public UnsagaMaterial getMaterial() {
+		// TODO 自動生成されたメソッド・スタブ
+		return UnsagaMaterials.iron;
 	}
 }

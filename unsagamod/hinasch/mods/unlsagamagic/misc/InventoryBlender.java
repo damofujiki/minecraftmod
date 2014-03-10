@@ -52,17 +52,6 @@ public class InventoryBlender implements IInventory{
         }
 	}
 
-	@Override
-	public String getInvName() {
-		// TODO 自動生成されたメソッド・スタブ
-		return "inventory.blender";
-	}
-
-	@Override
-	public boolean isInvNameLocalized() {
-		// TODO 自動生成されたメソッド・スタブ
-		return false;
-	}
 
 	@Override
 	public int getInventoryStackLimit() {
@@ -70,11 +59,6 @@ public class InventoryBlender implements IInventory{
 		return 1;
 	}
 
-	@Override
-	public void onInventoryChanged() {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
 
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
@@ -82,22 +66,43 @@ public class InventoryBlender implements IInventory{
 		return UtilItem.hasItemInstance(entityplayer, ItemBlender.class);
 	}
 
-	@Override
-	public void openChest() {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
 
-	@Override
-	public void closeChest() {
-		// TODO 自動生成されたメソッド・スタブ
-		
-	}
+
 
 	@Override
 	public boolean isItemValidForSlot(int i, ItemStack itemstack) {
 		// TODO 自動生成されたメソッド・スタブ
 		return false;
+	}
+
+	@Override
+	public String getInventoryName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return "inventory.blender";
+	}
+
+	@Override
+	public boolean hasCustomInventoryName() {
+		// TODO 自動生成されたメソッド・スタブ
+		return false;
+	}
+
+	@Override
+	public void markDirty() {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void openInventory() {
+		// TODO 自動生成されたメソッド・スタブ
+		
+	}
+
+	@Override
+	public void closeInventory() {
+		// TODO 自動生成されたメソッド・スタブ
+		
 	}
 
 }
