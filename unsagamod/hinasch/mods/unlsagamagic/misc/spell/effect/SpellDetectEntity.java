@@ -7,24 +7,20 @@ import java.util.List;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.world.World;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
-public abstract class SpellDetectEntity extends AbstractSpell{
+public abstract class SpellDetectEntity extends SpellBase{
 	
 	public boolean isAmplified;
 	public SpellDetectEntity(){
 		
 	}
-	public SpellDetectEntity(World world) {
-		super(world);
-		// TODO 自動生成されたコンストラクター・スタブ
-	}
+
 
 	@Override
-	public void doSpell(InvokeSpell spell) {
+	public void invokeSpell(InvokeSpell spell) {
 		double range = 50.0D;
 		this.isAmplified = spell.getAmp()>1.5F;
 		

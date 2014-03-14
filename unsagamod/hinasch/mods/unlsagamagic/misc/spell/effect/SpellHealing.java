@@ -6,20 +6,16 @@ import hinasch.mods.unlsaga.misc.util.ChatUtil;
 import hinasch.mods.unlsaga.network.packet.PacketParticle;
 import hinasch.mods.unlsaga.network.packet.PacketUtil;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.world.World;
 
-public abstract class SpellHealing extends AbstractSpell{
+public abstract class SpellHealing extends SpellBase{
 
 	public SpellHealing(){
 		
 	}
-	public SpellHealing(World world) {
-		super(world);
-		// TODO 自動生成されたコンストラクター・スタブ
-	}
+
 
 	@Override
-	public void doSpell(InvokeSpell parent) {
+	public void invokeSpell(InvokeSpell parent) {
 		float heal = Math.round(parent.spell.hurtHP*parent.getAmp());
 		if(parent.getTarget().isPresent()){
 

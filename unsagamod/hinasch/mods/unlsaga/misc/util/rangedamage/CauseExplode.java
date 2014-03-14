@@ -1,15 +1,15 @@
 package hinasch.mods.unlsaga.misc.util.rangedamage;
 
 import hinasch.lib.RangeDamageHelper;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
 
 public class CauseExplode extends RangeDamageHelper{
 
-	public SkillEffectHelper parent;
+	public InvokeSkill parent;
 	
-	public CauseExplode(SkillEffectHelper parent,int amp) {
+	public CauseExplode(InvokeSkill parent,int amp) {
 		super(parent.world);
 		this.parent = parent;
 		// TODO 自動生成されたコンストラクター・スタブ

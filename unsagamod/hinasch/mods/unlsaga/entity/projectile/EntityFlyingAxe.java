@@ -1,7 +1,10 @@
 package hinasch.mods.unlsaga.entity.projectile;
 
-import hinasch.lib.RangeDamageHelper;
 import hinasch.lib.HSLibs;
+import hinasch.lib.RangeDamageHelper;
+import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
+import hinasch.mods.unlsaga.misc.util.DamageHelper;
+import hinasch.mods.unlsaga.misc.util.DamageSourceUnsaga;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -292,8 +295,9 @@ public class EntityFlyingAxe extends EntityThrowable implements IProjectile
 		float f2;
 		float f3;
 		AxisAlignedBB bb = HSLibs.getBounding(this.posX, this.posY, this.posZ, 3.0D, 2.0D);
+		DamageSourceUnsaga ds = new DamageSourceUnsaga(null,this.shootingEntity,AbilityRegistry.skyDrive.hurtLp,DamageHelper.Type.SWORDPUNCH,this);
 
-		RangeDamageHelper.causeDamage(null, this.worldObj, bb, (float)this.getDamage(), DamageSource.causeThrownDamage(this, shootingEntity), false);
+		RangeDamageHelper.causeDamage(this.worldObj,null ,bb, DamageSource.causeThrownDamage(this, shootingEntity), (float)this.getDamage());
 
 
 		if (movingobjectposition != null && movingobjectposition.entityHit != null && movingobjectposition.entityHit instanceof EntityPlayer)

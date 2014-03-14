@@ -1,7 +1,9 @@
 package hinasch.mods.unlsaga.misc.debuff;
 
 import hinasch.lib.StaticWords;
+import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaConfigs;
+import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingBuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.debuff.state.State;
@@ -15,20 +17,23 @@ import java.util.HashMap;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+
+import com.google.common.collect.Lists;
 
 public class Debuffs {
 
 	
 	protected static HashMap<Integer,Debuff> debuffMap = new HashMap();
 	
-	public static final Debuff downSkill = new Debuff(1,"Down Skill");
-	public static final Debuff downPhysical = new Debuff(2,"Down Physical");
+	public static final Debuff downSkill = new Debuff(1,"Down Skill").addAbilityAgainst(AbilityRegistry.skillGuard);
+	public static final Debuff downPhysical = new Debuff(2,"Down Physical").addAbilityAgainst(AbilityRegistry.bodyGuard);
 
-	public static final Debuff downMagic = new Debuff(4,"Down Magic");
-	public static final Debuff sleep = new Debuff(5,"sleep");
+	public static final Debuff downMagic = new Debuff(4,"Down Magic").addAbilityAgainst(AbilityRegistry.magicGuard);
+	public static final Debuff sleep = new Debuff(5,"sleep").setAbilitiesAgainst(Lists.newArrayList(AbilityRegistry.antiDebuff,AbilityRegistry.antiSleep));
 	public static final Debuff lockSlime = new Buff(6,"Slime Lock");
 	public static final Debuff detected = new Debuff(7,"Detected");
 	 
@@ -45,7 +50,8 @@ public class Debuffs {
 	public static final Buff lifeBoost = new Buff(18,"Life Boost");
 	public static final Buff magicUp = new Buff(19,"Magic Up");
 	public static final Buff perseveranceUp = new Buff(20,"perseverance Up");
-
+	public static final Buff waterShield = (Buff) new Buff(21,"ice shield").setParticleNumber(202);
+	public static final Buff physicalUp = (Buff) new Buff(22,"Physical Up").setAttributeModifier(new AttributeModifier("Build Up SuperArmor",1.0D,0));
 
 	//public static final State _antiFallDamage = new State(18,"anti Fall","落下無敵");
 	 
@@ -79,19 +85,33 @@ public class Debuffs {
 			e.ammount += 1;
 		}
 		
+		
+	
 		if(attacker instanceof EntityLivingBase){
-			if(LivingDebuff.hasDebuff((EntityLivingBase) attacker,powerup)){
+			EntityLivingBase livingAttacker = (EntityLivingBase)attacker;
+			if(LivingDebuff.hasDebuff(livingAttacker,powerup)){
 				LivingBuff buff = (LivingBuff) LivingDebuff.getLivingDebuff((EntityLivingBase) attacker, powerup).get();
 				e.ammount += buff.amp;
 			}
-			if(LivingDebuff.hasDebuff((EntityLivingBase) attacker,downSkill)){
+			if(LivingDebuff.hasDebuff(livingAttacker,downSkill)){
 				if(!UnsagaConfigs.module.isLPEnabled()){
-					LivingBuff buff = (LivingBuff) LivingDebuff.getLivingDebuff((EntityLivingBase) attacker, downSkill).get();
-					if(((EntityLivingBase) attacker).getRNG().nextInt(100)<20)
-					e.ammount = 1;
+					LivingDebuff buff = (LivingDebuff) LivingDebuff.getLivingDebuff((EntityLivingBase) attacker, downSkill).get();
+					if(((EntityLivingBase) attacker).getRNG().nextInt(100)<20){
+						e.ammount = 1;
+					}
+					
 				}
 
 			}
+			if(LivingDebuff.hasDebuff(livingAttacker,downMagic)){
+				if(e.source.isMagicDamage()){
+					e.ammount *= 0.5F;
+					Unsaga.debug("魔力減がきいている");
+				}
+
+
+			}
+
 
 			
 			if(LivingDebuff.hasDebuff(hurtEntity, downPhysical)){
@@ -99,6 +119,9 @@ public class Debuffs {
 				float i = 1.0F;
 				hurtEntity.addVelocity((double)(-MathHelper.sin((yaw) * (float)Math.PI / 180.0F) * (float)i * 0.5F), 0.1D, (double)(MathHelper.cos(yaw * (float)Math.PI / 180.0F) * (float)i * 0.5F));
 			}
+//			if(LivingDebuff.hasDebuff(hurtEntity, physicalUp)){
+//				Unsaga.debug("効果が出ている");
+//			}
 		}
 
 		

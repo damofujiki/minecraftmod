@@ -9,7 +9,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.item.weapon.base.ItemSpearBase;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
@@ -65,12 +65,12 @@ public class ItemSpearUnsaga extends ItemSpearBase {
 		int ac = 20;
 		int j = this.getMaxItemUseDuration(par1ItemStack) - par4;
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.aiming, par1ItemStack)){
-			SkillEffectHelper helper = new SkillEffectHelper(par2World, par3EntityPlayer,AbilityRegistry.aiming , par1ItemStack);
+			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer,AbilityRegistry.aiming , par1ItemStack);
 			helper.setCharge(j);
 			helper.doSkill();
 		}
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.acupuncture, par1ItemStack)){
-			SkillEffectHelper helper = new SkillEffectHelper(par2World, par3EntityPlayer,AbilityRegistry.acupuncture , par1ItemStack);
+			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer,AbilityRegistry.acupuncture , par1ItemStack);
 			helper.setCharge(j);
 			helper.doSkill();
 		}
@@ -83,7 +83,7 @@ public class ItemSpearUnsaga extends ItemSpearBase {
 
 
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.swing, par1ItemStack) && par3EntityPlayer.isSneaking()){
-			SkillEffectHelper helper = new SkillEffectHelper(par2World, par3EntityPlayer, AbilityRegistry.swing, par1ItemStack);
+			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer, AbilityRegistry.swing, par1ItemStack);
 			helper.doSkill();
 		}
 		if (HelperAbility.hasAbilityFromItemStack(AbilityRegistry.aiming, par1ItemStack) && par3EntityPlayer.isSneaking())
@@ -105,7 +105,7 @@ public class ItemSpearUnsaga extends ItemSpearBase {
 	public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
 	{
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.grassHopper, par1ItemStack)){
-			SkillEffectHelper helper = new SkillEffectHelper(par3World,par2EntityPlayer,AbilityRegistry.grassHopper,par1ItemStack);
+			InvokeSkill helper = new InvokeSkill(par3World,par2EntityPlayer,AbilityRegistry.grassHopper,par1ItemStack);
 
 			helper.setUsePoint(new XYZPos(par4,par5,par6));
 			helper.doSkill();

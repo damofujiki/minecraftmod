@@ -88,6 +88,7 @@ public class ExtendedEntityLivingData implements IExtendedEntityProperties{
 		for(LivingDebuff debuff:this.debuffSet){
 			debuff.updateTick(living);
 			if(debuff.isExpired()){
+				debuff.onExpiredEvent(living);
 				removes.add(debuff);
 			}
 		}
@@ -127,10 +128,14 @@ public class ExtendedEntityLivingData implements IExtendedEntityProperties{
 		if(living.getExtendedProperties(ExtendedEntityLivingData.KEY)!=null){
 			ExtendedEntityLivingData ldata = (ExtendedEntityLivingData) living.getExtendedProperties(ExtendedEntityLivingData.KEY);
 			if(!ldata.hasDebuff(debuff)){
-				ldata.debuffSet.add(new LivingDebuff(debuff,remain));
+				LivingDebuff livdebuff = new LivingDebuff(debuff,remain);
+				ldata.debuffSet.add(livdebuff);
+				livdebuff.onInitEvent(living);
 			}else{
 				removeDebuff(living,debuff);
-				ldata.debuffSet.add(new LivingDebuff(debuff,remain));
+				LivingDebuff livdebuff = new LivingDebuff(debuff,remain);
+				ldata.debuffSet.add(livdebuff);
+				livdebuff.onInitEvent(living);
 			}
 			
 		}
@@ -141,9 +146,11 @@ public class ExtendedEntityLivingData implements IExtendedEntityProperties{
 			ExtendedEntityLivingData ldata = (ExtendedEntityLivingData) living.getExtendedProperties(ExtendedEntityLivingData.KEY);
 			if(!ldata.hasDebuff(livdebuff.getDebuff())){
 				ldata.debuffSet.add(livdebuff);
+				livdebuff.onInitEvent(living);
 			}else{
 				removeDebuff(living,livdebuff.getDebuff());
 				ldata.debuffSet.add(livdebuff);
+				livdebuff.onInitEvent(living);
 			}
 			
 		}

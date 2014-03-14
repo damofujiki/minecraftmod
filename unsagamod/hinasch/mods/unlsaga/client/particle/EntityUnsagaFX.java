@@ -36,8 +36,7 @@ public class EntityUnsagaFX extends EntityFX {
 		this.particleScale = this.particleScale + 0.1F;
  
 		// 発生地点から1m以上上昇したら消滅する
-		if (this.posY > orginalPosY + 1.0D
-				&& this.particleAge++ >= this.particleMaxAge) {
+		if (this.particleAge++ >= this.particleMaxAge) {
 			this.setDead();
 		}
 		this.moveEntity(this.motionX, this.motionY, this.motionZ);

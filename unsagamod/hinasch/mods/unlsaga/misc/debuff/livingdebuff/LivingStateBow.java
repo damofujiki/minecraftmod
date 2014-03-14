@@ -3,7 +3,7 @@ package hinasch.mods.unlsaga.misc.debuff.livingdebuff;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemBowUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
 import hinasch.mods.unlsaga.misc.debuff.Debuff;
 import hinasch.mods.unlsaga.misc.util.UtilItem;
 import net.minecraft.entity.EntityLivingBase;
@@ -15,7 +15,7 @@ public class LivingStateBow extends LivingState{
 	public int shootTick;
 	public String tag;
 	public float charge;
-	SkillEffectHelper helper;
+	InvokeSkill helper;
 	
 	public LivingStateBow(Debuff par1, int par2, boolean par3,int par4,String tag,float par5) {
 		super(par1, par2, false);
@@ -46,9 +46,9 @@ public class LivingStateBow extends LivingState{
 			if(UtilItem.hasItemInstance(ep, ItemBowUnsaga.class)){
 				if(helper==null){
 					if(this.tag.equals("triple")){
-						helper =  new SkillEffectHelper(ep.worldObj,ep,AbilityRegistry.tripleShot,ep.getHeldItem());
+						helper =  new InvokeSkill(ep.worldObj,ep,AbilityRegistry.tripleShot,ep.getHeldItem());
 					}else{
-						helper =  new SkillEffectHelper(ep.worldObj,ep,AbilityRegistry.doubleShot,ep.getHeldItem());
+						helper =  new InvokeSkill(ep.worldObj,ep,AbilityRegistry.doubleShot,ep.getHeldItem());
 					}
 					
 				}

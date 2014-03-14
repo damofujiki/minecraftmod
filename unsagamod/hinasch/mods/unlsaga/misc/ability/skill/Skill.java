@@ -1,9 +1,8 @@
 package hinasch.mods.unlsaga.misc.ability.skill;
 
 import hinasch.mods.unlsaga.misc.ability.Ability;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillBase;
 import hinasch.mods.unlsaga.misc.util.DamageHelper;
-
-import java.lang.reflect.Method;
 
 public class Skill extends Ability{
 
@@ -12,7 +11,7 @@ public class Skill extends Ability{
 	public float hurtLp;
 	public int damageWeapon;
 	public DamageHelper.Type damageType;
-	public Method method;
+	public SkillBase effect;
 	
 	public Skill(int num, String par1, String par2,int hp,int lp,DamageHelper.Type type,int damage) {
 		super(num, par1, par2);
@@ -23,8 +22,13 @@ public class Skill extends Ability{
 		// TODO 自動生成されたコンストラクター・スタブ
 	}
 	
-	public void setMethod(Method method){
-		this.method = method;
+	public Skill setSkillEffect(SkillBase par1){
+		this.effect = par1;
+		return this;
+	}
+	
+	public SkillBase getSkillEffect(){
+		return this.effect;
 	}
 
 }

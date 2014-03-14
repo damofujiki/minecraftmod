@@ -7,6 +7,7 @@ import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 public class Buff extends Debuff{
 
 	
+	
 	protected Buff(int num, String nameEn) {
 		super(num, nameEn);
 		// TODO 自動生成されたコンストラクター・スタブ
@@ -38,4 +39,6 @@ public class Buff extends Debuff{
 		this.particle = par1;
 		return (Buff)this;
 	}
+	
+	
 }

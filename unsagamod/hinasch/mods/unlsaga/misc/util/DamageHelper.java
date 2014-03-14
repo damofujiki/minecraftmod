@@ -1,8 +1,8 @@
 package hinasch.mods.unlsaga.misc.util;
 
-import hinasch.mods.unlsaga.core.FiveElements.EnumElement;
 import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,12 +13,14 @@ import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityMagmaCube;
 import net.minecraft.entity.monster.EntitySkeleton;
 import net.minecraft.entity.monster.EntitySlime;
+import net.minecraft.entity.passive.EntityWaterMob;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.DamageSource;
 
 public class DamageHelper {
 
 	public static enum Type {SWORD,PUNCH,SPEAR,SWORDPUNCH,MAGIC};
+	public static enum SubType {FIRE,ELECTRIC,FREEZE,LIGHT,NONE};
 
 	protected static Map<EnumUnsagaTools,Type> typesNormalAttack;
 	protected static Map<EnumUnsagaTools,Float> strsNormalAttack; 
@@ -48,6 +50,8 @@ public class DamageHelper {
 		return new DamageSourceUnsaga("mob",ds.getEntity(),getStrLPNormalAttack(category),getTypeNormalAttack(category));
 	}
 	
+
+	
 	private static void addMap(EnumUnsagaTools category,Type type,float strlp){
 		typesNormalAttack.put(category,type);
 		strsNormalAttack.put(category,strlp);
@@ -68,12 +72,19 @@ public class DamageHelper {
 		return 0.1F;
 	}
 	
-	public static String getMobPlayerString(EntityLivingBase living){
-		if(living instanceof EntityPlayer){
-			return "player";
-		}else{
-			return "mob";
+	public static String getMobPlayerString(String par1Str,Entity par2Entity){
+		if(par1Str==null || par1Str.equals("")){
+			if(par2Entity instanceof EntityLivingBase){
+				if(par2Entity instanceof EntityPlayer){
+					return "player";
+				}else{
+					return "mob";
+				}
+			}
 		}
+
+		return par1Str;
+
 	}
 	public static float getDamageModifierFromType(Type type,Entity target,float baseStr){
 		float modifier = 0.0F;
@@ -107,12 +118,11 @@ public class DamageHelper {
 		return modifier;
 	}
 	
-	public static float getDamageModifierFromElementType(EnumElement type,Entity target,float baseStr){
+	public static float getDamageModifierFromSubType(EnumSet<SubType> types,Entity target,float baseStr){
 		float modifier = 0.0F;
 		if(target instanceof EntityLivingBase){
 			EntityLivingBase living = (EntityLivingBase)target;
-			switch(type){
-			case FIRE:
+			if(types.contains(DamageHelper.SubType.FIRE)){
 				if(living.getCreatureAttribute()==EnumCreatureAttribute.UNDEAD){
 					modifier += baseStr * 0.4F;
 				}
@@ -120,30 +130,30 @@ public class DamageHelper {
 					modifier -= baseStr * 0.7F;
 				}
 				if(living instanceof EntityMagmaCube || living instanceof EntityBlaze){
-					modifier -= baseStr * 0.9F;
+					modifier -= baseStr * 0.6F;
 				}
-				break;
-			case EARTH:
-				break;
-			case WOOD:
-				break;
-			case WATER:
-				if(target instanceof EntityMagmaCube){
-					modifier += baseStr * 0.4F;
-				}
-				if(target instanceof EntityBlaze){
-					modifier += baseStr * 0.5F;
-				}
-				break;
-			case METAL:
-				break;
-			case FORBIDDEN:
-				break;
 			}
+			if(types.contains(DamageHelper.SubType.FREEZE)){
+				if(living instanceof EntityMagmaCube || living instanceof EntityBlaze){
+					modifier -= baseStr * 1.4F;
+				}
+			}
+			if(types.contains(DamageHelper.SubType.ELECTRIC)){
+				if(living instanceof EntityWaterMob){
+					modifier += baseStr * 1.5F;
+				}
+			}
+			if(types.contains(DamageHelper.SubType.LIGHT)){
+				
+			}
+
 		}
 
 		return modifier;
 	}
+	
+
+
 	static{
 		typesNormalAttack = new HashMap();
 		strsNormalAttack = new HashMap();
@@ -153,4 +163,9 @@ public class DamageHelper {
 		addMap(EnumUnsagaTools.BOW, Type.SPEAR,0.5F);
 		addMap(EnumUnsagaTools.AXE, Type.SWORDPUNCH,0.3F);
 	}
+
+
+
+
+
 }

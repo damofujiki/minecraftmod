@@ -22,12 +22,15 @@ public class Ability {
 	protected final String name;
 	protected final String nameJP;
 
+
+
 	protected int healPoint;
 
 	public Ability(int num,String par1,String par2){
 		name = par1;
 		nameJP = par2;
 		this.number = num;
+
 
 		AbilityRegistry.abilityMap.put(num, this);
 
@@ -64,6 +67,7 @@ public class Ability {
 		return String.valueOf(this.number)+":"+name;
 	}
 
+
 	//From LivingUpdate
 	public static void abilityEventOnLivingUpdate(EntityLivingBase living,AbilityRegistry ar){
 		int amountHeal = 0;
@@ -73,23 +77,21 @@ public class Ability {
 			}
 		}
 
-		if(living.isPotionActive(Potion.poison)){
-			if(HelperAbility.hasAbilityLiving(living, AbilityRegistry.antiPoison)>0 || 
-					HelperAbility.hasAbilityLiving(living, AbilityRegistry.antiDebuff)>0){
-				living.removePotionEffect(Potion.poison.id);
+		for(Potion potion:AbilityRegistry.againstPotionMap.keySet()){
+			if(living.isPotionActive(potion)){
+				if(HelperAbility.hasAbilityLiving(living, AbilityRegistry.againstPotionMap.get(potion))>0){
+					living.removePotionEffect(potion.id);
+				}
 			}
 		}
-		if(living.isPotionActive(Potion.blindness)){
-			if(HelperAbility.hasAbilityLiving(living, AbilityRegistry.antiBlind)>0 || 
-					HelperAbility.hasAbilityLiving(living, AbilityRegistry.antiDebuff)>0){
-				living.removePotionEffect(Potion.blindness.id);
+		for(Potion potion:Potion.potionTypes){
+			if(potion!=null){
+				if(potion.isBadEffect() && living.isPotionActive(potion) && HelperAbility.hasAbilityLiving(living, AbilityRegistry.antiDebuff)>0){
+					living.removePotionEffect(potion.id);
+				}
 			}
 		}
-		if(living.isPotionActive(Potion.wither)){
-			if(HelperAbility.hasAbilityLiving(living, AbilityRegistry.antiWither)>0){
-				living.removePotionEffect(Potion.wither.id);
-			}
-		}
+		
 		if(!living.isPotionActive(Potion.fireResistance)){
 			if(HelperAbility.hasAbilityLiving(living, AbilityRegistry.fireProtection)>0){
 				int amount = HelperAbility.hasAbilityLiving(living, AbilityRegistry.fireProtection);

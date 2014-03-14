@@ -7,7 +7,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.item.weapon.base.ItemStaffBase;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
@@ -29,28 +29,28 @@ public class ItemStaffUnsaga extends ItemStaffBase{
     public boolean onItemUse(ItemStack is, EntityPlayer ep, World par3World, int par4, int par5, int par6, int side, float par8, float par9, float par10)
     {
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.gonger, is) && ep.isSneaking() && side==1){
-			SkillEffectHelper helper = new SkillEffectHelper(par3World,ep,AbilityRegistry.gonger,is);
+			InvokeSkill helper = new InvokeSkill(par3World,ep,AbilityRegistry.gonger,is);
 			helper.setUsePoint(new XYZPos(par4,par5,par6));
 			helper.doSkill();
 		}
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.grandSlam, is) && ep.isSneaking() && side==1){
-			SkillEffectHelper helper = new SkillEffectHelper(par3World,ep,AbilityRegistry.grandSlam,is);
+			InvokeSkill helper = new InvokeSkill(par3World,ep,AbilityRegistry.grandSlam,is);
 			//helper.setCoolingTime(13);
 			helper.setUsePoint(new XYZPos(par4,par5,par6));
 			helper.doSkill();
 		}
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.pulvorizer, is) && ep.isSneaking()){
-			SkillEffectHelper helper = new SkillEffectHelper(par3World,ep,AbilityRegistry.pulvorizer,is);
+			InvokeSkill helper = new InvokeSkill(par3World,ep,AbilityRegistry.pulvorizer,is);
 			helper.setUsePoint(new XYZPos(par4,par5,par6));
 			helper.doSkill();
 		}
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.earthDragon, is) && ep.isSneaking() && side==1){
-			SkillEffectHelper helper = new SkillEffectHelper(par3World,ep,AbilityRegistry.earthDragon,is);
+			InvokeSkill helper = new InvokeSkill(par3World,ep,AbilityRegistry.earthDragon,is);
 			helper.setUsePoint(new XYZPos(par4,par5,par6));
 			helper.doSkill();
 		}
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.rockCrusher, is) && ep.isSneaking()){
-			SkillEffectHelper helper = new SkillEffectHelper(par3World,ep,AbilityRegistry.rockCrusher,is);
+			InvokeSkill helper = new InvokeSkill(par3World,ep,AbilityRegistry.rockCrusher,is);
 			helper.setUsePoint(new XYZPos(par4,par5,par6));
 			helper.doSkill();
 		}
@@ -67,7 +67,7 @@ public class ItemStaffUnsaga extends ItemStaffBase{
     	if(entity instanceof EntityLivingBase){
     		EntityPlayer ep = player;
         	if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.skullCrash, stack) && ep.isSneaking()){
-        		SkillEffectHelper helper = new SkillEffectHelper(ep.worldObj,ep,AbilityRegistry.skullCrash,stack);
+        		InvokeSkill helper = new InvokeSkill(ep.worldObj,ep,AbilityRegistry.skullCrash,stack);
         		helper.setTarget((EntityLivingBase) entity);
         		helper.doSkill();
         		return true;

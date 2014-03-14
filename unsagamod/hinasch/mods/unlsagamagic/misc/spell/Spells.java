@@ -19,51 +19,52 @@ public class Spells {
 	public static final SpellEffectNormal effectNormal = SpellEffectNormal.getInstance();
 	public static final SpellEffectBlend effectBlend = SpellEffectBlend.getInstance();
 	
-	public static final Spell fireArrow = new Spell(FiveElements.EnumElement.FIRE,1,"Fire Arrow","炎の矢",10,10,75).setSpellEffect(effectNormal.new SpellFireArrow());
-	public static final Spell fireVeil = new Spell(FiveElements.EnumElement.FIRE,2,"Fire Veil","火遁",8,8,75).setSpellEffect(effectNormal.new SpellElementVeil());
-	public static final Spell heroism = new Spell(FiveElements.EnumElement.FIRE,3,"Heroism","ヒロイズム",8,8,70).setSpellEffect(effectNormal.new SpellHeroism());
-	public static final Spell fireWall = new Spell(FiveElements.EnumElement.FIRE,4,"Fire Wall","ファイアウォール",14,14,70).setSpellEffect(effectNormal.new SpellFireWall());
-	public static final Spell fireStorm = new Spell(FiveElements.EnumElement.FIRE,5,"Fire Storm","太陽風",18,20,70).setStrength(3, 0.4F).setSpellEffect(effectNormal.new SpellFireStorm());
+	public static final Spell fireArrow = new Spell(FiveElements.EnumElement.FIRE,1,"Fire Arrow","炎の矢",10,10,75).setSpellEffect(effectNormal.fireArrow);
+	public static final Spell fireVeil = new Spell(FiveElements.EnumElement.FIRE,2,"Fire Veil","火遁",8,8,75).setSpellEffect(effectNormal.elemntVeil);
+	public static final Spell heroism = new Spell(FiveElements.EnumElement.FIRE,3,"Heroism","ヒロイズム",8,8,70).setSpellEffect(effectNormal.heroism);
+	public static final Spell fireWall = new Spell(FiveElements.EnumElement.FIRE,4,"Fire Wall","ファイアウォール",14,14,70).setSpellEffect(effectNormal.fireWall);
+	public static final Spell fireStorm = new Spell(FiveElements.EnumElement.FIRE,5,"Fire Storm","太陽風",18,20,70).setStrength(3, 0.4F).setSpellEffect(effectNormal.fireStorm);
 	
-	public static final Spell cloudCall = new Spell(FiveElements.EnumElement.WATER,10,"Cloud Call","クラウドコール",6,10,70).setSpellEffect(effectNormal.new SpellCloudCall());
-	public static final Spell purify = new Spell(FiveElements.EnumElement.WATER,11,"Purify","ピュリファイ",11,10,70).setSpellEffect(effectNormal.new SpellPurify());
-	public static final Spell waterVeil = new Spell(FiveElements.EnumElement.WATER,12,"Water Veil","水遁",8,8,75).setSpellEffect(effectNormal.new SpellElementVeil());
+	public static final Spell cloudCall = new Spell(FiveElements.EnumElement.WATER,10,"Cloud Call","クラウドコール",6,10,70).setSpellEffect(effectNormal.cloudCall);
+	public static final Spell purify = new Spell(FiveElements.EnumElement.WATER,11,"Purify","ピュリファイ",11,10,70).setSpellEffect(effectNormal.purify);
+	public static final Spell waterVeil = new Spell(FiveElements.EnumElement.WATER,12,"Water Veil","水遁",8,8,75).setSpellEffect(effectNormal.elemntVeil);
 
-	public static final Spell stoneVeil = new Spell(FiveElements.EnumElement.EARTH,21,"Earth Veil","土遁",8,8,75).setSpellEffect(effectNormal.new SpellElementVeil());
-	public static final Spell boulder = new Spell(FiveElements.EnumElement.EARTH,22,"Stone Barrett","ストーンバレット",10,10,75).setSpellEffect(effectNormal.new SpellBoulder());
+	public static final Spell stoneVeil = new Spell(FiveElements.EnumElement.EARTH,21,"Earth Veil","土遁",8,8,75).setSpellEffect(effectNormal.elemntVeil);
+	public static final Spell boulder = new Spell(FiveElements.EnumElement.EARTH,22,"Stone Barrett","ストーンバレット",10,10,75).setSpellEffect(effectNormal.boulder);
 	
 	
-	public static final Spell animalCharm = new Spell(FiveElements.EnumElement.EARTH,23,"Animal Charm","アニマルチャーム",8,9,75).setSpellEffect(effectNormal.new SpellAbyss());
-	public static final Spell detectAnimal = new Spell(FiveElements.EnumElement.EARTH,24,"Detect Animal","デテクトアニマル",8,8,75).setSpellEffect(effectNormal.new SpellDetectAnimal());
+	public static final Spell animalCharm = new Spell(FiveElements.EnumElement.EARTH,23,"Animal Charm","アニマルチャーム",8,9,75).setSpellEffect(effectNormal.animalCharm);
+	public static final Spell detectAnimal = new Spell(FiveElements.EnumElement.EARTH,24,"Detect Animal","デテクトアニマル",8,8,75).setSpellEffect(effectNormal.detectAnimal);
+	public static final Spell buildUp = new Spell(FiveElements.EnumElement.EARTH,25,"Build Up","ビルドアップ",8,8,75).setSpellEffect(effectNormal.buildUp);
 	
-	public static final Spell missuileGuard = new Spell(FiveElements.EnumElement.WOOD,30,"Missuile Guard","ミサイルガード",14,15,65).setSpellEffect(effectNormal.new SpellMissuileGuard());
-	public static final Spell recycle = new Spell(FiveElements.EnumElement.WOOD,31,"Recycle","リサイクル",15,14,70).setSpellEffect(effectNormal.new SpellRecycle());
-	public static final Spell woodVeil = new Spell(FiveElements.EnumElement.WOOD,32,"Wood Veil","木遁",8,8,75).setSpellEffect(effectNormal.new SpellElementVeil());
-	public static final Spell lifeBoost = new Spell(FiveElements.EnumElement.WOOD,33,"Life Boost","ライフブースト",13,14,70).setSpellEffect(effectNormal.new SpellLifeBoost());
-	public static final Spell callThunder = new Spell(FiveElements.EnumElement.WOOD,35,"Call Thunder","召雷",13,14,70).setSpellEffect(effectNormal.new SpellCallThunder());
+	public static final Spell missuileGuard = new Spell(FiveElements.EnumElement.WOOD,30,"Missuile Guard","ミサイルガード",14,15,65).setSpellEffect(effectNormal.missuileGuard);
+	public static final Spell recycle = new Spell(FiveElements.EnumElement.WOOD,31,"Recycle","リサイクル",15,14,70).setSpellEffect(effectNormal.recycle);
+	public static final Spell woodVeil = new Spell(FiveElements.EnumElement.WOOD,32,"Wood Veil","木遁",8,8,75).setSpellEffect(effectNormal.elemntVeil);
+	public static final Spell lifeBoost = new Spell(FiveElements.EnumElement.WOOD,33,"Life Boost","ライフブースト",13,14,70).setSpellEffect(effectNormal.lifeBoost);
+	public static final Spell callThunder = new Spell(FiveElements.EnumElement.WOOD,35,"Call Thunder","召雷",13,14,70).setSpellEffect(effectNormal.callThunder);
 
-	public static final Spell overGrowth = new Spell(FiveElements.EnumElement.WOOD,34,"Over Growth","オーバーグロウス",13,14,70).setSpellEffect(effectNormal.new SpellOverGrowth());
-	public static final Spell metalVeil = new Spell(FiveElements.EnumElement.METAL,40,"Metal Veil","金遁",8,8,75).setSpellEffect(effectNormal.new SpellElementVeil());
-	public static final Spell detectGold = new Spell(FiveElements.EnumElement.METAL,41,"Detect Gold","デテクトゴールド",12,12,70).setSpellEffect(effectNormal.new SpellDetectGold());
+	public static final Spell overGrowth = new Spell(FiveElements.EnumElement.WOOD,34,"Over Growth","オーバーグロウス",13,14,70).setSpellEffect(effectNormal.overGrowth);
+	public static final Spell metalVeil = new Spell(FiveElements.EnumElement.METAL,40,"Metal Veil","金遁",8,8,75).setSpellEffect(effectNormal.elemntVeil);
+	public static final Spell detectGold = new Spell(FiveElements.EnumElement.METAL,41,"Detect Gold","デテクトゴールド",12,12,70).setSpellEffect(effectNormal.detectGold);
 	//public static final Spell armorBless = new Spell(EnumElement.METAL,42,"Armor Blessing","アーマーブレス",13,14,70);
 	//public static final Spell weaponBless = new Spell(EnumElement.METAL,43,"Weapon Blessing","ウエポンブレス",13,14,70);
 	
-	public static final Spell magicLock = new Spell(FiveElements.EnumElement.METAL,42,"Magic Lock","マジックロック",10,10,72).setSpellEffect(effectNormal.new SpellMagicLock());
-	public static final Spell weakness = new Spell(FiveElements.EnumElement.FORBIDDEN,50,"Weakness","ウィークネス",10,10,70).setSpellEffect(effectNormal.new SpellWeakness());
-	public static final Spell abyss = new Spell(FiveElements.EnumElement.FORBIDDEN,51,"Seal of the Abyss","魔印",12,12,70).setSpellEffect(effectNormal.new SpellAbyss());
-	public static final Spell detectBlood = new Spell(FiveElements.EnumElement.FORBIDDEN,52,"Detect Blood","デテクトブラッド",10,8,75).setSpellEffect(effectNormal.new SpellDetectBlood());
+	public static final Spell magicLock = new Spell(FiveElements.EnumElement.METAL,42,"Magic Lock","マジックロック",10,10,72).setSpellEffect(effectNormal.magicLock);
+	public static final Spell weakness = new Spell(FiveElements.EnumElement.FORBIDDEN,50,"Weakness","ウィークネス",10,10,70).setSpellEffect(effectNormal.weakness);
+	public static final Spell abyss = new Spell(FiveElements.EnumElement.FORBIDDEN,51,"Seal of the Abyss","魔印",12,12,70).setSpellEffect(effectNormal.abyss);
+	public static final Spell detectBlood = new Spell(FiveElements.EnumElement.FORBIDDEN,52,"Detect Blood","デテクトブラッド",10,8,75).setSpellEffect(effectNormal.detectBlood);
 	
 	
 	
-	public static final SpellBlend crimsonFlare = (SpellBlend) new SpellBlend(FiveElements.EnumElement.FIRE,60,"Crimson Flare","クリムゾンフレア",25,70).setStrength(5, 1).setSpellEffect(effectBlend.new SpellCrimsonFlare());
-	public static final SpellBlend stoneShower = (SpellBlend)new SpellBlend(FiveElements.EnumElement.EARTH,61,"Stone Shower","ストーンシャワー",25,70).setSpellEffect(effectBlend.new SpellStoneShower());
-	public static final SpellBlend detectTreasure = (SpellBlend)new SpellBlend(FiveElements.EnumElement.METAL,62,"Detect Treasire","デテクトトレジャー",15,70).setSpellEffect(effectBlend.new SpellDetectTreasure());
-	public static final SpellBlend leavesShield = (SpellBlend)new SpellBlend(FiveElements.EnumElement.WOOD,63,"Leaves Shield","木の葉の盾",15,70).setSpellEffect(effectBlend.new SpellLeavesShield());
-	public static final SpellBlend iceNine = (SpellBlend)new SpellBlend(FiveElements.EnumElement.WATER,64,"Ice Nine","アイスナイン",15,70).setSpellEffect(effectBlend.new SpellIceNine());
-	public static final SpellBlend touchGold = (SpellBlend)new SpellBlend(FiveElements.EnumElement.METAL,65,"Gold Finger","ゴールドフィンガー",20,70).setSpellEffect(effectBlend.new SpellGoldFinger());
-	public static final SpellBlend thunderCrap = (SpellBlend)new SpellBlend(FiveElements.EnumElement.WATER,66,"Thunder crap","サンダークラップ",20,70).setSpellEffect(effectBlend.new SpellThunderCrap());
+	public static final SpellBlend crimsonFlare = (SpellBlend) new SpellBlend(FiveElements.EnumElement.FIRE,60,"Crimson Flare","クリムゾンフレア",25,70).setStrength(5, 1).setSpellEffect(effectBlend.crimsonFlare);
+	public static final SpellBlend stoneShower = (SpellBlend)new SpellBlend(FiveElements.EnumElement.EARTH,61,"Stone Shower","ストーンシャワー",25,70).setSpellEffect(effectBlend.stoneShower);
+	public static final SpellBlend detectTreasure = (SpellBlend)new SpellBlend(FiveElements.EnumElement.METAL,62,"Detect Treasire","デテクトトレジャー",15,70).setSpellEffect(effectBlend.detectTreasure);
+	public static final SpellBlend leavesShield = (SpellBlend)new SpellBlend(FiveElements.EnumElement.WOOD,63,"Leaves Shield","木の葉の盾",15,70).setSpellEffect(effectBlend.leavesShield);
+	public static final SpellBlend iceNine = (SpellBlend)new SpellBlend(FiveElements.EnumElement.WATER,64,"Ice Nine","アイスナイン",15,70).setSpellEffect(effectBlend.iceNine);
+	public static final SpellBlend touchGold = (SpellBlend)new SpellBlend(FiveElements.EnumElement.METAL,65,"Gold Finger","ゴールドフィンガー",20,70).setSpellEffect(effectBlend.goldFinger);
+	public static final SpellBlend thunderCrap = (SpellBlend)new SpellBlend(FiveElements.EnumElement.WATER,66,"Thunder crap","サンダークラップ",20,70).setSpellEffect(effectBlend.thudnerCrap);
 	
-	public static final HashSet<SpellBlend> blendSet = Sets.newHashSet(crimsonFlare,stoneShower,detectTreasure,leavesShield,iceNine);
+	public static final HashSet<SpellBlend> blendSet = Sets.newHashSet(crimsonFlare,stoneShower,detectTreasure,leavesShield,iceNine,touchGold,thunderCrap);
 
 	
 	public static List<Spell> getValidSpells(){
@@ -74,6 +75,7 @@ public class Spells {
 			}
 			
 		}
+		
 		return list;
 	}
 

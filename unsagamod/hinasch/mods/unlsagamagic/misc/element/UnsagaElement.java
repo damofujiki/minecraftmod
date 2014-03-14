@@ -13,7 +13,7 @@ import hinasch.mods.unlsagamagic.misc.spell.SpellMixTable;
 
 import java.util.Set;
 
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.BiomeGenBase;
@@ -33,7 +33,7 @@ public class UnsagaElement {
 	public SpellMixTable getWorldElements(){
 		return this.worldElementTable;
 	}
-	public void figureElements(World world,EntityPlayer ep){
+	public void figureElements(World world,EntityLivingBase ep){
 		this.worldElementTable.reset();
 		this.figureFromWorld(world, ep);
 		this.figureFromBiomeAndWeather(world, ep);
@@ -47,7 +47,7 @@ public class UnsagaElement {
 		//this.worldElementTable.cut(0, 100);
 	}
 
-	private void figureFromBuff(EntityPlayer ep) {
+	private void figureFromBuff(EntityLivingBase ep) {
 		if(LivingDebuff.hasDebuff(ep, Debuffs.fireVeil))this.worldElementTable.add(FiveElements.EnumElement.FIRE,15.0F);
 		if(LivingDebuff.hasDebuff(ep, Debuffs.woodVeil))this.worldElementTable.add(FiveElements.EnumElement.WOOD,15.0F);
 		if(LivingDebuff.hasDebuff(ep, Debuffs.waterVeil))this.worldElementTable.add(FiveElements.EnumElement.WATER,15.0F);
@@ -55,7 +55,7 @@ public class UnsagaElement {
 		if(LivingDebuff.hasDebuff(ep, Debuffs.metalVeil))this.worldElementTable.add(FiveElements.EnumElement.METAL,15.0F);
 	}
 
-	protected void figureFromWorld(World world,EntityPlayer ep){
+	protected void figureFromWorld(World world,EntityLivingBase ep){
 		XYZPos epos = XYZPos.entityPosToXYZ(ep);
 		ScanHelper scanner = new ScanHelper(ep,10,8);
 		boolean flag = false;
@@ -107,7 +107,7 @@ public class UnsagaElement {
 
 	}
 
-	protected void figureFromBiomeAndWeather(World world,EntityPlayer ep){
+	protected void figureFromBiomeAndWeather(World world,EntityLivingBase ep){
 		BiomeGenBase biomegen = world.getBiomeGenForCoords((int)ep.posX, (int)ep.posZ);
 		Set<BiomeDictionary.Type> biomeTypes = Sets.newHashSet(BiomeDictionary.getTypesForBiome(biomegen));
 
@@ -163,7 +163,7 @@ public class UnsagaElement {
 		}
 	}
 
-	protected void figureFromEquipment(EntityPlayer ep){
+	protected void figureFromEquipment(EntityLivingBase ep){
 		int fire = HelperAbility.hasAbilityLiving(ep, AbilityRegistry.supportFire)*10;
 		int wood = HelperAbility.hasAbilityLiving(ep, AbilityRegistry.supportWood)*10;
 		int water = HelperAbility.hasAbilityLiving(ep, AbilityRegistry.supportWater)*10;
@@ -174,7 +174,7 @@ public class UnsagaElement {
 
 	}
 
-	protected void figureFromCurrentHeight(World world,EntityPlayer ep){
+	protected void figureFromCurrentHeight(World world,EntityLivingBase ep){
 		int height = (int)ep.posY;
 		if(height<=10){
 			this.worldElementTable.add(FiveElements.EnumElement.EARTH,50);

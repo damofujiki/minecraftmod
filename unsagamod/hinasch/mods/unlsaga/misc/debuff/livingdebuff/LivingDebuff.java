@@ -2,6 +2,7 @@ package hinasch.mods.unlsaga.misc.debuff.livingdebuff;
 
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.event.ExtendedEntityLivingData;
+import hinasch.mods.unlsaga.misc.ability.Ability;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.debuff.Debuff;
@@ -40,8 +41,20 @@ public class LivingDebuff {
 		return this.remain;
 	}
 	
+	//打ち消すアビリティを持ってれば消える
+	public void checkAbilitiesAgainst(EntityLivingBase living){
+		for(Ability ab:this.debuff.getAbilityAgainst()){
+			if(HelperAbility.hasAbilityLiving(living, ab)>0){
+				this.remain = 0;
+			}
+		}
+	}
+	
 	//Tickごとに
 	public void updateTick(EntityLivingBase living) {
+		if(!this.debuff.getAbilityAgainst().isEmpty()){
+			this.checkAbilitiesAgainst(living);
+		}
 		
 		
 	}
@@ -187,6 +200,16 @@ public class LivingDebuff {
 		}
 		
 		return new String(saveString);
+		
+	}
+
+	public void onExpiredEvent(EntityLivingBase living) {
+		
+		
+	}
+
+	public void onInitEvent(EntityLivingBase living) {
+		// TODO 自動生成されたメソッド・スタブ
 		
 	}
 

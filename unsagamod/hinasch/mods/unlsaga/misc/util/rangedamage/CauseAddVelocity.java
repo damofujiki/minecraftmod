@@ -2,7 +2,7 @@ package hinasch.mods.unlsaga.misc.util.rangedamage;
 
 import hinasch.lib.RangeDamageHelper;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -14,9 +14,9 @@ import net.minecraft.world.World;
 
 public class CauseAddVelocity extends RangeDamageHelper{
 
-	protected SkillEffectHelper helper;
+	protected InvokeSkill helper;
 
-	public CauseAddVelocity(World world,SkillEffectHelper helper) {
+	public CauseAddVelocity(World world,InvokeSkill helper) {
 		super(world);
 		this.helper = helper;
 		// TODO 自動生成されたコンストラクター・スタブ
@@ -43,18 +43,19 @@ public class CauseAddVelocity extends RangeDamageHelper{
 
 				living.setVelocity(0.0D, 0.0D,0.0D);
 			}
-			double d0 = helper.owner.posX - living.posX;
-			double d1;
-
-			for (d1 = helper.owner.posZ - living.posZ; d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D)
-			{
-				d0 = (Math.random() - Math.random()) ;
-			}
-			living.knockBack(living, 0, d0, d1);
-			living.motionX *= 2;
-			living.motionY *= 2;
-			living.motionZ *= 2;
 		}
+		double d0 = helper.owner.posX - living.posX;
+		double d1;
+
+		for (d1 = helper.owner.posZ - living.posZ; d0 * d0 + d1 * d1 < 1.0E-4D; d1 = (Math.random() - Math.random()) * 0.01D)
+		{
+			d0 = (Math.random() - Math.random()) ;
+		}
+		living.knockBack(living, 0, d0, d1);
+		living.motionX *= 2;
+		living.motionY *= 2;
+		living.motionZ *= 2;
+
 	}
 }
 

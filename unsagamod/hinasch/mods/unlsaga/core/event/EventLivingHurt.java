@@ -9,7 +9,8 @@ import hinasch.mods.unlsaga.item.weapon.ItemSwordUnsaga;
 import hinasch.mods.unlsaga.misc.ability.Ability;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillBow;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.util.ChatMessageHandler;
 import hinasch.mods.unlsaga.misc.util.DamageHelper;
@@ -35,10 +36,14 @@ public class EventLivingHurt {
 	public void onLivingHurt(LivingHurtEvent e){
 		Unsaga.debug(e.source);
 		this.unsagaDamageSource = null;
+		if(e.source.getEntity() instanceof EntityLivingBase && !(e.source instanceof DamageSourceUnsaga)){
+			this.setUnsagaDamage(e, DamageHelper.getUnsagaDamageSource(e.source));
+		}
 		//this.flagBowAttack = false;
 		Debuffs.debuffEventOnLivingHurt(e);
 		Ability.abilityEventOnLivingHurt(e);
 		ItemSwordUnsaga.hitExplodeByVandalize(e);
+		SkillBow.checkArrowOnLivingHurtEvent(e);
 
 		if(e.source.getSourceOfDamage() instanceof EntityArrow || e.source.getSourceOfDamage() instanceof EntityArrowUnsaga){
 			this.onArrowHitEvent(e);
@@ -73,7 +78,7 @@ public class EventLivingHurt {
 				if(UtilItem.hasItemInstance(player, ItemBowUnsaga.class) && e.source.getSourceOfDamage() instanceof EntityArrow){
 					ItemStack is = player.getHeldItem();
 					if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.exorcist,is) ||HelperAbility.hasAbilityFromItemStack(AbilityRegistry.zapper,is) ){
-						SkillEffectHelper helper = new SkillEffectHelper(player.worldObj, player, AbilityRegistry.zapper, is);
+						InvokeSkill helper = new InvokeSkill(player.worldObj, player, AbilityRegistry.zapper, is);
 						helper.setParent(e);
 						helper.doSkill();
 					}
@@ -123,7 +128,9 @@ public class EventLivingHurt {
 	public void resultUnsagaDamage(LivingHurtEvent e){
 		float lphurt = this.unsagaDamageSource.getStrengthLPHurt();
 		float modifier = DamageHelper.getDamageModifierFromType(this.unsagaDamageSource.getUnsagaDamageType(), e.entityLiving, e.ammount);
+		float emodifier = DamageHelper.getDamageModifierFromSubType(this.unsagaDamageSource.getSubDamageType(), e.entityLiving, e.ammount);
 		e.ammount += modifier;
+		e.ammount += emodifier;
 		e.ammount = MathHelper.clamp_float(e.ammount, 0.0F, 1000.0F);
 		if(UnsagaConfigs.module.isLPEnabled()){
 			Unsaga.lpHandler.tryHurtLP(e.entityLiving, lphurt);

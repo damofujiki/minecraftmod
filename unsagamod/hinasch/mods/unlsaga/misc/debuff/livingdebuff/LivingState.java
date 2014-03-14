@@ -5,7 +5,7 @@ import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemSwordUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
 import hinasch.mods.unlsaga.misc.debuff.Debuff;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.util.UtilItem;
@@ -78,12 +78,12 @@ public class LivingState extends LivingDebuff{
 				if(UtilItem.hasItemInstance(ep, ItemSwordUnsaga.class)){
 					
 					ep.setSneaking(true);
-					SkillEffectHelper helper = new SkillEffectHelper(ep.worldObj,ep,AbilityRegistry.chargeBlade,ep.getHeldItem());
+					InvokeSkill helper = new InvokeSkill(ep.worldObj,ep,AbilityRegistry.chargeBlade,ep.getHeldItem());
 					CauseKnockBack causeknock = new CauseKnockBack(ep.worldObj,1.0D);
 					AxisAlignedBB bb = ep.boundingBox
 							.expand(1.5D, 1.0D, 1.5D);
-					causeknock.setLPDamage(helper.getAttackDamageLP());
-					causeknock.doCauseDamage(bb, helper.getAttackDamage(), DamageSource.causePlayerDamage(ep), false);
+					//causeknock.setLPDamage(helper.getAttackDamageLP());
+					causeknock.causeRangeDamage(bb, helper.getDamageSource(),helper.getAttackDamage());
 					
 				
 				}else{

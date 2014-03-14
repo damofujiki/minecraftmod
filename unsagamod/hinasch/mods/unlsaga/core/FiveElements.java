@@ -1,8 +1,9 @@
 package hinasch.mods.unlsaga.core;
 
-import java.util.EnumSet;
-
+import hinasch.lib.StaticWords;
 import hinasch.mods.unlsaga.misc.translation.Translation;
+
+import java.util.EnumSet;
 
 public class FiveElements {
 
@@ -39,6 +40,18 @@ public class FiveElements {
 			case FORBIDDEN:return 0x800080;
 			}
 			return 0xffffff;
+		}
+		
+		public int getElementParticle(){
+			switch(this){
+			case FIRE:return StaticWords.getParticleNumber(StaticWords.particleFlame);
+			case EARTH:return 200;
+			case WOOD:return 201;
+			case METAL:return StaticWords.getParticleNumber(StaticWords.particleReddust);
+			case WATER:return 202;
+			case FORBIDDEN:return StaticWords.getParticleNumber(StaticWords.particlePortal);
+			}
+			return -1;
 		}
 	
 	}

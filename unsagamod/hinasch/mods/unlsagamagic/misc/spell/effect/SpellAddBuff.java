@@ -5,26 +5,35 @@ import hinasch.mods.unlsaga.misc.debuff.Buff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingBuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.MathHelper;
-import net.minecraft.world.World;
 
-public class SpellAddBuff extends AbstractSpell{
+public class SpellAddBuff extends SpellBase{
 
 	protected List<Buff> buffs;
 	protected List<Potion> potions;
 	
+	protected Map<Potion,Potion> mobPotionMap;
+	
 	public SpellAddBuff(){
-		
+		this.mobPotionMap = new HashMap();
+		this.buffs = new ArrayList();
+		this.potions = new ArrayList();
+		//プレイヤー以外の処理関係
+		this.mobPotionMap.put(Potion.digSpeed, Potion.moveSpeed);
+		this.mobPotionMap.put(Potion.digSlowdown, Potion.moveSlowdown);
+		this.mobPotionMap.put(Potion.nightVision, Potion.moveSpeed);
+		this.mobPotionMap.put(Potion.invisibility, Potion.moveSlowdown);
 	}
-	public SpellAddBuff(World world) {
-		super(world);
-		// TODO 自動生成されたコンストラクター・スタブ
-	}
+
 
 	public void setBuff(List<Buff> buffs){
 		this.buffs = buffs;
@@ -39,7 +48,7 @@ public class SpellAddBuff extends AbstractSpell{
 		return this.buffs;
 	}
 	@Override
-	public void doSpell(InvokeSpell parent) {
+	public void invokeSpell(InvokeSpell parent) {
 		int remain = (int)((float)15 * parent.getAmp());
 		int lv =(int)parent.getAmp()-1;
 		lv = MathHelper.clamp_int(lv, 0, 5);
@@ -63,7 +72,16 @@ public class SpellAddBuff extends AbstractSpell{
 		}
 		if(potions!=null && !potions.isEmpty()){
 			for(Potion potion:potions){
-				target.addPotionEffect(new PotionEffect(potion.id,HSLibs.getPotionTime(remain),lv));
+				if(!(parent.invoker instanceof EntityPlayer)){
+					Potion potionMob = potion;
+					if(this.mobPotionMap.containsKey(potion)){
+						potionMob = this.mobPotionMap.get(potion);
+					}
+					target.addPotionEffect(new PotionEffect(potionMob.id,HSLibs.getPotionTime(remain),lv));
+				}else{
+					target.addPotionEffect(new PotionEffect(potion.id,HSLibs.getPotionTime(remain),lv));
+				}
+				
 			}
 			
 		}

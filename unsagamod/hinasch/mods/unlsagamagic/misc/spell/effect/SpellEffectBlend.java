@@ -34,8 +34,18 @@ public class SpellEffectBlend {
 
 	public static SpellEffectBlend INSTANCE;
 
+	public final SpellBase crimsonFlare = new SpellCrimsonFlare();
+	public final SpellBase detectTreasure = new SpellDetectTreasure();
+	public final SpellBase goldFinger = new SpellGoldFinger();
+	public final SpellBase iceNine = new SpellIceNine();
+	public final SpellBase leavesShield = new SpellLeavesShield();
+	public final SpellBase megaPower = new SpellMegaPowerRise();
+	public final SpellBase reflesh = new SpellReflesh();
+	public final SpellBase stoneShower = new SpellStoneShower();
+	public final SpellBase thudnerCrap = new SpellThunderCrap();
 	
-	public class SpellThunderCrap extends AbstractSpell{
+	
+	public class SpellThunderCrap extends SpellBase{
 
 		public SpellThunderCrap() {
 			super();
@@ -43,7 +53,7 @@ public class SpellEffectBlend {
 		}
 
 		@Override
-		public void doSpell(InvokeSpell invoke) {
+		public void invokeSpell(InvokeSpell invoke) {
 			if(!LivingDebuff.hasDebuff(invoke.invoker, Debuffs.thunderCrap)){
 				LivingDebuff.addLivingDebuff(invoke.invoker, new LivingStateRandomThrow(Debuffs.thunderCrap,100,10, 1));
 				
@@ -52,7 +62,7 @@ public class SpellEffectBlend {
 		}
 		
 	}
-	public class SpellStoneShower extends AbstractSpell{
+	public class SpellStoneShower extends SpellBase{
 
 		public SpellStoneShower() {
 			super();
@@ -60,7 +70,7 @@ public class SpellEffectBlend {
 		}
 
 		@Override
-		public void doSpell(InvokeSpell spell) {
+		public void invokeSpell(InvokeSpell spell) {
 			if(spell.getAmp()>1.5F){
 				spell.world.playSoundAtEntity(spell.invoker, "mob.ghast.fireball", 1.0F, 1.0F / (spell.world.rand.nextFloat() * 0.4F + 1.2F) + 1.0F * 0.5F);
 				
@@ -82,7 +92,7 @@ public class SpellEffectBlend {
 		}
 		
 	}
-	public class SpellLeavesShield extends AbstractSpell{
+	public class SpellLeavesShield extends SpellBase{
 
 		public SpellLeavesShield() {
 			super();
@@ -90,7 +100,7 @@ public class SpellEffectBlend {
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parent) {
+		public void invokeSpell(InvokeSpell parent) {
 			int remain = (int)((float)15 * parent.getAmp());
 			int amp = (int)((float)30 * parent.getAmp());
 			if(parent.getTarget().isPresent()){
@@ -102,7 +112,7 @@ public class SpellEffectBlend {
 		}
 		
 	}
-	public class SpellIceNine extends AbstractSpell{
+	public class SpellIceNine extends SpellBase{
 
 		public SpellIceNine() {
 			super();
@@ -110,7 +120,7 @@ public class SpellEffectBlend {
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parent) {
+		public void invokeSpell(InvokeSpell parent) {
 			int amp = 1;
 
 			if(parent.invoker.isBurning()){
@@ -176,7 +186,7 @@ public class SpellEffectBlend {
 		
 	}
 	
-	public class SpellCrimsonFlare extends AbstractSpell{
+	public class SpellCrimsonFlare extends SpellBase{
 
 		public SpellCrimsonFlare() {
 			super();
@@ -184,7 +194,7 @@ public class SpellEffectBlend {
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parent) {
+		public void invokeSpell(InvokeSpell parent) {
 			int amp =(int) parent.getAmp();
 
 			int targetid = -1;
@@ -224,7 +234,7 @@ public class SpellEffectBlend {
 		}
 	}
 	
-	public class SpellDetectTreasure extends AbstractSpell{
+	public class SpellDetectTreasure extends SpellBase{
 
 		public SpellDetectTreasure() {
 			super();
@@ -232,7 +242,7 @@ public class SpellEffectBlend {
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parent) {
+		public void invokeSpell(InvokeSpell parent) {
 			int range = Math.round((16*9)*parent.getAmp());
 			if(range<1){
 				range = 1;
@@ -280,7 +290,7 @@ public class SpellEffectBlend {
 
 	}
 	
-	public class SpellGoldFinger extends AbstractSpell{
+	public class SpellGoldFinger extends SpellBase{
 
 		public SpellGoldFinger() {
 			super();
@@ -288,7 +298,7 @@ public class SpellEffectBlend {
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parent) {
+		public void invokeSpell(InvokeSpell parent) {
 			if(parent.getTarget().isPresent()){
 				EntityLivingBase target = parent.getTarget().get();
 				if(target instanceof IBossDisplayData){

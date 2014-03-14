@@ -17,6 +17,7 @@ import cpw.mods.fml.common.registry.EntityRegistry;
 
 public class EntityDataUnsaga {
 
+
 	public static EntityDataUnsaga arrow = new EntityDataUnsaga(1,"arrow");
 	public static EntityDataUnsaga barrett = new EntityDataUnsaga(2,"barrett");
 	public static EntityDataUnsaga flyingAxe = new EntityDataUnsaga(4,"flyingAxe");
@@ -25,6 +26,8 @@ public class EntityDataUnsaga {
 	public static EntityDataUnsaga solutionLiquid = new EntityDataUnsaga(7,"solutionLiquid");
 	public static EntityDataUnsaga treasureSlime = new EntityDataUnsaga(8,"treasureSlime");
 	public static EntityDataUnsaga golem = new EntityDataUnsaga(9,"golem");
+	
+
 	
 	public static List<Class<? extends Entity>> entitySpawnableOnDebug = new ArrayList();
 	
@@ -55,4 +58,6 @@ public class EntityDataUnsaga {
 	public static void addSpawnableInCreative(Class<? extends Entity> entity){
 		entitySpawnableOnDebug.add(entity);
 	}
+	
+
 }

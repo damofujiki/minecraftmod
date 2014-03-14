@@ -10,7 +10,7 @@ import hinasch.mods.unlsaga.item.weapon.base.ItemAxeBase;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillAxe;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingState;
@@ -78,7 +78,7 @@ public class ItemAxeUnsaga extends ItemAxeBase{
 			if(LivingDebuff.hasDebuff(par3EntityPlayer, Debuffs.flyingAxe) && par3EntityPlayer.isSneaking()){
 				LockOnHelper.searchEntityNear(par3EntityPlayer, Debuffs.weaponTarget);
 				ItemStack copyaxe = par1ItemStack.copy();
-				SkillEffectHelper helper = new SkillEffectHelper(par2World,par3EntityPlayer,AbilityRegistry.skyDrive,copyaxe);
+				InvokeSkill helper = new InvokeSkill(par2World,par3EntityPlayer,AbilityRegistry.skyDrive,copyaxe);
 				EntityLivingBase target = null;
 				
 				if(LivingDebuff.getLivingDebuff(par3EntityPlayer, Debuffs.weaponTarget).isPresent()){
@@ -108,7 +108,7 @@ public class ItemAxeUnsaga extends ItemAxeBase{
 
 		if(par2EntityPlayer.isSneaking() && HelperAbility.hasAbilityFromItemStack(AbilityRegistry.woodChopper, par1ItemStack)){
 			par2EntityPlayer.swingItem();
-			SkillEffectHelper helper = new SkillEffectHelper(par3World,par2EntityPlayer,AbilityRegistry.woodChopper,par1ItemStack);
+			InvokeSkill helper = new InvokeSkill(par3World,par2EntityPlayer,AbilityRegistry.woodChopper,par1ItemStack);
 			helper.setUsePoint(new XYZPos(par4,par5,par6));
 			helper.doSkill();
 
@@ -132,7 +132,7 @@ public class ItemAxeUnsaga extends ItemAxeBase{
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.fujiView, stack) && player.isSneaking() && !LivingDebuff.hasDebuff(player, Debuffs.cooling)){
 			SkillAxe fujiView = new SkillAxe();
 			if(!player.worldObj.isRemote && entity instanceof EntityLivingBase){
-				SkillEffectHelper helper = new SkillEffectHelper(player.worldObj,player,AbilityRegistry.fujiView,stack);
+				InvokeSkill helper = new InvokeSkill(player.worldObj,player,AbilityRegistry.fujiView,stack);
 				helper.setTarget((EntityLivingBase) entity);
 				helper.doSkill();
 			}

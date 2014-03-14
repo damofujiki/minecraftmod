@@ -3,7 +3,7 @@ package hinasch.mods.unlsagamagic.misc.spell;
 import hinasch.lib.HSLibs;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.FiveElements;
-import hinasch.mods.unlsagamagic.misc.spell.effect.AbstractSpell;
+import hinasch.mods.unlsagamagic.misc.spell.effect.SpellBase;
 
 public class Spell {
 
@@ -18,7 +18,7 @@ public class Spell {
 
 	public boolean usePointer;
 	public final int number;
-	public AbstractSpell spellEffect;
+	public SpellBase spellEffect;
 	
 	public final String nameEn;
 	public final String nameJp;
@@ -27,7 +27,7 @@ public class Spell {
 	public SpellMixTable elementsAmp;
 	public SpellMixTable elementsCost;
 	
-	protected Class<? extends AbstractSpell> spellClass;
+	protected Class<? extends SpellBase> spellClass;
 
 	protected Spell(FiveElements.EnumElement element,int num,String nameEn,String nameJp,int difficulty,int damageItem,int baseProb){
 		this.number = num;
@@ -86,20 +86,20 @@ public class Spell {
 		this.usePointer = par1;
 	}
 	
-	public Spell setSpellEffect(AbstractSpell par1){
+	public Spell setSpellEffect(SpellBase par1){
 		this.spellEffect = par1;
 		return this;
 	}
 	
-	public Spell setSpellClass(Class<? extends AbstractSpell> spellClass){
+	public Spell setSpellClass(Class<? extends SpellBase> spellClass){
 		this.spellClass = spellClass;
 		return this;
 	}
 	
-	public Class<? extends AbstractSpell> getSpellClass(){
+	public Class<? extends SpellBase> getSpellClass(){
 		return this.spellClass;
 	}
-	public AbstractSpell getSpellEffect(){
+	public SpellBase getSpellEffect(){
 		return this.spellEffect;
 	}
 }

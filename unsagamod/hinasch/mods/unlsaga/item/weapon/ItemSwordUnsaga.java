@@ -8,7 +8,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.item.weapon.base.ItemSwordBase;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingState;
@@ -44,7 +44,7 @@ public class ItemSwordUnsaga extends ItemSwordBase{
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.gust, is) && this.isGust(is)){
 			this.setGust(is, false);
 			if(j>15){
-				SkillEffectHelper helper = new SkillEffectHelper(world,ep,AbilityRegistry.gust,is);
+				InvokeSkill helper = new InvokeSkill(world,ep,AbilityRegistry.gust,is);
 				helper.doSkill();
 			}
 		}
@@ -55,7 +55,7 @@ public class ItemSwordUnsaga extends ItemSwordBase{
 				for(EntityLivingBase damageentity:entlist){
 					//Entity damageentity = i.next();
 					if(damageentity!=ep){
-						SkillEffectHelper helper = new SkillEffectHelper(world,ep,AbilityRegistry.smash,is);
+						InvokeSkill helper = new InvokeSkill(world,ep,AbilityRegistry.smash,is);
 						helper.attack(damageentity, null,j);
 						is.damageItem(AbilityRegistry.smash.damageWeapon, ep);
 					}
@@ -85,7 +85,7 @@ public class ItemSwordUnsaga extends ItemSwordBase{
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
     {
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.vandalize, stack) && player.isSneaking()){
-			SkillEffectHelper helper = new SkillEffectHelper(player.worldObj,player,AbilityRegistry.vandalize,stack);
+			InvokeSkill helper = new InvokeSkill(player.worldObj,player,AbilityRegistry.vandalize,stack);
 			if(entity instanceof EntityLivingBase){
 				helper.setTarget((EntityLivingBase) entity);
 				helper.setCoolingTime(8);
@@ -93,7 +93,7 @@ public class ItemSwordUnsaga extends ItemSwordBase{
 			}
 		}
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.kaleidoscope,stack) && player.isSneaking()){
-			SkillEffectHelper helper = new SkillEffectHelper(player.worldObj,player,AbilityRegistry.kaleidoscope,stack);
+			InvokeSkill helper = new InvokeSkill(player.worldObj,player,AbilityRegistry.kaleidoscope,stack);
 			if(entity instanceof EntityLivingBase){
 				helper.setTarget((EntityLivingBase) entity);
 				helper.doSkill();
@@ -146,7 +146,7 @@ public class ItemSwordUnsaga extends ItemSwordBase{
 		}
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.chargeBlade,par1ItemStack) && par3EntityPlayer.isSprinting()){
 			if(!LivingDebuff.hasDebuff(par3EntityPlayer,Debuffs.rushBlade)){
-				SkillEffectHelper helper = new SkillEffectHelper(par2World,par3EntityPlayer,AbilityRegistry.chargeBlade,par1ItemStack);
+				InvokeSkill helper = new InvokeSkill(par2World,par3EntityPlayer,AbilityRegistry.chargeBlade,par1ItemStack);
 				//par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
 				//helper.setCoolingTime(4);
 				helper.doSkill();

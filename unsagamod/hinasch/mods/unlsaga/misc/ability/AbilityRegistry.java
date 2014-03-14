@@ -3,6 +3,10 @@ package hinasch.mods.unlsaga.misc.ability;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.misc.ability.skill.Skill;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillAxe;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillBow;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillSpear;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillStaff;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillSword;
 import hinasch.mods.unlsaga.misc.util.DamageHelper;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
@@ -13,6 +17,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import net.minecraft.potion.Potion;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -23,11 +30,16 @@ public class AbilityRegistry {
 	public static AbilityRegistry instance;
 	public static HashMap<Integer,Ability> abilityMap = new HashMap();
 	
-	protected SkillSword skillSword = new SkillSword();
+
 	
 	protected HashMap<String,List<Ability>> normalAbilityMap;
 	protected HashMap<String,List<Ability>> inheritAbilityMap;
 	
+	public final static SkillAxe skillAxe = SkillAxe.getInstance();
+	public final static SkillStaff skillStaff = SkillStaff.getInstance();
+	public final static SkillSpear skillSpear = SkillSpear.getInstance();
+	public final static SkillSword skillSword = SkillSword.getInstance();
+	public final static SkillBow skillBow = SkillBow.getInstance();
 
 	
 	public static final Ability healDown5 = new Ability(0,"Heal -5","回復力 -5",-1);
@@ -68,41 +80,47 @@ public class AbilityRegistry {
 	public static final Ability bodyGuard = new Ability(34,"Anti Debuff:Body","保護 体");
 	public static final Ability antiWither = new Ability(35,"Anti Wither","ウィザー耐性");
 	public static final Ability superHealing = new Ability(36,"Super Healing","超回復");
+	public static final Ability powerGuard = new Ability(37,"Power Guard","保護 力");
 
 	
-	public static final Skill kaleidoscope = new Skill(100,"Bopeep","変幻自在",20,6,DamageHelper.Type.SWORD,5);
-	public static final Skill slash = new Skill(101,"Slash","払い抜け",5,3,DamageHelper.Type.SWORD,3);
-	public static final Skill smash = new Skill(102,"Smash","スマッシュ",15,3,DamageHelper.Type.SWORD,8);
-	public static final Skill roundabout = new Skill(103,"Roundabout","転",0,0,DamageHelper.Type.SWORD,6);
-	public static final Skill chargeBlade = new Skill(104,"Charge Blade","追突剣",5,0,DamageHelper.Type.SWORDPUNCH,8);
-	public static final Skill gust = new Skill(105,"Gust","逆風の太刀",9,0,DamageHelper.Type.SWORD,5);
-	public static final Skill vandalize = new Skill(106,"Vandalize","ヴァンダライズ",10,0,DamageHelper.Type.SWORD,15);
-	public static final Skill tomahawk = new Skill(107,"Tomahawk","トマホーク",5,0,DamageHelper.Type.SWORDPUNCH,15);
-	public static final Skill fujiView = new Skill(108,"Fuji View","富嶽百景",8,0,DamageHelper.Type.SWORDPUNCH,15);
-	public static final Skill skyDrive = new Skill(109,"Skydrive","スカイドライブ",10,0,DamageHelper.Type.SWORDPUNCH,15);
-	public static final Skill woodBreakerPhoenix = new Skill(111,"Wood Breaker Phoenix","マキ割りフェニックス",10,0,DamageHelper.Type.SWORDPUNCH,15);
-	public static final Skill woodChopper = new Skill(110,"Wood Chopper","大木断",5,0,DamageHelper.Type.SWORDPUNCH,15);
-	public static final Skill aiming = new Skill(120,"Aiming","エイミング",10,2,DamageHelper.Type.SPEAR,15);
-	public static final Skill acupuncture = new Skill(121,"Acupuncture","独妙点穴",20,2,DamageHelper.Type.SPEAR,25);
-	public static final Skill swing = new Skill(122,"Swing","スウィング",-10,2,DamageHelper.Type.SWORDPUNCH,15);
-	public static final Skill grassHopper = new Skill(123,"Grass Hopper","草伏せ",-50,0,DamageHelper.Type.SWORD,5);
-	public static final Skill earthDragon = new Skill(133,"Earth Dragon","土竜撃",-13,0,DamageHelper.Type.PUNCH,5);
-	public static final Skill skullCrash = new Skill(134,"Skull Crash","スカルクラッシュ",1,0,DamageHelper.Type.PUNCH,5);
-	public static final Skill pulvorizer = new Skill(135,"Pulvorizer","粉砕撃",5,0,DamageHelper.Type.PUNCH,5);
-	public static final Skill grandSlam = new Skill(136,"Grand Slam","グランドスラム",2,0,DamageHelper.Type.PUNCH,5);
-	public static final Skill gonger = new Skill(137,"Gonger","どら鳴らし",1,0,DamageHelper.Type.PUNCH,5);
-	public static final Skill rockCrusher = new Skill(138,"Rockcrusher","削岩撃",1,0,DamageHelper.Type.PUNCH,5);
+	public static final Skill kaleidoscope = new Skill(100,"Bopeep","変幻自在",20,6,DamageHelper.Type.SWORD,5).setSkillEffect(skillSword.kaleidoScope);
+	public static final Skill slash = new Skill(101,"Slash","払い抜け",5,3,DamageHelper.Type.SWORD,3).setSkillEffect(null);
+	public static final Skill smash = new Skill(102,"Smash","スマッシュ",15,3,DamageHelper.Type.SWORD,8).setSkillEffect(skillSword.gust);
+	public static final Skill roundabout = new Skill(103,"Roundabout","転",0,0,DamageHelper.Type.SWORD,6).setSkillEffect(null);
+	public static final Skill chargeBlade = new Skill(104,"Charge Blade","追突剣",5,0,DamageHelper.Type.SWORDPUNCH,8).setSkillEffect(skillSword.chargeBlade);
+	public static final Skill gust = new Skill(105,"Gust","逆風の太刀",9,0,DamageHelper.Type.SWORD,5).setSkillEffect(skillSword.gust);
+	public static final Skill vandalize = new Skill(106,"Vandalize","ヴァンダライズ",10,0,DamageHelper.Type.SWORD,15).setSkillEffect(skillSword.vandelize);
+	public static final Skill tomahawk = new Skill(107,"Tomahawk","トマホーク",5,0,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(null);
+	public static final Skill fujiView = new Skill(108,"Fuji View","富嶽百景",8,0,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(skillAxe.fujiView);
+	public static final Skill skyDrive = new Skill(109,"Skydrive","スカイドライブ",10,0,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(skillAxe.skyDrive);
+	public static final Skill woodBreakerPhoenix = new Skill(111,"Wood Breaker Phoenix","マキ割りフェニックス",10,0,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(skillAxe.woodBreaker);
+	public static final Skill woodChopper = new Skill(110,"Wood Chopper","大木断",5,0,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(skillAxe.new SkillWoodChopper());
+	public static final Skill aiming = new Skill(120,"Aiming","エイミング",10,2,DamageHelper.Type.SPEAR,15).setSkillEffect(skillSpear.aiming);
+	public static final Skill acupuncture = new Skill(121,"Acupuncture","独妙点穴",20,2,DamageHelper.Type.SPEAR,25).setSkillEffect(skillSpear.acupuncture);
+	public static final Skill swing = new Skill(122,"Swing","スウィング",-10,2,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(skillSpear.swing);;
+	public static final Skill grassHopper = new Skill(123,"Grass Hopper","草伏せ",-50,0,DamageHelper.Type.SPEAR,5).setSkillEffect(skillSpear.grassHopper);;
+	public static final Skill earthDragon = new Skill(133,"Earth Dragon","土竜撃",-13,0,DamageHelper.Type.PUNCH,5).setSkillEffect(skillStaff.earthDragon);
+	public static final Skill skullCrash = new Skill(134,"Skull Crash","スカルクラッシュ",1,0,DamageHelper.Type.PUNCH,5).setSkillEffect(skillStaff.skullCrusher);
+	public static final Skill pulvorizer = new Skill(135,"Pulvorizer","粉砕撃",5,0,DamageHelper.Type.PUNCH,5).setSkillEffect(skillStaff.pulverizer);
+	public static final Skill grandSlam = new Skill(136,"Grand Slam","グランドスラム",2,0,DamageHelper.Type.PUNCH,5).setSkillEffect(skillStaff.grandSlam);
+	public static final Skill gonger = new Skill(137,"Gonger","どら鳴らし",1,0,DamageHelper.Type.PUNCH,5).setSkillEffect(skillStaff.bellRinger);
+	public static final Skill rockCrusher = new Skill(138,"Rockcrusher","削岩撃",1,0,DamageHelper.Type.PUNCH,5).setSkillEffect(skillStaff.rockCrusher);
 	
-	public static final Skill doubleShot = new Skill(150,"Double Shot","ニ連射",2,2,DamageHelper.Type.SPEAR,5);
-	public static final Skill tripleShot = new Skill(151,"Triple Shot","三連射",2,2,DamageHelper.Type.SPEAR,9);
-	public static final Skill zapper = new Skill(152,"Zapper","ザップショット",5,0,DamageHelper.Type.SPEAR,15);
-	public static final Skill exorcist = new Skill(153,"Exorcist","破魔の矢",5,0,DamageHelper.Type.SPEAR,5);
-	public static final Skill shadowStitching = new Skill(154,"Shadow Stitching","影縫い",2,0,DamageHelper.Type.SPEAR,3);
+	public static final Skill doubleShot = new Skill(150,"Double Shot","ニ連射",2,2,DamageHelper.Type.SPEAR,5).setSkillEffect(skillBow.multipleShoot);
+	public static final Skill tripleShot = new Skill(151,"Triple Shot","三連射",2,2,DamageHelper.Type.SPEAR,9).setSkillEffect(skillBow.multipleShoot);
+	public static final Skill zapper = new Skill(152,"Zapper","ザップショット",5,0,DamageHelper.Type.SPEAR,15).setSkillEffect(skillBow.zapper);
+	public static final Skill exorcist = new Skill(153,"Exorcist","破魔の矢",5,0,DamageHelper.Type.SPEAR,5).setSkillEffect(skillBow.exorcist);
+	public static final Skill shadowStitching = new Skill(154,"Shadow Stitching","影縫い",2,0,DamageHelper.Type.SPEAR,3).setSkillEffect(skillBow.shodowStitch);
+	public static final Skill phoenix = new Skill(155,"Phoenix Arrow","フェニックスアロー",2,0,DamageHelper.Type.SPEAR,3).setSkillEffect(skillBow.phoenixArrow);
+	public static final Skill arrowRain = new Skill(156,"Arrow Rain","アローレイン",2,0,DamageHelper.Type.SPEAR,3).setSkillEffect(skillBow.shodowStitch);
+	
 	//TODO 一部の技、攻撃力が増えるものだけでなく下るものもあるようにする
 	public static final HashSet<Ability> healDowns = Sets.newHashSet(healDown5,healDown10,healDown15,healDown20,healDown25);
 	public static final HashSet<Ability> healUps = Sets.newHashSet(healUp5,healUp10);
 	
 	public static final HashSet<Skill> requireCoolingSet = Sets.newHashSet(vandalize,skyDrive,grandSlam,zapper);
+	
+	public static Map<Potion,Ability> againstPotionMap = new HashMap();
 	
 	public static AbilityRegistry getInstance(){
 		if(instance==null){
@@ -113,6 +131,11 @@ public class AbilityRegistry {
 	protected AbilityRegistry(){
 		this.inheritAbilityMap = new HashMap();
 		this.normalAbilityMap = new HashMap();
+		
+		againstPotionMap.put(Potion.poison, antiPoison);
+		againstPotionMap.put(Potion.wither, antiWither);
+		againstPotionMap.put(Potion.blindness, antiBlind);
+		
 		addInheritAbility(EnumUnsagaTools.SWORD,UnsagaMaterials.dragonHeart,Lists.newArrayList(superHealing));
 		addInheritAbility(EnumUnsagaTools.STAFF,UnsagaMaterials.dragonHeart,Lists.newArrayList(superHealing));
 		addInheritAbility(EnumUnsagaTools.AXE,UnsagaMaterials.dragonHeart,Lists.newArrayList(superHealing));
@@ -209,16 +232,16 @@ public class AbilityRegistry {
 		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.meteorite,Lists.newArrayList(healUp5,supportFire,supportEarth,supportMetal));
 		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.angelite,Lists.newArrayList(healUp10,supportWood,lifeGuard,divination));
 		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.demonite,Lists.newArrayList(healDown20,supportForbidden,forbidden));
-		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.silver,Lists.newArrayList(healUp5,supportWater));
-		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.corundum1,Lists.newArrayList(healUp5,supportWater,water));
-		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.corundum2,Lists.newArrayList(healUp5,supportFire,fire));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.silver,Lists.newArrayList(healUp5,supportWater,defuse,unlock));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.corundum2,Lists.newArrayList(healUp5,supportWater,water));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.corundum1,Lists.newArrayList(healUp5,supportFire,fire));
 		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.obsidian,Lists.newArrayList(healUp5,supportMetal,defuse,unlock));
 		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.diamond,Lists.newArrayList(healUp5,supportFire,defuse,antiSleep,unlock));
 		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.metals,Lists.newArrayList(healUp5,supportWater));		
 		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.steels,Lists.newArrayList(healUp5,supportWater));	
 		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.meteoricIron,Lists.newArrayList(healUp5,supportMetal,supportWater,supportWood));		
-		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.fairieSilver,Lists.newArrayList(healUp10,defuse,unlock,supportWater));	
-		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.damascus,Lists.newArrayList(healUp5,supportWater,lifeGuard));
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.fairieSilver,Lists.newArrayList(healUp10,antiWither,defuse,unlock,supportWater));	
+		addAbility(EnumUnsagaTools.ACCESSORY,UnsagaMaterials.damascus,Lists.newArrayList(healUp5,antiWither,supportWater,lifeGuard));
 		this.registerSkill();
 	}
 	
@@ -231,7 +254,7 @@ public class AbilityRegistry {
 		addSkill(EnumUnsagaTools.SPEAR,false,newSkillList(swing,grassHopper));
 		addSkill(EnumUnsagaTools.SPEAR,true,newSkillList(aiming,acupuncture));
 		addSkill(EnumUnsagaTools.BOW,false,newSkillList(doubleShot,tripleShot,shadowStitching));
-		addSkill(EnumUnsagaTools.BOW,true,newSkillList(zapper,exorcist));
+		addSkill(EnumUnsagaTools.BOW,true,newSkillList(zapper,exorcist,phoenix));
 		addSkill(EnumUnsagaTools.STAFF,false,newSkillList(skullCrash,pulvorizer,gonger,rockCrusher));
 		addSkill(EnumUnsagaTools.STAFF,true,newSkillList(gonger,grandSlam,earthDragon));
 	}

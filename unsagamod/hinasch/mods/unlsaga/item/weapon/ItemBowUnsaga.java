@@ -1,13 +1,14 @@
 package hinasch.mods.unlsaga.item.weapon;
 
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.core.event.ExtendedEntityTag;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.item.weapon.base.ItemBowBase;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillBow;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillBow.SkillBowBase;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateBow;
@@ -29,6 +30,7 @@ public class ItemBowUnsaga extends ItemBowBase
 	public final static String ARROW_ZAPPER = "zapper";
 	public final static String ARROW_EXORCIST = "exorcist";
 	public final static String ARROW_STITCH = "stitch";
+	public final static String ARROW_PHOENIX = "phoenix";
     public ItemBowUnsaga(UnsagaMaterial material)
     {
         super(material);
@@ -46,7 +48,7 @@ public class ItemBowUnsaga extends ItemBowBase
         int j = this.getMaxItemUseDuration(par1ItemStack) - par4;
 
         
-        SkillEffectHelper skilleffect = null;
+        InvokeSkill skilleffect = null;
         ArrowLooseEvent event = new ArrowLooseEvent(player, par1ItemStack, j);
         MinecraftForge.EVENT_BUS.post(event);
         if (event.isCanceled())
@@ -85,27 +87,28 @@ public class ItemBowUnsaga extends ItemBowBase
             EntityArrow entityarrow = new EntityArrow(par2World, player, f * 2.0F);
 
             String addTagKey = "";
-            if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.zapper,par1ItemStack ) && player.isSneaking()){
-            	skilleffect = new SkillEffectHelper(par2World, player, AbilityRegistry.zapper, par1ItemStack);
-            	skilleffect.setCharge(f);
-            	addTagKey = ARROW_ZAPPER;
-
-            	//entityarrow.setZapper(true);
+            for(String key:SkillBow.getAssociatedMap().keySet()){
+            	SkillBowBase skillBow = SkillBow.getSkillAssociatedWithTag(key);
+            	if(skillBow!=null){
+                    if(HelperAbility.hasAbilityFromItemStack(skillBow.getSkill(),par1ItemStack ) && player.isSneaking()){
+                    	skilleffect = new InvokeSkill(par2World, player, skillBow.getSkill(), par1ItemStack);
+                    	skilleffect.setCharge(f);
+                    }
+            	}
+ 
             }
-            if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.exorcist,par1ItemStack ) && player.isSneaking()){
-            	skilleffect = new SkillEffectHelper(par2World, player, AbilityRegistry.exorcist, par1ItemStack);
-            	skilleffect.setCharge(f);
-            	addTagKey = ARROW_EXORCIST;
-
-            	//entityarrow.setExorcist(true);
-            }
-            if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.shadowStitching,par1ItemStack ) && player.isSneaking()){
-            	skilleffect = new SkillEffectHelper(par2World, player, AbilityRegistry.shadowStitching, par1ItemStack);
-            	skilleffect.setCharge(f);
-            	addTagKey = ARROW_STITCH;
-
-            	//entityarrow.setShadowStitch(true);
-            }
+//            if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.zapper,par1ItemStack ) && player.isSneaking()){
+//            	skilleffect = new InvokeSkill(par2World, player, AbilityRegistry.zapper, par1ItemStack);
+//            	skilleffect.setCharge(f);
+//            }
+//            if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.exorcist,par1ItemStack ) && player.isSneaking()){
+//            	skilleffect = new InvokeSkill(par2World, player, AbilityRegistry.exorcist, par1ItemStack);
+//            	skilleffect.setCharge(f);
+//            }
+//            if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.shadowStitching,par1ItemStack ) && player.isSneaking()){
+//            	skilleffect = new InvokeSkill(par2World, player, AbilityRegistry.shadowStitching, par1ItemStack);
+//            	skilleffect.setCharge(f);
+//            }
             if (f == 1.0F)
             {
                 entityarrow.setIsCritical(true);
@@ -137,11 +140,11 @@ public class ItemBowUnsaga extends ItemBowBase
                 entityarrow.setFire(100);
             }
 
-            if(skilleffect!=null){
-            	par1ItemStack.damageItem(skilleffect.getDamageItem(), player);
-            }else{
+//            if(skilleffect.getSkill()==AbilityRegistry.shadowStitching){
+//            	par1ItemStack.damageItem(skilleffect.getDamageItem(), player);
+//            }else{
             	par1ItemStack.damageItem(1, player);
-            }
+            //}
             
             par2World.playSoundAtEntity(player, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 
@@ -157,8 +160,14 @@ public class ItemBowUnsaga extends ItemBowBase
             if (!par2World.isRemote)
             {
                 par2World.spawnEntityInWorld(entityarrow);
-                if(!addTagKey.equals("")){
-                	ExtendedEntityTag.addTagToEntity(entityarrow,addTagKey);
+                if(skilleffect!=null){
+                	if(skilleffect.getEffect() instanceof SkillBowBase){
+                		if(skilleffect.doSkill()){
+                    		SkillBowBase skillBow = (SkillBowBase) skilleffect.getEffect();
+                    		skillBow.postShoot(entityarrow); //ここで技のタグを設定
+                		}
+
+                	}
                 }
             }
         }

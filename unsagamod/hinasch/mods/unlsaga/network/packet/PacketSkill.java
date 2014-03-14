@@ -9,7 +9,7 @@ import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.ability.skill.HelperSkill;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -68,7 +68,7 @@ public class PacketSkill extends AbstractPacket{
 	public void handleServerSide(EntityPlayer player) {
 		if(packetId==PACKETID.WOODBREAKER){
 			if(player.getHeldItem()!=null){
-				SkillEffectHelper helper = new SkillEffectHelper(player.worldObj, player, AbilityRegistry.woodBreakerPhoenix,player.getHeldItem() );
+				InvokeSkill helper = new InvokeSkill(player.worldObj, player, AbilityRegistry.woodBreakerPhoenix,player.getHeldItem() );
 				helper.setUsePoint(pos);
 				helper.doSkill();
 			}

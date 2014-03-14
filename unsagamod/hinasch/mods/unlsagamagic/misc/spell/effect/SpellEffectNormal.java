@@ -13,7 +13,6 @@ import hinasch.mods.unlsaga.entity.projectile.EntityFireArrow;
 import hinasch.mods.unlsaga.misc.debuff.Buff;
 import hinasch.mods.unlsaga.misc.debuff.Debuff;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
-import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingBuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateCrimsonFlare;
 import hinasch.mods.unlsaga.misc.translation.Translation;
@@ -30,8 +29,8 @@ import hinasch.mods.unlsagamagic.item.ItemSpellBook;
 
 import java.util.HashSet;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockOre;
+import net.minecraft.block.BlockRedstoneOre;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -44,6 +43,7 @@ import net.minecraft.entity.passive.EntityAnimal;
 import net.minecraft.entity.passive.EntityHorse;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.passive.IAnimals;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -52,7 +52,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.AxisAlignedBB;
-import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -65,6 +64,28 @@ public class SpellEffectNormal{
 
 	public static SpellEffectNormal INSTANCE;
 
+	public final SpellBase abyss = new SpellAbyss();
+	public final SpellBase animalCharm = new SpellAnimalCharm();
+	public final SpellBase boulder = new SpellBoulder();
+	public final SpellBase buildUp = new SpellBuildUp();
+	public final SpellBase cloudCall = new SpellCloudCall();
+	public final SpellBase callThunder = new SpellCallThunder();
+	public final SpellBase detectAnimal = new SpellDetectAnimal();
+	public final SpellBase detectBlood = new SpellDetectBlood();
+	public final SpellBase detectGold = new SpellDetectGold();
+	public final SpellBase elemntVeil = new SpellElementVeil();
+	public final SpellBase fireArrow = new SpellFireArrow();
+	public final SpellBase fireStorm = new SpellFireStorm();
+	public final SpellBase fireWall = new SpellFireWall();
+	public final SpellBase heroism = new SpellHeroism();
+	public final SpellBase lifeBoost = new SpellLifeBoost();
+	public final SpellBase magicLock = new SpellMagicLock();
+	public final SpellBase meditation = new SpellMeditation();
+	public final SpellBase missuileGuard = new SpellMissuileGuard();
+	public final SpellBase overGrowth = new SpellOverGrowth();
+	public final SpellBase purify = new SpellPurify();
+	public final SpellBase recycle = new SpellRecycle();
+	public final SpellBase weakness = new SpellWeakness();
 
 	public static SpellEffectNormal getInstance(){
 		if(INSTANCE==null){
@@ -73,7 +94,7 @@ public class SpellEffectNormal{
 		return INSTANCE;
 
 	}
-	public class SpellCallThunder extends AbstractSpell{
+	public class SpellCallThunder extends SpellBase{
 
 		public SpellCallThunder() {
 			//super();
@@ -81,7 +102,7 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parentInvoke) {
+		public void invokeSpell(InvokeSpell parentInvoke) {
 			if(parentInvoke.getTarget().isPresent()){
 				Entity target = parentInvoke.getTarget().get();
 				EntityLightningBolt thunder = new EntityLightningBolt(parentInvoke.world,target.posX,target.posY,target.posZ);
@@ -101,19 +122,24 @@ public class SpellEffectNormal{
 	public class SpellBuildUp extends SpellAddBuff{
 		
 		public SpellBuildUp(){
-			this.potions = Lists.newArrayList(Potion.jump,Potion.moveSpeed);
+			this.potions = Lists.newArrayList(Potion.digSpeed);
+			this.buffs = Lists.newArrayList(Debuffs.physicalUp);
 		}
 	}
 	public class SpellPurify extends SpellHealing{
 
 		@Override
 		public void hookHealing(InvokeSpell parent, EntityLivingBase target) {
-			// TODO 自動生成されたメソッド・スタブ
+			if(parent.getAmp()>1.5F){
+				target.removePotionEffect(Potion.poison.id);
+				target.removePotionEffect(Potion.wither.id);
+				target.removePotionEffect(Potion.blindness.id);
+			}
 			
 		}
 		
 	}
-	public class SpellFireStorm extends AbstractSpell{
+	public class SpellFireStorm extends SpellBase{
 
 		public SpellFireStorm() {
 			super();
@@ -121,7 +147,7 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parent) {
+		public void invokeSpell(InvokeSpell parent) {
 			int amp =(int) parent.getAmp();
 
 			XYZPos xyz = null;
@@ -188,7 +214,7 @@ public class SpellEffectNormal{
 		}
 		
 	}
-	public class SpellRecycle extends AbstractSpell{
+	public class SpellRecycle extends SpellBase{
 
 		public SpellRecycle() {
 			super();
@@ -196,8 +222,14 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell spell) {
-			ItemStack is = spell.invoker.inventory.getStackInSlot(0);
+		public void invokeSpell(InvokeSpell spell) {
+			ItemStack is = null;
+			if(spell.invoker instanceof EntityPlayer){
+				is = ((EntityPlayer)spell.invoker).inventory.getStackInSlot(0);
+			}else{
+				is = spell.invoker.getHeldItem();
+			}
+
 			//HashSet<Class> validClasses = Sets.newHashSet(ItemSword.class,ItemAxe.class,ItemTool.class,ItemArmor.class,Item
 			if(is!=null && is.getItem().isRepairable()){
 				int repair = 20+spell.invoker.getRNG().nextInt(15);
@@ -213,7 +245,7 @@ public class SpellEffectNormal{
 		}
 		
 	}
-	public class SpellBoulder extends AbstractSpell{
+	public class SpellBoulder extends SpellBase{
 
 		public SpellBoulder() {
 			super();
@@ -221,7 +253,7 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell spell) {
+		public void invokeSpell(InvokeSpell spell) {
 			spell.world.playSoundAtEntity(spell.invoker, "mob.ghast.fireball", 1.0F, 1.0F / (spell.world.rand.nextFloat() * 0.4F + 1.2F) + 1.0F * 0.5F);
 			EntityBoulder var8 = new EntityBoulder(spell.world, spell.invoker, 1.0F*1.5F);
 			int knockback = Math.round(5.0F*spell.getAmp());
@@ -243,7 +275,7 @@ public class SpellEffectNormal{
 		}
 		
 	}
-	public class SpellMagicLock extends AbstractSpell{
+	public class SpellMagicLock extends SpellBase{
 
 		public SpellMagicLock() {
 			super();
@@ -251,7 +283,7 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell spell) {
+		public void invokeSpell(InvokeSpell spell) {
 			EntityLivingBase target = null;
 			if(spell.getTarget().isPresent()){
 				target = spell.getTarget().get();
@@ -268,7 +300,7 @@ public class SpellEffectNormal{
 		}
 		
 	}
-	public class SpellFireArrow extends AbstractSpell{
+	public class SpellFireArrow extends SpellBase{
 
 		public SpellFireArrow() {
 			super();
@@ -276,7 +308,7 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parent) {
+		public void invokeSpell(InvokeSpell parent) {
 			PacketSound ps = new PacketSound(1008,parent.invoker.getEntityId(),PacketSound.MODE.AUX);
 			Unsaga.packetPipeline.sendToAllAround(ps, PacketUtil.getTargetPointNear(parent.invoker));
 			//PacketDispatcher.sendPacketToPlayer(ps.getPacket(),(Player)parent.invoker);
@@ -293,7 +325,7 @@ public class SpellEffectNormal{
 		}
 		
 	}
-	public class SpellAnimalCharm extends AbstractSpell{
+	public class SpellAnimalCharm extends SpellBase{
 
 		public SpellAnimalCharm() {
 			super();
@@ -301,7 +333,7 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell spell) {
+		public void invokeSpell(InvokeSpell spell) {
 			if(spell.getTarget().isPresent()){
 				if(spell.getTarget().get() instanceof EntityTameable){
 					EntityTameable tameable = (EntityTameable)spell.getTarget().get();
@@ -316,28 +348,31 @@ public class SpellEffectNormal{
 					//PacketDispatcher.sendPacketToPlayer(pp.getPacket(), (Player)spell.invoker);
 					return;
 				}
-				if(spell.getTarget().get() instanceof EntityHorse){
-					EntityHorse horse = (EntityHorse)spell.getTarget().get();
-					horse.setTamedBy(spell.invoker);
-					PacketParticle pp = new PacketParticle(2,horse.getEntityId(),10);
-					if(!spell.invoker.worldObj.isRemote){
-						Unsaga.packetPipeline.sendTo(pp, (EntityPlayerMP) spell.invoker);
+				if(spell.invoker instanceof EntityPlayer){
+					if(spell.getTarget().get() instanceof EntityHorse){
+						EntityHorse horse = (EntityHorse)spell.getTarget().get();
+						horse.setTamedBy((EntityPlayer) spell.invoker);
+						PacketParticle pp = new PacketParticle(2,horse.getEntityId(),10);
+						if(!spell.invoker.worldObj.isRemote){
+							Unsaga.packetPipeline.sendTo(pp, (EntityPlayerMP) spell.invoker);
+						}
+						return;
+
 					}
-					return;
+					if(spell.getTarget().get() instanceof EntityAnimal){
+						EntityAnimal animal = (EntityAnimal)spell.getTarget().get();
+						animal.func_146082_f((EntityPlayer) spell.invoker);
+						return;
 
+					}
 				}
-				if(spell.getTarget().get() instanceof EntityAnimal){
-					EntityAnimal animal = (EntityAnimal)spell.getTarget().get();
-					animal.func_146082_f(spell.invoker);
-					return;
 
-				}
 			}
 			
 		}
 		
 	}
-	public class SpellElementVeil extends AbstractSpell{
+	public class SpellElementVeil extends SpellBase{
 
 		public SpellElementVeil() {
 			super();
@@ -345,7 +380,7 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parentInvoke) {
+		public void invokeSpell(InvokeSpell parentInvoke) {
 			int remain = (int)((float)20 * parentInvoke.getAmp());
 			switch(parentInvoke.spell.element){
 			case FIRE:
@@ -372,24 +407,13 @@ public class SpellEffectNormal{
 		}
 		
 	}
-	public class SpellHeroism extends AbstractSpell{
+	public class SpellHeroism extends SpellAddBuff{
 
 		public SpellHeroism() {
 			super();
-			// TODO 自動生成されたコンストラクター・スタブ
+			this.potions = Lists.newArrayList(Potion.damageBoost);
 		}
 
-		@Override
-		public void doSpell(InvokeSpell parent) {
-			int remain = (int)((float)15 * parent.getAmp());
-			int amp = (int)(1.0F*parent.getAmp());
-			if(parent.getTarget().isPresent()){
-				LivingDebuff.addLivingDebuff(parent.getTarget().get(), new LivingBuff(Debuffs.powerup,remain,1));
-			}else{
-				LivingDebuff.addLivingDebuff(parent.invoker, new LivingBuff(Debuffs.powerup,remain,amp));
-			}
-			
-		}
 		
 	}
 	public class SpellMissuileGuard extends SpellAddBuff{
@@ -442,7 +466,7 @@ public class SpellEffectNormal{
 	}
 	
 
-	public class SpellCloudCall extends AbstractSpell{
+	public class SpellCloudCall extends SpellBase{
 
 		public SpellCloudCall() {
 			super();
@@ -450,13 +474,13 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parent) {
+		public void invokeSpell(InvokeSpell parent) {
 			parent.world.getWorldInfo().setRaining(true);
 			
 		}
 		
 	}
-	public class SpellDetectGold extends AbstractSpell{
+	public class SpellDetectGold extends SpellBase{
 
 		public SpellDetectGold() {
 			super();
@@ -464,7 +488,7 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parent) {
+		public void invokeSpell(InvokeSpell parent) {
 			int prob = (int)(25.0F * parent.getAmp());
 			boolean diacheck = parent.world.rand.nextInt(100)<prob;
 			ScanHelper scan = new ScanHelper(parent.invoker,16,16);
@@ -473,16 +497,17 @@ public class SpellEffectNormal{
 			scan.setWorld(parent.world);
 			for(;scan.hasNext();scan.next()){
 				if(!scan.isAirBlock() && scan.sy>0 && scan.sy<255){
-					Block block = scan.getBlock();
+					//Block block = scan.getBlock();
 					PairID blocknumber = this.worldHelper.getBlockDatas(scan.getAsXYZPos());
 					boolean flag = false;
-					if(block instanceof BlockOre){
-						if(block==Blocks.diamond_ore){
+					if(blocknumber.blockObj instanceof BlockOre || blocknumber.blockObj instanceof BlockRedstoneOre){
+						Unsaga.debug(blocknumber);
+						if(blocknumber.blockObj==Blocks.diamond_ore){
 							if(diacheck){
 								if(pairList.contains(blocknumber)){
 									pairList.addStack(blocknumber, 1);
 								}else{
-									pairList.list.add(blocknumber);
+									pairList.list.add(blocknumber.setStack(1));
 								}
 							}
 
@@ -490,19 +515,19 @@ public class SpellEffectNormal{
 							if(pairList.contains(blocknumber)){
 								pairList.addStack(blocknumber, 1);
 							}else{
-								pairList.list.add(blocknumber);
+								pairList.list.add(blocknumber.setStack(1));
 							}
 						}
 
 						flag = true;
 
 					}
-					String orekey = OreDictionary.getOreName(OreDictionary.getOreID(new ItemStack(block,1,scan.getMetadata())));
+					String orekey = OreDictionary.getOreName(OreDictionary.getOreID(new ItemStack(blocknumber.blockObj,1,scan.getMetadata())));
 					if(!orekey.equals("Unknown") && orekey.toLowerCase().contains("ore") && !flag){
 						if(pairList.contains(blocknumber)){
 							pairList.addStack(blocknumber, 1);
 						}else{
-							pairList.list.add(blocknumber);
+							pairList.list.add(blocknumber.setStack(1));
 						}
 					}
 				}
@@ -530,7 +555,7 @@ public class SpellEffectNormal{
 		
 	}
 
-	public class SpellAbyss extends AbstractSpell{
+	public class SpellAbyss extends SpellBase{
 
 		public SpellAbyss() {
 			super();
@@ -538,7 +563,7 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parent) {
+		public void invokeSpell(InvokeSpell parent) {
 			float amp = parent.getAmp();
 			AxisAlignedBB bb = parent.invoker.boundingBox.expand(9.0D+amp, 4.0D+amp, 9.0D+amp);
 			Entity nearent = parent.world.findNearestEntityWithinAABB(EntityLivingBase.class, bb, parent.invoker);
@@ -568,7 +593,9 @@ public class SpellEffectNormal{
 					}
 					int at = 8*(int)amp;
 					System.out.println(at);
-					nearTarget.attackEntityFrom(DamageSource.causePlayerDamage(parent.invoker), at);
+					//DamageSource ds = new DamageSourceUnsaga(null, parent.invoker, parent.getSpell().hurtLP, DamageHelper.Type.MAGIC);
+					
+					nearTarget.attackEntityFrom(parent.getDamageSource(), at);
 
 					int time = Math.round((float)240*amp);
 					if(time>600){
@@ -586,7 +613,7 @@ public class SpellEffectNormal{
 		}
 		
 	}
-	public class SpellWeakness extends AbstractSpell{
+	public class SpellWeakness extends SpellBase{
 
 		public SpellWeakness() {
 			super();
@@ -594,7 +621,7 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parent) {
+		public void invokeSpell(InvokeSpell parent) {
 			AxisAlignedBB bb = parent.invoker.boundingBox.expand(9.0D, 4.0D, 9.0D);
 
 			System.out.println(bb);
@@ -630,7 +657,7 @@ public class SpellEffectNormal{
 		
 	}
 
-	public class SpellOverGrowth extends AbstractSpell{
+	public class SpellOverGrowth extends SpellBase{
 
 		public SpellOverGrowth() {
 			super();
@@ -638,7 +665,7 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parent) {
+		public void invokeSpell(InvokeSpell parent) {
 			int range = 10;
 			int prob = Math.round(30*parent.getAmp());
 
@@ -655,7 +682,10 @@ public class SpellEffectNormal{
 						Unsaga.packetPipeline.sendTo(pp, (EntityPlayerMP) parent.invoker);
 					}
 					
-					ItemDye.applyBonemeal(dummy, parent.world, scan.sx, scan.sy, scan.sz, parent.invoker);
+					if(parent.invoker instanceof EntityPlayer){
+						ItemDye.applyBonemeal(dummy, parent.world, scan.sx, scan.sy, scan.sz, (EntityPlayer) parent.invoker);
+					}
+					
 				}
 
 			}
@@ -665,7 +695,7 @@ public class SpellEffectNormal{
 		}
 		
 	}
-	public class SpellFireWall extends AbstractSpell{
+	public class SpellFireWall extends SpellBase{
 
 		public SpellFireWall() {
 			super();
@@ -673,7 +703,7 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void doSpell(InvokeSpell parent) {
+		public void invokeSpell(InvokeSpell parent) {
 			if(ItemSpellBook.readPosition(parent.spellbook)!=null){
 				if(!parent.world.isRemote){
 					int ampli = (int)(3.0F + parent.getAmp());
