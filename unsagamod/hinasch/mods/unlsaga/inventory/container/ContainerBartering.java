@@ -22,6 +22,8 @@ public class ContainerBartering extends Container{
 	protected EntityPlayer theCustomer;
 	protected IMerchant theMerchant;
 	protected SlotMerchandise[] merchandiseSlot;
+	
+
 
 	protected InventoryMerchantUnsaga invMerchant;
 
@@ -38,14 +40,14 @@ public class ContainerBartering extends Container{
 
 		for (int i = 0; i < 9; ++i)
 		{
-			//this.merchandiseSlot[i] = new SlotMerchandise(this.invMerchant, i+10, 8 + i * 18, 63-(18*3));
 			this.addSlotToContainer(new SlotMerchandise(this.invMerchant, i+10, 8 + i * 18, 63-(18*3)));
 		}
 
-		for (int i = 0; i < 9; ++i)
+		for (int i = 0; i < this.invMerchant.getSizeBarteringInv(); ++i)
 		{
 			this.addSlotToContainer(new Slot(this.invMerchant, i, 8 + i * 18, 62));
 		}
+		this.addSlotToContainer(new Slot(this.invMerchant, this.invMerchant.RESULT, 8 + 8 * 18, 62));
 
 		for (int i = 0; i < 3; ++i)
 		{
@@ -95,13 +97,13 @@ public class ContainerBartering extends Container{
 		this.theMerchant.setCustomer((EntityPlayer)null);
 		super.onContainerClosed(par1EntityPlayer);
 		if(!par1EntityPlayer.worldObj.isRemote){
-			for(int i=0;i<9;i++){
+			for(int i=0;i<this.invMerchant.getSizeBarteringInv();i++){
 				ItemStack is = this.invMerchant.getStackInSlotOnClosing(i);
 				if(is!=null){
 					par1EntityPlayer.entityDropItem(is,0.1F);
 				}
 			}
-			ItemStack is = this.invMerchant.getStackInSlotOnClosing(30);
+			ItemStack is = this.invMerchant.getStackInSlotOnClosing(this.invMerchant.RESULT);
 			if(is!=null){
 				par1EntityPlayer.entityDropItem(is,0.1F);
 			}
@@ -109,15 +111,14 @@ public class ContainerBartering extends Container{
 	}
 
 
-	public void onButtonPushed(int id) {
+	public void onButtonPushed(int buttonid) {
 		
-		PacketGuiButton pgo = new PacketGuiButton(PacketGuiButton.GUI_BARTERING,this.id);
+		PacketGuiButton pgo = new PacketGuiButton(PacketGuiButton.GUI_BARTERING,(byte)buttonid);
 		Unsaga.packetPipeline.sendToServer(pgo);
 
 	}
 
 	public static void writePacketData(ByteBuf dos, byte id) {
-		dos.writeInt((int)PacketGuiButton.GUI_BARTERING);
 		dos.writeByte((byte)id);
 
 	}
@@ -142,13 +143,15 @@ public class ContainerBartering extends Container{
 	}
 	public void onPacketData() {
 
+		Unsaga.debug(this.id);
 		if(this.invMerchant.getMerchandise(this.id)!=null){
 			if(canBuy(this.invMerchant.getMerchandise(this.id))){
-				ItemStack bought = this.invMerchant.getMerchandise(this.id);
+				ItemStack bought = this.invMerchant.getMerchandise(this.id).copy();
 				MerchandiseInfo.removePriceTag(bought);
-				if(!this.theCustomer.worldObj.isRemote){
-					this.theCustomer.entityDropItem(bought,0.1F);
-				}
+				//if(!this.theCustomer.worldObj.isRemote){
+				this.invMerchant.setResult(bought);
+				//this.theCustomer.entityDropItem(bought,0.1F);
+				//}
 				this.invMerchant.decrStackSize(this.id+10, this.invMerchant.getMerchandise(id).stackSize);
 				if(!this.worldobj.isRemote){
 					XYZPos xyz = XYZPos.entityPosToXYZ((Entity) this.theMerchant);
@@ -168,7 +171,7 @@ public class ContainerBartering extends Container{
 	}
 	
 	public void cleanBarteringInv(){
-		for(int i=0;i<9;i++){
+		for(int i=0;i<this.invMerchant.getSizeBarteringInv();i++){
 			if(this.invMerchant.getBartering(i)!=null){
 				if(MerchandiseInfo.isPossibleToSell(this.invMerchant.getBartering(i))){
 					this.invMerchant.setBartering(i, null);

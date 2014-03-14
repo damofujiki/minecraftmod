@@ -14,7 +14,7 @@ import net.minecraft.item.ItemStack;
 public class InventoryMerchantUnsaga implements IInventory{
 
 	protected String KEY = ExtendedMerchantData.VILLAGER;
-
+	public final int RESULT = 8;
 	protected ItemStack[] bartering = new ItemStack[10];
 	protected ItemStack[] merchandise = new ItemStack[10];
 	protected ItemStack result;
@@ -44,10 +44,13 @@ public class InventoryMerchantUnsaga implements IInventory{
 
 	}
 	
+	public int getSizeBarteringInv(){
+		return 7;
+	}
 	
 	public int getCurrentPriceToSell(){
 		int price = 0;
-		for(int i=0;i<9;i++){
+		for(int i=0;i<this.getSizeBarteringInv();i++){
 			//途中
 			//price = price + this.getBartering(i);
 			if(this.getBartering(i)!=null){
@@ -62,25 +65,32 @@ public class InventoryMerchantUnsaga implements IInventory{
 	@Override
 	public int getSizeInventory() {
 		// TODO 自動生成されたメソッド・スタブ
-		return this.bartering.length + this.merchandise.length;
+		return this.bartering.length + this.merchandise.length ;
 	}
 
 	@Override
 	public ItemStack getStackInSlot(int i) {
 		// TODO 自動生成されたメソッド・スタブ
-		if(i==30){
+		if(i==RESULT){
 			return this.result;
 		}
-		if(i!=30 && i>9){
+		if(i>9){
 			return this.merchandise[i-10];
 		}
-		if(i<=9){
+		if(i<=this.getSizeBarteringInv()){
 			return this.bartering[i];
 		}
 
 		return null;
 	}
 
+	public ItemStack getResult(){
+		return this.getStackInSlot(RESULT);
+	}
+	
+	public void setResult(ItemStack is){
+		this.setInventorySlotContents(RESULT, is);
+	}
 	public ItemStack getMerchandise(int par1){
 		return this.getStackInSlot(10+par1);					
 	}
@@ -100,7 +110,7 @@ public class InventoryMerchantUnsaga implements IInventory{
 	public ItemStack decrStackSize(int i, int request) {
 		// TODO 自動生成されたメソッド・スタブ
 		Unsaga.debug("decr:"+i);
-		if(i<=9){
+		if(i<=this.getSizeBarteringInv()){
 			if(this.bartering[i]!=null){
 				int stack = request;
 				ItemStack is;
@@ -113,6 +123,26 @@ public class InventoryMerchantUnsaga implements IInventory{
 					is = this.bartering[i].splitStack(request);
 					if(this.bartering[i].stackSize == 0){
 						this.bartering[i] = null;
+					}
+
+					return is;
+				}
+
+			}
+		}
+		if(i==RESULT){
+			if(this.result!=null){
+				int stack = request;
+				ItemStack is;
+				if(this.result.stackSize<=request){
+					is = this.result;
+					this.result = null;
+
+					return is;
+				}else{
+					is = this.result.splitStack(request);
+					if(this.result.stackSize == 0){
+						this.result = null;
 					}
 
 					return is;
@@ -139,18 +169,21 @@ public class InventoryMerchantUnsaga implements IInventory{
 	}
 
 	public boolean canBuy(ItemStack is){
-		int priceBuy = MerchandiseInfo.getPrice(is);
-		int priceSell = this.getCurrentPriceToSell();
-		if(priceSell>=priceBuy){
-			return true;
+		if(this.getResult()==null){
+			int priceBuy = MerchandiseInfo.getPrice(is);
+			int priceSell = this.getCurrentPriceToSell();
+			if(priceSell>=priceBuy){
+				return true;
+			}
 		}
+
 		return false;
 
 	}
 
 	@Override
 	public ItemStack getStackInSlotOnClosing(int i) {
-		if(i!=30 && i<=9){
+		if(i<=this.getSizeBarteringInv()){
 			if(this.bartering[i]!=null){
 				ItemStack is = this.bartering[i];
 				this.bartering[i] = null;
@@ -158,7 +191,7 @@ public class InventoryMerchantUnsaga implements IInventory{
 			}
 			return null;
 		}
-		if(i==30){
+		if(i==RESULT){
 			if(this.result!=null){
 				ItemStack is = this.result;
 				this.result = null;
@@ -171,7 +204,8 @@ public class InventoryMerchantUnsaga implements IInventory{
 
 	@Override
 	public void setInventorySlotContents(int i, ItemStack itemstack) {
-		if(i<=9){
+		Unsaga.debug(i+"に"+itemstack+"をセットします");
+		if(i<=this.getSizeBarteringInv()){
 			this.bartering[i] = itemstack;
 
 			if (itemstack != null && itemstack.stackSize > this.getInventoryStackLimit())
@@ -179,7 +213,15 @@ public class InventoryMerchantUnsaga implements IInventory{
 				itemstack.stackSize = this.getInventoryStackLimit();
 			}
 		}
-		if(i!=30 && i>9){
+		if(i==RESULT){
+			this.result = itemstack;
+
+			if (itemstack != null && itemstack.stackSize > this.getInventoryStackLimit())
+			{
+				itemstack.stackSize = this.getInventoryStackLimit();
+			}
+		}
+		if(i>9){
 			
 
 			this.merchandise[i-10] = itemstack;
@@ -191,14 +233,7 @@ public class InventoryMerchantUnsaga implements IInventory{
 
 		}
 
-		if(i==30){
-			this.result = itemstack;
 
-			if (itemstack != null && itemstack.stackSize > this.getInventoryStackLimit())
-			{
-				itemstack.stackSize = this.getInventoryStackLimit();
-			}
-		}
 
 
 

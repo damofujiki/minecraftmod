@@ -35,7 +35,7 @@ public class PacketGuiButton extends AbstractPacket{
 	public void encodeInto(ChannelHandlerContext ctx, ByteBuf buffer) {
 		buffer.writeInt(this.id);
 		if(this.id==GUI_BARTERING){
-			ContainerBartering.writePacketData(buffer,(Byte)args[0] );
+			buffer.writeByte((Byte)args[0]);
 		}
 		if(this.id==GUI_CHEST){
 			buffer.writeInt((Integer)args[0]);
