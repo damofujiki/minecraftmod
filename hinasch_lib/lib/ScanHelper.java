@@ -1,7 +1,8 @@
 package hinasch.lib;
 
 import net.minecraft.block.Block;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
 import net.minecraft.world.World;
 
@@ -26,11 +27,11 @@ public class ScanHelper {
 	public XYZPos count;
 	
 	public final int mode;
-	public EntityPlayer entityPlayer;
+	public Entity entity;
 	public World world;
 	protected boolean scanned;
 
-	public static XYZPos entityPosToXYZ(EntityPlayer ep){
+	public static XYZPos entityPosToXYZ(EntityLivingBase ep){
 		XYZPos xyz = new XYZPos((int)ep.posX,(int)ep.posY,(int)ep.posZ);
 		return xyz;
 	}
@@ -63,7 +64,7 @@ public class ScanHelper {
 		this.endZ = 0;
 	}
 
-	public ScanHelper(EntityPlayer ep,int par1range,int par2rangey){
+	public ScanHelper(Entity ep,int par1range,int par2rangey){
 		this.range = par1range;
 		this.rangeY = par2rangey;
 		this.sx = (int)ep.posX - (range/2);
@@ -73,7 +74,7 @@ public class ScanHelper {
 		this.startY = this.sy;
 		this.startZ = this.sz;
 		this.scanned = false;
-		this.entityPlayer = ep;
+		this.entity = ep;
 		this.mode = 0;
 		this.endX = 0;
 		this.endY = 0;
@@ -308,9 +309,16 @@ public class ScanHelper {
 			return false;
 		}
 	}
+	
+	public boolean isValidHeight(){
+		if(this.sy>0 && this.sy<255){
+			return true;
+		}
+		return false;
+	}
 
 	public boolean isPlayerPos(){
-		return ((int)this.entityPlayer.posX==this.sx)&&((int)this.entityPlayer.posY==this.sy)&&((int)this.entityPlayer.posZ==this.sz);
+		return ((int)this.entity.posX==this.sx)&&((int)this.entity.posY==this.sy)&&((int)this.entity.posZ==this.sz);
 	}
 	
 	public XYZPos getCount(){

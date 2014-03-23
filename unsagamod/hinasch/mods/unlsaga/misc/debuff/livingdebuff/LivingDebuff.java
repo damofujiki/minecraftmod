@@ -8,6 +8,7 @@ import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.debuff.Debuff;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.network.packet.PacketParticle;
+import hinasch.mods.unlsaga.network.packet.PacketSyncDebuff;
 import hinasch.mods.unlsaga.network.packet.PacketUtil;
 
 import java.util.Iterator;
@@ -135,6 +136,7 @@ public class LivingDebuff {
 		
 		if(this.remain<=0){
 			Unsaga.debug(this.debuff.name+" is expired.");
+
 			return true;
 		}
 		
@@ -203,14 +205,31 @@ public class LivingDebuff {
 		
 	}
 
+	//TODO : このへん要改変
 	public void onExpiredEvent(EntityLivingBase living) {
-		
+		if(this.debuff.getAttributeModifier()!=null){
+			living.getEntityAttribute(this.debuff.getAttributeType()).removeModifier(this.debuff.getAttributeModifier());
+			Unsaga.debug("おわりしました："+living.getEntityAttribute(this.debuff.getAttributeType()).getAttributeValue());
+
+		}
+		if(!living.worldObj.isRemote){
+			PacketSyncDebuff psd = new PacketSyncDebuff(living.getEntityId(),this.debuff.number);
+			Unsaga.packetPipeline.sendToAll(psd);
+		}
+//		if(living.worldObj.isRemote){
+//			PacketSyncDebuff psd = new PacketSyncDebuff(living.getEntityId(),this.debuff.number);
+//			Unsaga.packetPipeline.sendToServer(psd);
+//		}
+
 		
 	}
 
 	public void onInitEvent(EntityLivingBase living) {
-		// TODO 自動生成されたメソッド・スタブ
-		
+		if(this.debuff.getAttributeModifier()!=null && living.getEntityAttribute(this.debuff.getAttributeType()).getModifier(this.debuff.getAttributeModifier().getID())==null){
+			living.getEntityAttribute(this.debuff.getAttributeType()).applyModifier(this.debuff.getAttributeModifier());
+			Unsaga.debug(this.debuff.getAttributeModifier().getName()+"アプライしました："+living.getEntityAttribute(this.debuff.getAttributeType()).getAttributeValue());
+		}
 	}
 
+	
 }

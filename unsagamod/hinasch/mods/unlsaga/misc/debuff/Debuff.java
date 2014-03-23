@@ -1,5 +1,6 @@
 package hinasch.mods.unlsaga.misc.debuff;
 
+import hinasch.lib.PairObject;
 import hinasch.lib.StaticWords;
 import hinasch.mods.unlsaga.misc.ability.Ability;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
@@ -8,13 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.IAttribute;
 
 public class Debuff {
 
 	public final String name;
 	protected int particle;
 	protected List<Ability> abilitiesAgainst;
-	protected AttributeModifier attributeModifier;
+	protected PairObject<IAttribute,AttributeModifier> attributeModifier;
 	
 	public final int number;
 	
@@ -23,6 +25,8 @@ public class Debuff {
 		this.number = num;
 		this.particle = -1;
 		this.abilitiesAgainst = new ArrayList();
+
+		this.attributeModifier = new PairObject(null,null);
 		Debuffs.debuffMap.put(num, this);
 	}
 	public String toString(){
@@ -48,13 +52,17 @@ public class Debuff {
 		return this;
 	}
 	
-	public Debuff setAttributeModifier(AttributeModifier par1){
-		this.attributeModifier = par1;
+	public Debuff setAttributeModifier(IAttribute ia,AttributeModifier par1){
+		this.attributeModifier = new PairObject(ia,par1);
 		return this;
 	}
 	
 	public AttributeModifier getAttributeModifier(){
-		return this.attributeModifier;
+		return this.attributeModifier.right;
+	}
+	
+	public IAttribute getAttributeType(){
+		return this.attributeModifier.left;
 	}
 	
 	public List<Ability> getAbilityAgainst(){

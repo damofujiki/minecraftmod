@@ -4,6 +4,7 @@ import java.util.List;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 import com.google.common.collect.Lists;
@@ -23,6 +24,7 @@ public class XYZPos {
 	public double dx;
 	public double dy;
 	public double dz;
+	protected boolean isBlockPos = false;
 	
 	public XYZPos(int par1,int par2,int par3){
 		x=par1;
@@ -31,6 +33,7 @@ public class XYZPos {
 		dx=(double)par1;
 		dy=(double)par2;
 		dz=(double)par3;
+		this.isBlockPos = true;
 	}
 	
 	public XYZPos(double par1,double par2,double par3){
@@ -40,16 +43,25 @@ public class XYZPos {
 		dx=par1;
 		dy=par2;
 		dz=par3;
+		this.isBlockPos = false;
 	}
 	@Override
 	public String toString(){
 		StringBuilder sb = new StringBuilder();
 		
-		sb.append(x).append(",").append(y).append(",").append(z);
+		if(this.isBlockPos){
+			sb.append(x).append(",").append(y).append(",").append(z);
+		}else{
+			sb.append(dx).append(",").append(dy).append(",").append(dz);
+		}
+		
 		return new String(sb);
 		
 	}
 	
+	public void setAsBlockPos(boolean par1){
+		this.isBlockPos = par1;
+	}
 	
 	public static XYZPos strapOff(String par1){
 		String[] str = par1.split(",");
@@ -64,6 +76,14 @@ public class XYZPos {
 		xyz.dx = en.posX;
 		xyz.dy = en.posY;
 		xyz.dz = en.posZ;
+		return xyz;
+	}
+	
+	public static XYZPos tileEntityPosToXYZ(TileEntity en){
+		XYZPos xyz = new XYZPos((int)en.xCoord,(int)en.yCoord,(int)en.zCoord);
+		xyz.dx = en.xCoord;
+		xyz.dy = en.yCoord;
+		xyz.dz = en.zCoord;
 		return xyz;
 	}
 	
@@ -104,6 +124,11 @@ public class XYZPos {
 	
 	public XYZPos add(XYZPos par2){
 		return new XYZPos(this.x + par2.x,this.y + par2.y,this.z + par2.z);
+	}
+	
+	public XYZPos addPos(int px,int py,int pz){
+		XYZPos newpos = this.add(new XYZPos(px,py,pz));
+		return newpos;
 	}
 	
 	//おもにデバグ用？

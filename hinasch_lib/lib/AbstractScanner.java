@@ -42,7 +42,7 @@ public abstract class AbstractScanner {
 					if(compareBlock.equalsOrSameBlock(roundBlockData)){
 						addList.add(addedPos);
 					}
-					if((compareBlock.blockObj instanceof BlockRedstoneOre) && (roundBlockData.blockObj instanceof BlockRedstoneOre)){
+					if((compareBlock.getBlockObject() instanceof BlockRedstoneOre) && (roundBlockData.getBlockObject() instanceof BlockRedstoneOre)){
 						addList.add(addedPos);
 					}
 

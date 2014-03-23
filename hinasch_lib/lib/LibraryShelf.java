@@ -103,12 +103,12 @@ public class LibraryShelf {
 		for(LibraryBook book:libSet){
 			if(book.getKey()==EnumSelector.ITEMSTACK){
 				if(book.isAllMetadata){
-					if(book.idmeta.isPresent() && is.getItem()==book.idmeta.get().itemObj){
+					if(book.idmeta.isPresent() && is.getItem()==book.idmeta.get().getItemObject()){
 						return book;
 					}
 				}else{
 					PairID pair = book.idmeta.isPresent() ? book.idmeta.get() : null;
-					if(pair!=null && is.getItem()==pair.itemObj && is.getItemDamage()==pair.metadata){
+					if(pair!=null && is.getItem()==pair.getItemObject() && is.getItemDamage()==pair.getMeta()){
 						return book;
 					}
 				}

@@ -2,6 +2,7 @@ package hinasch.mods.unlsaga.tileentity;
 
 
 
+import hinasch.lib.HSLibs;
 import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
@@ -19,7 +20,6 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
@@ -55,11 +55,11 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 
 
 		if(this.doChance(world.rand, 60)){
-			this.unlocked = false;
+			//this.unlocked = false;
 		}
 		if(this.doChance(world.rand, 40)){
-			this.magicLock = true;
-			this.unlocked = true;
+			//this.magicLock = true;
+			//this.unlocked = true;
 		}
 		this.initChestLevel(world);
 	}
@@ -153,20 +153,12 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 		if(doChance(this.worldObj.rand,40)){
 			switch(this.worldObj.rand.nextInt(3)+1){
 			case 1:
-				if(!this.worldObj.isRemote){
-					this.trapOccured = true;
-					float explv = ((float)this.level.get() * 0.06F);
-					explv = MathHelper.clamp_float(explv, 1.0F, 4.0F);
-					ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("msg.chest.burst"));
-					//ep.addChatMessage(Translation.localize("msg.chest.burst"));
-					this.worldObj.createExplosion(null, this.xCoord, this.yCoord, this.zCoord, 1.5F*explv, true);
-				}
+				this.occurTrapExplode(ep);
 				break;
 			case 2:
 
 				ep.addPotionEffect(new PotionEffect(Potion.poison.id,10*(this.level.get()/2+1),1));
 				ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("msg.chest.poison"));
-				//ep.addChatMessage(Translation.localize("msg.chest.poison"));
 				this.trapOccured = true;
 				break;
 			case 3:
@@ -174,7 +166,6 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 				damage = MathHelper.clamp_int(damage, 1, 10);
 				ep.attackEntityFrom(DamageSource.cactus, damage);
 				ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("msg.chest.needle"));
-				//ep.addChatMessage(Translation.localize("msg.chest.needle"));
 				this.trapOccured = true;
 				break;
 
@@ -182,6 +173,12 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 
 		}
 		this.trapOccured = true;
+
+		this.occurSlimeTrap();
+
+	}
+	
+	private void occurSlimeTrap(){
 		Entity var13 = null;
 		if(doChance(this.worldObj.rand,40)){
 			var13 = new EntityTreasureSlime(this.worldObj,this.level.get());
@@ -206,8 +203,19 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 
 
 		}
-
 	}
+
+	private void occurTrapExplode(EntityPlayer ep){
+		if(!this.worldObj.isRemote){
+			this.trapOccured = true;
+			float explv = ((float)this.level.get() * 0.06F);
+			explv = MathHelper.clamp_float(explv, 1.0F, 4.0F);
+			ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("msg.chest.burst"));
+			//ep.addChatMessage(Translation.localize("msg.chest.burst"));
+			this.worldObj.createExplosion(null, this.xCoord, this.yCoord, this.zCoord, 1.5F*explv, true);
+		}
+	}
+	
 
 	public void tryDefuse(EntityPlayer ep) {
 		//		if(ItemAccessory.hasAbility(ep, 9)){
@@ -227,17 +235,17 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 		if(!this.hasItemSet){
 			HelperChestUnsaga hc = new HelperChestUnsaga(this.level.get());
 			WeightedRandomChestContent[] chestcontent = hc.getChestContentsUnsaga();
-			if(chestcontent!=null){
-				HelperChestUnsaga.generateChestContents(random, chestcontent, this, random.nextInt(5)+1);
-			}
-
-			for(int i=0;i<this.getSizeInventory();i++){
-				if(this.getStackInSlot(i)!=null){
-					ItemStack is = this.getStackInSlot(i);
-					is.stackSize = 1;
-					this.setInventorySlotContents(i, is);
-				}
-			}
+//			if(chestcontent!=null){
+//				HelperChestUnsaga.generateChestContents(random, chestcontent, this, random.nextInt(5)+1);
+//			}
+//
+//			for(int i=0;i<this.getSizeInventory();i++){
+//				if(this.getStackInSlot(i)!=null){
+//					ItemStack is = this.getStackInSlot(i);
+//					is.stackSize = 1;
+//					this.setInventorySlotContents(i, is);
+//				}
+//			}
 
 			this.hasItemSet = true;
 		}
@@ -245,31 +253,34 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 
 	public void reductionChestContent(Random random){
 
-		if(this!=null){
-			for(int i=0;i<this.getSizeInventory();i++){
-				ItemStack var1 = this.getStackInSlot(i);
-				if(var1!=null){
-					if(random.nextInt(5)==0){
-						this.setInventorySlotContents(i, null);
-					}
-				}
-			}
-		}
+		int lv = this.getChestLevel() / 2;
+		lv = MathHelper.clamp_int(lv, 0, 100);
+		this.setChestLevel(lv);
+//		if(this!=null){
+//			for(int i=0;i<this.getSizeInventory();i++){
+//				ItemStack var1 = this.getStackInSlot(i);
+//				if(var1!=null){
+//					if(random.nextInt(5)==0){
+//						this.setInventorySlotContents(i, null);
+//					}
+//				}
+//			}
+//		}
 		return;
 	}
 
 	public void reductionChestContent(Random random,int par1){
 
-		if(this!=null){
-			for(int i=0;i<this.getSizeInventory();i++){
-				ItemStack var1 = this.getStackInSlot(i);
-				if(var1!=null){
-					if(random.nextInt(par1)==0){
-						this.setInventorySlotContents(i, null);
-					}
-				}
-			}
-		}
+    	HelperChestUnsaga hc = new HelperChestUnsaga(this.getChestLevel());
+    	ItemStack is = hc.getChestItem(random);
+    	if(!this.worldObj.isRemote){
+    		if(is!=null){
+    			HSLibs.dropItem(this.worldObj, is, xCoord, yCoord, zCoord);
+    		}else{
+    			//ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("msg.chest.empty"));
+    		}
+    		this.worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+    	}
 		return;
 	}
 
@@ -338,7 +349,6 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 			int lv =0;
 			if(this.worldObj.rand.nextInt(100)<=50+(10*div)){
 				ChatMessageHandler.sendChatToPlayer(openPlayer, Translation.localize("msg.chest.divination.succeeded"));
-				//openPlayer.addChatMessage(Translation.localize("msg.chest.divination.succeeded"));
 				lv = this.level.get() + worldObj.rand.nextInt(7)+1;
 
 				
@@ -346,11 +356,9 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 				
 				if(this.worldObj.rand.nextInt(10)<=2){
 					ChatMessageHandler.sendChatToPlayer(openPlayer, Translation.localize("msg.chest.divination.catastrophe"));
-					//openPlayer.addChatMessage(Translation.localize("msg.chest.divination.catastrophe"));
 					lv = 2;
 				}else{
 					ChatMessageHandler.sendChatToPlayer(openPlayer, Translation.localize("msg.chest.divination.failed"));
-					//openPlayer.addChatMessage(Translation.localize("msg.chest.divination.failed"));
 					lv = this.level.get() - worldObj.rand.nextInt(7)+1;
 				}
 
@@ -360,11 +368,9 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 			String str = Translation.localize("msg.chest.divination.levelis");
 			String formatted = String.format(str, this.level.get());
 			ChatMessageHandler.sendChatToPlayer(openPlayer, Translation.localize(formatted));
-			//openPlayer.addChatMessage(formatted);
 			XYZPos xyz = new XYZPos(this.xCoord,this.yCoord,this.zCoord);
 			PacketParticle pp = new PacketParticle(xyz,5,3);
 			Unsaga.packetPipeline.sendTo(pp, (EntityPlayerMP) openPlayer);
-			//PacketDispatcher.sendPacketToPlayer(PacketHandler.getParticleToPosPacket(xyz,5,3), (Player) openPlayer);
 		}
 		
 	}
@@ -373,23 +379,36 @@ public class TileEntityChestUnsaga extends TileEntityChest{
 		return this.level.get();
 	}
 	
-    public boolean chestFunc(EntityPlayer ep)
+    public boolean openChest(EntityPlayer ep)
     {
+    	this.openInventory();
+    	HelperChestUnsaga hc = new HelperChestUnsaga(this.getChestLevel());
+    	ItemStack is = hc.getChestItem(this.worldObj.rand);
+    	if(!this.worldObj.isRemote){
+    		if(is!=null){
+    			HSLibs.dropItem(this.worldObj, is, xCoord, yCoord, zCoord);
+    		}else{
+    			ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("msg.chest.empty"));
+    		}
+    		//this.worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+    	}
     	
-        if (this.worldObj.isRemote)
-        {
-            return true;
-        }
-        else
-        {
-            IInventory iinventory = this;
-            if (iinventory != null)
-            {
-                ep.displayGUIChest(iinventory);
-            }
-
-            return true;
-        }
+//        if (this.worldObj.isRemote)
+//        {
+//            return true;
+//        }
+//        else
+//        {
+//            IInventory iinventory = this;
+//            if (iinventory != null)
+//            {
+//                ep.displayGUIChest(iinventory);
+//            }
+//
+//            return true;
+//        }
+    	return true;
     }
+
 
 }

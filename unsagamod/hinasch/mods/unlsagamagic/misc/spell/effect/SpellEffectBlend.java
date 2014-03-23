@@ -17,6 +17,10 @@ import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateRandomThrow;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.misc.util.ChatUtil;
 import hinasch.mods.unlsaga.misc.util.LockOnHelper;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockChest;
 import net.minecraft.entity.EntityLivingBase;
@@ -114,9 +118,16 @@ public class SpellEffectBlend {
 	}
 	public class SpellIceNine extends SpellBase{
 
+		protected Map<Block,Block> blockTransformMap = new HashMap();
+		
 		public SpellIceNine() {
 			super();
-			// TODO 自動生成されたコンストラクター・スタブ
+			this.blockTransformMap.put(Blocks.water, Blocks.ice);
+			this.blockTransformMap.put(Blocks.flowing_water, Blocks.ice);
+			this.blockTransformMap.put(Blocks.lava, Blocks.obsidian);
+			this.blockTransformMap.put(Blocks.flowing_lava, Blocks.cobblestone);
+			this.blockTransformMap.put(Blocks.fire, Blocks.air);
+			
 		}
 
 		@Override
@@ -131,31 +142,22 @@ public class SpellEffectBlend {
 			scan.setWorld(parent.world);
 
 			for(;scan.hasNext();scan.next()){
-				if((scan.sy>0)){
-					if(scan.getBlock()==Blocks.water ||scan.getBlock()==Blocks.flowing_water ){
-						scan.setBlockHere(Blocks.ice,0,2);
-					}
-					if(scan.getBlock()==Blocks.flowing_lava){
-						scan.setBlockHere(Blocks.cobblestone);
-					}
-					if(scan.getBlock()==Blocks.lava){
-						scan.setBlockHere(Blocks.obsidian);
-					}
-					if(scan.getBlock()==Blocks.fire){
-						scan.setBlockHere(Blocks.air);
+				if(scan.isValidHeight() && !scan.world.isRemote){
+					if(this.blockTransformMap.containsKey(scan.getBlock())){
+						Block blockTransformTo = this.blockTransformMap.get(scan.getBlock());
+						scan.setBlockHere(blockTransformTo);
 					}
 
 					if(scan.isOpaqueBlock() && scan.isAirBlockUp() && !scan.isPlayerPos()){
 						System.out.println("true");
 						
-						this.worldHelper.setBlock(scan.getAsXYZPos().add(WorldHelper.UP), new PairID(Blocks.snow,0));
+						this.worldHelper.setBlock(scan.getAsXYZPos().add(WorldHelper.UP), new PairID(Blocks.snow_layer,0));
 						//parent.world.setBlock(scan.sx, scan.sy+1, scan.sz, Blocks.snow,0,2);
 					}
-					if(scan.getBlock()==Blocks.snow && !scan.isPlayerPos()){
+					if(scan.getBlock()==Blocks.snow_layer && !scan.isPlayerPos()){
 						int meta = scan.getMetadata();
-						if(meta<15){
-							this.worldHelper.setBlockMetadata(scan.getAsXYZPos(), meta+1, 3);
-							//parent.world.setBlockMetadataWithNotify(scan.sx, scan.sy, scan.sz, meta+1, 2);
+						if(meta<=15){
+							this.worldHelper.addBlockMetadata(scan.getAsXYZPos(), 3);
 						}
 					}
 
@@ -177,7 +179,7 @@ public class SpellEffectBlend {
 		public void hookHealing(InvokeSpell parent, EntityLivingBase target) {
 			for(Potion potion:Potion.potionTypes){
 				if(potion!=null){
-					if(potion.isBadEffect()){
+					if(potion.isBadEffect() && target.isPotionActive(potion.id)){
 						target.removePotionEffect(potion.id);
 					}
 				}
@@ -256,15 +258,17 @@ public class SpellEffectBlend {
 			ScanHelper scan = new ScanHelper(parent.invoker,range,range);
 			scan.setWorld(parent.world);
 			for(;scan.hasNext();scan.next()){
-				if(scan.sy>0 && scan.sy<255){
+				if(scan.isValidHeight()){
 					if(!scan.isAirBlock() && scan.getBlock()!=null){
 						Block block = scan.getBlock();
 						if(block instanceof BlockChest || block instanceof BlockChestUnsaga){
 							Unsaga.debug("発見");
+							XYZPos distance_pos = scan.getAsXYZPos().subtract(XYZPos.entityPosToXYZ(parent.invoker));
+							distance_pos.setAsBlockPos(true);
 							Vec3 vec = Vec3.createVectorHelper((int)scan.sx, (int)scan.sy, (int)scan.sz);
 							Vec3 vec2 = parent.invoker.getPosition(1.0F);
-							int distance = (int) (vec2.distanceTo(vec));
-							ChatUtil.addMessageNoLocalized(parent.invoker, "Detect Chest:"+distance+"m");
+							//int distance = (int) (vec2.distanceTo(vec));
+							ChatUtil.addMessageNoLocalized(parent.invoker, "Detect Chest:"+distance_pos.toString());
 							found = true;
 						}
 

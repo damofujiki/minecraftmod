@@ -2,6 +2,7 @@ package hinasch.lib;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.world.World;
 
 public class WorldHelper {
@@ -14,7 +15,10 @@ public class WorldHelper {
 	}
 	
 	public void setBlock(XYZPos pos,PairID pairid){
-		world.setBlock(pos.x, pos.y, pos.z, pairid.blockObj, pairid.metadata, 3);
+		if(pairid.getBlockObject()!=null){
+			world.setBlock(pos.x, pos.y, pos.z, pairid.getBlockObject(), pairid.getMeta(), 3);
+		}
+		
 	}
 	
 	public void setBlockToAir(XYZPos pos){
@@ -53,6 +57,13 @@ public class WorldHelper {
 	public void setBlockMetadata(XYZPos pos,int meta,int flag){
 		this.world.setBlockMetadataWithNotify(pos.x, pos.y, pos.z, meta, flag);
 	}
+	
+	public void addBlockMetadata(XYZPos pos,int flag){
+		int meta = this.getBlockMetadata(pos);
+		if(meta<=0 && meta>=15){
+			this.setBlockMetadata(pos, meta+1, flag);
+		}
+	}
 	public XYZPos findNearMaterial(World world,Material material,XYZPos pos,int range){
 		ScanHelper scan = new ScanHelper(pos.x,pos.y,pos.z,range,range);
 		scan.setWorld(world);
@@ -73,5 +84,13 @@ public class WorldHelper {
 			}
 		}
 		return null;
+	}
+	
+	public TileEntity getTileEntity(XYZPos pos){
+		return this.world.getTileEntity(pos.x, pos.y, pos.z);
+	}
+	
+	public boolean isReplaceable(XYZPos pos){
+		return this.getBlock(pos).isReplaceable(world, pos.x, pos.y, pos.z);
 	}
 }

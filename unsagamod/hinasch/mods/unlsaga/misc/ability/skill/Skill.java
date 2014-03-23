@@ -2,6 +2,7 @@ package hinasch.mods.unlsaga.misc.ability.skill;
 
 import hinasch.mods.unlsaga.misc.ability.Ability;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillBase;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillMelee;
 import hinasch.mods.unlsaga.misc.util.DamageHelper;
 
 public class Skill extends Ability{
@@ -24,6 +25,9 @@ public class Skill extends Ability{
 	
 	public Skill setSkillEffect(SkillBase par1){
 		this.effect = par1;
+		if(par1 instanceof SkillMelee){
+			((SkillMelee) par1).associateWithSkill(this);
+		}
 		return this;
 	}
 	

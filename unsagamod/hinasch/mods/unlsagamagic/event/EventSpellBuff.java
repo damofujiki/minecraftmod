@@ -6,6 +6,10 @@ import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.util.DamageHelper;
 import hinasch.mods.unlsaga.misc.util.DamageSourceUnsaga;
 import hinasch.mods.unlsaga.network.packet.PacketSound;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityBlaze;
 import net.minecraft.entity.monster.EntityMagmaCube;
@@ -16,11 +20,12 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class EventSpellBuff {
 
+	public static Set<BuffShield> shieldSet = new HashSet();
 	protected PacketSound ps;
 	protected BuffShield shieldMissileGuard = new BuffShieldMissileGuard(Debuffs.missuileGuard,true,EnumElement.WOOD);
 	protected BuffShield shieldLeaves = new BuffShieldLeavesShield(Debuffs.leavesShield,false,EnumElement.WOOD);
 	protected BuffShield shieldWater = new BuffShieldWaterShield(Debuffs.waterShield,false,EnumElement.WATER);
-	
+	protected BuffShield shieldAegis = new BuffShieldAegis(Debuffs.aegisShield,false,EnumElement.EARTH);
 	public class BuffShieldMissileGuard extends BuffShield{
 
 		public BuffShieldMissileGuard(Buff parent, boolean isGuardAll,
@@ -46,6 +51,23 @@ public class EventSpellBuff {
 
 		
 	}
+	public class BuffShieldAegis extends BuffShield{
+
+		public BuffShieldAegis(Buff parent, boolean isGuardAll,
+				EnumElement element) {
+			super(parent, isGuardAll, element);
+			// TODO 自動生成されたコンストラクター・スタブ
+		}
+
+		@Override
+		public boolean isEffective(LivingHurtEvent e) {
+			if(!e.source.isUnblockable()){
+				return true;
+			}
+			return false;
+		}
+		
+	}
 	
 	public class BuffShieldLeavesShield extends BuffShield{
 
@@ -57,7 +79,7 @@ public class EventSpellBuff {
 
 		@Override
 		public boolean isEffective(LivingHurtEvent e) {
-			if(e.source.getEntity() instanceof EntityLivingBase){
+			if(e.source.getEntity() instanceof EntityLivingBase && !e.source.isMagicDamage() && !e.source.isUnblockable()){
 				return true;
 			}
 			return false;
@@ -95,10 +117,10 @@ public class EventSpellBuff {
 	@SubscribeEvent
 	public void onPlayerHurtDebuff(LivingHurtEvent e){
 		
-		
-		shieldLeaves.doGuard(e);
-		shieldMissileGuard.doGuard(e);
-		shieldWater.doGuard(e);
+		for(BuffShield shield:shieldSet){
+			shield.doGuard(e);
+		}
+
 		
 //		if(e.source.getSourceOfDamage() instanceof EntityArrow){
 //			EntityLivingBase el = (EntityLivingBase)e.entityLiving;

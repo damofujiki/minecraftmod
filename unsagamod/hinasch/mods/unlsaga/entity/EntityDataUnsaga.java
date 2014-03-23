@@ -4,9 +4,9 @@ import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaConfigs;
 import hinasch.mods.unlsaga.entity.projectile.EntityArrowUnsaga;
 import hinasch.mods.unlsaga.entity.projectile.EntityBarrett;
-import hinasch.mods.unlsaga.entity.projectile.EntityBoulder;
-import hinasch.mods.unlsaga.entity.projectile.EntityFireArrow;
-import hinasch.mods.unlsaga.entity.projectile.EntityFlyingAxe;
+import hinasch.mods.unlsaga.entity.projectile.EntityBoulderNew;
+import hinasch.mods.unlsaga.entity.projectile.EntityFireArrowNew;
+import hinasch.mods.unlsaga.entity.projectile.EntityFlyingAxeNew;
 import hinasch.mods.unlsaga.entity.projectile.EntitySolutionLiquid;
 
 import java.util.ArrayList;
@@ -42,9 +42,9 @@ public class EntityDataUnsaga {
 		EntityRegistry.registerModEntity(EntityArrowUnsaga.class, arrow.name, arrow.id, Unsaga.instance, 250, 5, true);
 		EntityRegistry.registerModEntity(EntityBarrett.class,barrett.name, barrett.id, Unsaga.instance, 250, 5, true);
 		//fireball 3
-		EntityRegistry.registerModEntity(EntityBoulder.class, boulder.name, boulder.id, Unsaga.instance, 250, 6, true);
-		EntityRegistry.registerModEntity(EntityFireArrow.class, fireArrow.name, fireArrow.id, Unsaga.instance, 250, 6, true);
-		EntityRegistry.registerModEntity(EntityFlyingAxe.class, flyingAxe.name, flyingAxe.id, Unsaga.instance, 250, 5, true);
+		EntityRegistry.registerModEntity(EntityBoulderNew.class, boulder.name, boulder.id, Unsaga.instance, 250, 6, true);
+		EntityRegistry.registerModEntity(EntityFireArrowNew.class, fireArrow.name, fireArrow.id, Unsaga.instance, 250, 6, true);
+		EntityRegistry.registerModEntity(EntityFlyingAxeNew.class, flyingAxe.name, flyingAxe.id, Unsaga.instance, 250, 5, true);
 		EntityRegistry.registerModEntity(EntityTreasureSlime.class, treasureSlime.name, treasureSlime.id, Unsaga.instance, 250, 5, true);
 		EntityRegistry.registerModEntity(EntityGolemUnsaga.class, golem.name, golem.id, Unsaga.instance, 250, 5, true);
 		EntityRegistry.registerModEntity(EntitySolutionLiquid.class, solutionLiquid.name, solutionLiquid.id, Unsaga.instance, 250, 6, true);

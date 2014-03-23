@@ -1,11 +1,13 @@
 package hinasch.mods.unlsaga.core.init;
 
+import hinasch.lib.FileObject;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.item.armor.ItemAccessory;
 import hinasch.mods.unlsaga.item.armor.ItemArmorUnsaga;
 import hinasch.mods.unlsaga.item.etc.ItemBarrett;
 import hinasch.mods.unlsaga.item.etc.ItemIngotsUnsaga;
+import hinasch.mods.unlsaga.item.tool.ItemPickaxeUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemAxeUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemBowUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemGunUnsaga;
@@ -83,6 +85,7 @@ public class UnsagaItems {
 	protected static Item[] itemAccessories = new Item[50];
 	protected static Item[] itemArmors = new Item[80];
 	protected static Item[] itemBows = new Item[30];
+	protected static Item[] itemPickaxes = new Item[30];
 
 	protected static ArrayList<String> keyExcept;
 
@@ -118,17 +121,17 @@ public class UnsagaItems {
 		//FileObject file = new FileObject("i:\\test.txt");
 		//file.openForOutput();
 		swordInitializer = new UnsagaToolInitializer();
-		swordInitializer.setNoParticles(Sets.newHashSet(UnsagaMaterials.stone,UnsagaMaterials.wood));
-		swordInitializer.setNoUseParentNames(Sets.newHashSet(UnsagaMaterials.metals));
-		swordInitializer.setHooter("en_US", "Sword").setHooter("ja_JP", "剣");
+//		swordInitializer.setNoParticles(Sets.newHashSet(UnsagaMaterials.stone,UnsagaMaterials.wood));
+//		swordInitializer.setNoUseParentNames(Sets.newHashSet(UnsagaMaterials.metals));
+//		swordInitializer.setHooter("en_US", "Sword").setHooter("ja_JP", "剣");
 		swordInitializer.setAvailableMaterial(UnsagaMaterials.ItemInitData.getAvailableSet(EnumUnsagaTools.SWORD));
 		swordInitializer.register(itemSwords, ItemSwordUnsaga.class, "sword");
 
 		
 		axeInitializer = new UnsagaToolInitializer();
-		axeInitializer.setHooter("en_US", "Axe").setHooter("ja_JP", "斧");
-		axeInitializer.setNoParticles(Sets.newHashSet(UnsagaMaterials.bone,UnsagaMaterials.stone));
-		axeInitializer.setNoUseParentNames(Sets.newHashSet(UnsagaMaterials.metals));
+//		axeInitializer.setHooter("en_US", "Axe").setHooter("ja_JP", "斧");
+//		axeInitializer.setNoParticles(Sets.newHashSet(UnsagaMaterials.bone,UnsagaMaterials.stone));
+//		axeInitializer.setNoUseParentNames(Sets.newHashSet(UnsagaMaterials.metals));
 		axeInitializer.setAvailableMaterial(UnsagaMaterials.ItemInitData.getAvailableSet(EnumUnsagaTools.AXE));
 		axeInitializer.register(itemAxes, ItemAxeUnsaga.class, "axe");
 		
@@ -185,6 +188,13 @@ public class UnsagaItems {
 		acsInitializer.setHooter("en_US", "Ring").setHooter("ja_JP", "腕輪");
 		acsInitializer.setAvailableMaterial(UnsagaMaterials.ItemInitData.getAvailableSet(EnumUnsagaTools.ACCESSORY));
 		acsInitializer.register(itemAccessories, ItemAccessory.class, "acs");
+		
+		FileObject fo = new FileObject("i:\\test.txt");
+		fo.openForOutput();
+		pickaxeInitializer = new UnsagaToolInitializer(fo);
+		pickaxeInitializer.setAvailableMaterial(UnsagaMaterials.ItemInitData.getAvailableSet(EnumUnsagaTools.STAFF));
+		pickaxeInitializer.register(itemPickaxes, ItemPickaxeUnsaga.class, "pickaxe");
+		fo.close();
 			
 		itemMaterials = new ItemIngotsUnsaga().setUnlocalizedName("unsaga.ingots").setCreativeTab(Unsaga.tabUnsaga);
 		GameRegistry.registerItem(itemMaterials, "nofuncitem",Unsaga.modid);

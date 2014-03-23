@@ -5,23 +5,21 @@ import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
-import hinasch.mods.unlsaga.entity.projectile.EntityFlyingAxe;
+import hinasch.mods.unlsaga.entity.projectile.EntityFlyingAxeNew;
 import hinasch.mods.unlsaga.item.weapon.base.ItemAxeBase;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillAxe;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillMelee;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingState;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateFlyingAxe;
-import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateTarget;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
 import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
-import hinasch.mods.unlsaga.misc.util.LockOnHelper;
-import hinasch.mods.unlsaga.network.packet.PacketSkill;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
@@ -68,32 +66,38 @@ public class ItemAxeUnsaga extends ItemAxeBase{
 			Unsaga.debug("トマホーク覚えてる");
 			par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
 		}
-
-
-		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.skyDrive, par1ItemStack) && !par3EntityPlayer.onGround
-				&& !LivingDebuff.isCooling(par3EntityPlayer)){
-			if(!LivingDebuff.hasDebuff(par3EntityPlayer, Debuffs.flyingAxe)){
-				this.setReadyToSkyDrive(par3EntityPlayer);
-			}
-			if(LivingDebuff.hasDebuff(par3EntityPlayer, Debuffs.flyingAxe) && par3EntityPlayer.isSneaking()){
-				LockOnHelper.searchEntityNear(par3EntityPlayer, Debuffs.weaponTarget);
-				ItemStack copyaxe = par1ItemStack.copy();
-				InvokeSkill helper = new InvokeSkill(par2World,par3EntityPlayer,AbilityRegistry.skyDrive,copyaxe);
-				EntityLivingBase target = null;
-				
-				if(LivingDebuff.getLivingDebuff(par3EntityPlayer, Debuffs.weaponTarget).isPresent()){
-					LivingStateTarget state = (LivingStateTarget)LivingDebuff.getLivingDebuff(par3EntityPlayer, Debuffs.weaponTarget).get();
-					target = (EntityLivingBase) par2World.getEntityByID(state.targetid);
-				}
-				if(target!=null){
-					helper.setTarget(target);
-				}
-				--par1ItemStack.stackSize;
+		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.RIGHTCLICK, par1ItemStack, par3EntityPlayer, par2World, XYZPos.entityPosToXYZ(par3EntityPlayer));
+		if(pickedSkillEffect!=null){
+			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer, pickedSkillEffect.getSkill(), par1ItemStack);
+			if(helper!=null){
 				helper.doSkill();
 			}
-
-
 		}
+
+//		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.skyDrive, par1ItemStack) && !par3EntityPlayer.onGround
+//				&& !LivingDebuff.isCooling(par3EntityPlayer)){
+//			if(!LivingDebuff.hasDebuff(par3EntityPlayer, Debuffs.flyingAxe)){
+//				this.setReadyToSkyDrive(par3EntityPlayer);
+//			}
+//			if(LivingDebuff.hasDebuff(par3EntityPlayer, Debuffs.flyingAxe) && par3EntityPlayer.isSneaking()){
+//				LockOnHelper.searchEntityNear(par3EntityPlayer, Debuffs.weaponTarget);
+//				ItemStack copyaxe = par1ItemStack.copy();
+//				InvokeSkill helper = new InvokeSkill(par2World,par3EntityPlayer,AbilityRegistry.skyDrive,copyaxe);
+//				EntityLivingBase target = null;
+//				
+//				if(LivingDebuff.getLivingDebuff(par3EntityPlayer, Debuffs.weaponTarget).isPresent()){
+//					LivingStateTarget state = (LivingStateTarget)LivingDebuff.getLivingDebuff(par3EntityPlayer, Debuffs.weaponTarget).get();
+//					target = (EntityLivingBase) par2World.getEntityByID(state.targetid);
+//				}
+//				if(target!=null){
+//					helper.setTarget(target);
+//				}
+//				--par1ItemStack.stackSize;
+//				helper.doSkill();
+//			}
+//
+//
+//		}
 
 
 		return par1ItemStack;
@@ -106,21 +110,75 @@ public class ItemAxeUnsaga extends ItemAxeBase{
 			return false;
 		}
 
-		if(par2EntityPlayer.isSneaking() && HelperAbility.hasAbilityFromItemStack(AbilityRegistry.woodChopper, par1ItemStack)){
-			par2EntityPlayer.swingItem();
-			InvokeSkill helper = new InvokeSkill(par3World,par2EntityPlayer,AbilityRegistry.woodChopper,par1ItemStack);
+//		HelperAbility abHelper  = new HelperAbility(par1ItemStack, par2EntityPlayer);
+//		SkillMelee pickedSkillEffect = null;
+//		if(abHelper.getGainedAbilities().isPresent()){
+//			for(Ability ability:abHelper.getGainedAbilities().get()){
+//				if(ability instanceof Skill){
+//					Skill skill = (Skill)ability;
+//					if(skill.getSkillEffect() instanceof SkillMelee){
+//						SkillMelee effect = (SkillMelee) skill.getSkillEffect();
+//						if(effect.getType()==SkillMelee.Type.USE && effect.canInvoke(par3World, par2EntityPlayer, par1ItemStack, new XYZPos(par4,par5,par6))){
+//							pickedSkillEffect = effect;
+//						}
+//					}
+//					
+//					
+//				}
+//			}
+//		}
+		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.USE, par1ItemStack, par2EntityPlayer, par3World, new XYZPos(par4,par5,par6));
+		if(pickedSkillEffect!=null){
+			InvokeSkill helper = new InvokeSkill(par3World, par2EntityPlayer, pickedSkillEffect.getSkill(), par1ItemStack);
 			helper.setUsePoint(new XYZPos(par4,par5,par6));
-			helper.doSkill();
-
-
+			if(helper!=null){
+				helper.doSkill();
+			}
 		}
+//		InvokeSkill helper = null;
+//		boolean requirePrepare = false;
+//		Set<SkillMelee> skillHashSet = new HashSet(SkillAxe.skillAxeSet);
+//		SkillMelee pickedSkill = null;
+//		for(SkillMelee skillMelee:skillHashSet){
+//			Unsaga.debug("Skill Melee:"+skillMelee.getSkill()+" Client:"+par3World.isRemote);
+//			
+//			if(skillMelee!=null && skillMelee.getType()==SkillMelee.Type.USE && skillMelee.canInvoke(par3World, par2EntityPlayer, par1ItemStack, new XYZPos(par4,par5,par6))){
+//
+//				pickedSkill = skillMelee;
+//				
+//			}
+//		}
+//		Unsaga.debug(pickedSkill);
+//		Unsaga.debug(pickedSkill.getSkill());
+//		if(pickedSkill!=null){
+//			helper = new InvokeSkill(par3World,par2EntityPlayer,pickedSkill.getSkill(),par1ItemStack);
+//
+//			if(helper!=null){
+//				helper.setUsePoint(new XYZPos(par4,par5,par6));
+//				if(pickedSkill.isRequirePrepare()){
+//					helper.prepareSkill();
+//				}else{
+//					helper.doSkill();
+//				}
+//			}
+//		}
+
 		
-		if(par2EntityPlayer.isSneaking() && !par2EntityPlayer.onGround && HelperAbility.hasAbilityFromItemStack(AbilityRegistry.woodBreakerPhoenix, par1ItemStack)){
-			par2EntityPlayer.swingItem();
-			PacketSkill ps = new PacketSkill(PacketSkill.PACKETID.WOODBREAKER,new XYZPos(par4,par5,par6));
-			Unsaga.packetPipeline.sendToServer(ps);
-			
-		}
+//		if(par2EntityPlayer.isSneaking() && HelperAbility.hasAbilityFromItemStack(AbilityRegistry.woodChopper, par1ItemStack)){
+//			par2EntityPlayer.swingItem();
+//			InvokeSkill helper = new InvokeSkill(par3World,par2EntityPlayer,AbilityRegistry.woodChopper,par1ItemStack);
+//			helper.setUsePoint(new XYZPos(par4,par5,par6));
+//			helper.doSkill();
+//
+//
+//		}
+//		
+//		if(par2EntityPlayer.isSneaking() && !par2EntityPlayer.onGround && HelperAbility.hasAbilityFromItemStack(AbilityRegistry.woodBreakerPhoenix, par1ItemStack)){
+//			par2EntityPlayer.swingItem();
+//			PacketSkill ps = new PacketSkill(PacketSkill.PACKETID.WOODBREAKER,new XYZPos(par4,par5,par6));
+//			Unsaga.packetPipeline.sendToServer(ps);
+//			
+//		}
 
 
 		return false;
@@ -129,15 +187,29 @@ public class ItemAxeUnsaga extends ItemAxeBase{
 	public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
 	{
 		//HelperSkill helper = new HelperSkill(stack,player);
-		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.fujiView, stack) && player.isSneaking() && !LivingDebuff.hasDebuff(player, Debuffs.cooling)){
-			SkillAxe fujiView = new SkillAxe();
-			if(!player.worldObj.isRemote && entity instanceof EntityLivingBase){
-				InvokeSkill helper = new InvokeSkill(player.worldObj,player,AbilityRegistry.fujiView,stack);
-				helper.setTarget((EntityLivingBase) entity);
-				helper.doSkill();
+//		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.fujiView, stack) && player.isSneaking() && !LivingDebuff.hasDebuff(player, Debuffs.cooling)){
+//			SkillAxe fujiView = new SkillAxe();
+//			if(!player.worldObj.isRemote && entity instanceof EntityLivingBase){
+//				InvokeSkill helper = new InvokeSkill(player.worldObj,player,AbilityRegistry.fujiView,stack);
+//				helper.setTarget((EntityLivingBase) entity);
+//				helper.doSkill();
+//			}
+//
+//
+//		}
+		
+		
+		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.ENTITY_LEFTCLICK, stack, player, player.worldObj, XYZPos.entityPosToXYZ(player));
+		if(pickedSkillEffect!=null && entity instanceof EntityLivingBase){
+			InvokeSkill helper = new InvokeSkill(player.worldObj, player, pickedSkillEffect.getSkill(), stack);
+			helper.setTarget((EntityLivingBase) entity);
+			if(helper!=null){
+				if(pickedSkillEffect.isRequirePrepare()){
+					helper.prepareSkill();
+				}else{
+					helper.doSkill();
+				}
 			}
-
-
 		}
 		return false;
 	}
@@ -165,8 +237,8 @@ public class ItemAxeUnsaga extends ItemAxeBase{
 			}
 
 			par1ItemStack.damageItem(AbilityRegistry.tomahawk.damageWeapon, par3EntityPlayer);
-			EntityFlyingAxe entityflyingaxe = new EntityFlyingAxe(par2World, par3EntityPlayer, f*1.1F,par1ItemStack,false);
-			entityflyingaxe.setDamage(this.unsMaterial.getToolMaterial().getDamageVsEntity());
+			EntityFlyingAxeNew entityflyingaxe = new EntityFlyingAxeNew(par2World, par3EntityPlayer, f*1.0F,par1ItemStack,false);
+			entityflyingaxe.setDamage((float) par3EntityPlayer.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue());
 
 			par2World.playSoundAtEntity(par3EntityPlayer, "random.bow", 1.0F, 1.0F / (itemRand.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
 
@@ -174,8 +246,9 @@ public class ItemAxeUnsaga extends ItemAxeBase{
 
 			if (!par2World.isRemote)
 			{
-				par2World.spawnEntityInWorld(entityflyingaxe);
-				if(entityflyingaxe.getEntityItem()!=null){
+				
+				if(entityflyingaxe.getAxeItemStack()!=null){
+					par2World.spawnEntityInWorld(entityflyingaxe);
 					ItemStack aitemstack = null;
 					par3EntityPlayer.inventory.mainInventory[par3EntityPlayer.inventory.currentItem] = aitemstack;
 				}

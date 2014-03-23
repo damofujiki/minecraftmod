@@ -45,13 +45,20 @@ public class SkillSpear extends SkillEffect{
 	}
 	public static SkillSpear INSTANCE;
 
-	public final SkillBase aiming = new SkillAiming();
-	public final SkillBase acupuncture = new SkillAcupuncture();
-	public final SkillBase swing = new SkillSwing(5.0D,1.0D);
-	public final SkillBase grassHopper = new SkillGrassHopper(3.0D);
+	public final SkillBase aiming = new SkillAiming(SkillMelee.Type.STOPPED_USING).setRequireSneak(false);
+	public final SkillBase acupuncture = new SkillAcupuncture(SkillMelee.Type.STOPPED_USING).setRequireSneak(false);
+	public final SkillBase swing = new SkillSwing(SkillMelee.Type.RIGHTCLICK,5.0D,1.0D);
+	public final SkillBase grassHopper = new SkillGrassHopper(SkillMelee.Type.USE,3.0D);
 
 
-	public class SkillAiming extends SkillBase{
+	public class SkillAiming extends SkillMelee{
+
+		public SkillAiming(Type type) {
+			super(type);
+			
+		}
+
+
 
 		protected int chargeTime = 0;
 		@Override
@@ -87,10 +94,12 @@ public class SkillSpear extends SkillEffect{
 
 	public class SkillAcupuncture extends SkillAiming{
 
-		public SkillAcupuncture(){
-			super();
+
+		public SkillAcupuncture(Type type) {
+			super(type);
 			this.chargeTime = 30;
 		}
+
 		@Override
 		public void hookOnAimingHit(InvokeSkill parent,Entity hitent){
 			for (int i = 0; i < 32; ++i)
@@ -209,8 +218,8 @@ public class SkillSpear extends SkillEffect{
 
 	public class SkillSwing extends SkillRangedAttack{
 
-		public SkillSwing(double horizontal, double vertical) {
-			super(horizontal, vertical);
+		public SkillSwing(SkillMelee.Type type,double horizontal, double vertical) {
+			super(type,horizontal, vertical);
 			this.onGroundOnly = false;
 		}
 
@@ -229,8 +238,8 @@ public class SkillSpear extends SkillEffect{
 		List<Block> idslist = Arrays.asList(Blocks.tallgrass,Blocks.double_plant,Blocks.deadbush,Blocks.fire,Blocks.web,Blocks.wheat);
 
 		protected double max;
-		public SkillGrassHopper(double par1) {
-			super(0, 0);
+		public SkillGrassHopper(SkillMelee.Type type,double par1) {
+			super(type,0, 0);
 			this.onGroundOnly = true;
 			this.max = par1;
 		}

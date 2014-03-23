@@ -94,6 +94,7 @@ public class InventorySmithUnsaga implements IInventory{
 	@Override
 	public boolean isUseableByPlayer(EntityPlayer entityplayer) {
 		// TODO 自動生成されたメソッド・スタブ
+		
 		return this.theSmith.getCustomer() == entityplayer;
 	}
 

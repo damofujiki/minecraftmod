@@ -19,6 +19,7 @@ import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
 import hinasch.mods.unlsaga.misc.util.UtilItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.item.ItemStack;
@@ -137,8 +138,10 @@ public class EventLivingHurt {
 		}
 		if(Unsaga.debug.get()){
 			if(e.source.getEntity() instanceof EntityPlayer){
+				EntityPlayer ep = (EntityPlayer) e.source.getEntity();
 				ChatMessageHandler.sendChatToPlayer((EntityPlayer) e.source.getEntity(), e.ammount+" Damage!:Attribute>"+this.unsagaDamageSource.getUnsagaDamageType());
 
+				Unsaga.debug(ep.getEntityAttribute(SharedMonsterAttributes.attackDamage).func_111122_c());
 			}
 		}
 	}

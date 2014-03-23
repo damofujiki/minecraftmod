@@ -3,17 +3,18 @@ package hinasch.mods.unlsaga.misc.ability.skill.effect;
 import hinasch.lib.RangeDamageHelper;
 import net.minecraft.util.AxisAlignedBB;
 
-public class SkillRangedAttack extends SkillBase{
+public class SkillRangedAttack extends SkillMelee{
 
 	protected double rangeVertical;
 	protected double rangeHorizontal;
 	protected boolean onGroundOnly = false;
 	
-	public SkillRangedAttack(double horizontal,double vertical){
-		super();
+	public SkillRangedAttack(SkillMelee.Type type,double horizontal,double vertical){
+		super(type);
 		this.rangeHorizontal = horizontal;
 		this.rangeVertical = vertical;
 	}
+	
 	@Override
 	public void invokeSkill(InvokeSkill parent) {
 		this.hookStart(parent);

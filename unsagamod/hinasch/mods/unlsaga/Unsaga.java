@@ -19,6 +19,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaBlocks;
 import hinasch.mods.unlsaga.core.init.UnsagaConfigs;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
+import hinasch.mods.unlsaga.core.init.UnsagaRecipes;
 import hinasch.mods.unlsaga.entity.EntityDataUnsaga;
 import hinasch.mods.unlsaga.misc.CreativeTabsUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
@@ -39,6 +40,7 @@ import cpw.mods.fml.common.Mod.EventHandler;
 import cpw.mods.fml.common.Mod.Instance;
 import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
+import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 
@@ -157,13 +159,19 @@ public class Unsaga {
 
 		NoFuncItemList.setLocalizeAndOreDict();
 		BlockDataUnsaga.registerSmeltingAndAssociation();
-		
+		UnsagaRecipes.register();
 
 		
 		//(new OreDictRegistry()).register();
 		//(new ForgeChestHooks()).addLoot();
 		//(new LocalizationRegistry()).addLocalization();
 		//(new RecipeRegistry()).addRecipe();
+	}
+	
+	@EventHandler
+	public void postInit(FMLPostInitializationEvent event){
+	
+		packetPipeline.postInitialise();
 	}
 	
 	public void checkLoadedMods(){

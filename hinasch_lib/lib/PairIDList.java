@@ -29,10 +29,12 @@ public class PairIDList {
 	}
 	
 	public void addStack(PairID pair,int amount){
-		this.getElement(pair).stack += amount ;
-//		int stack = this.getElement(pair).stack;
-//		stack += amount;
-//		this.list.set(this.getNumber(pair), )
+		if(this.contains(pair)){
+			this.getElement(pair).stack += amount ;
+		}else{
+			this.list.add(pair.setStack(amount));
+		}
+		
 	}
 	//public 
 	

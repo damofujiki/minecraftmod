@@ -22,6 +22,7 @@ public abstract class BuffShield {
 		this.parentBuff = parent;
 		this.isGuardAll = isGuardAll;
 		this.element = element;
+		EventSpellBuff.shieldSet.add(this);
 	}
 	
 	public void doGuard(LivingHurtEvent e){

@@ -1,45 +1,127 @@
 package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
 import hinasch.lib.HSLibs;
+import hinasch.lib.StaticWords;
+import hinasch.lib.UtilNBT;
+import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
+import hinasch.mods.unlsaga.item.weapon.ItemSwordUnsaga;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingState;
+import hinasch.mods.unlsaga.misc.util.rangedamage.CauseAddVelocity;
 import hinasch.mods.unlsaga.misc.util.rangedamage.CauseKnockBack;
+import hinasch.mods.unlsaga.network.packet.PacketParticle;
+import hinasch.mods.unlsaga.network.packet.PacketUtil;
 
+import java.util.List;
 import java.util.Random;
 
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
+import net.minecraft.world.World;
 
 public class SkillSword extends SkillEffect{
 
 	private static SkillSword INSTANCE;
 
 
-	@Override
-	public void selector(InvokeSkill helper){
-		if(helper.skill==AbilityRegistry.gust)this.doGust(helper);
-		if(helper.skill==AbilityRegistry.chargeBlade)this.doRearBlade(helper);
-		if(helper.skill==AbilityRegistry.kaleidoscope)this.doKaleidoscope(helper);
-		if(helper.skill==AbilityRegistry.vandalize)this.doVandelize(helper);
-	}
+	public final SkillBase gust = new SkillGust(SkillMelee.Type.STOPPED_USING).setRequireSneak(false);
+	public final SkillBase kaleidoScope = new SkillKaleidoScope(SkillMelee.Type.ENTITY_LEFTCLICK);
+	public final SkillBase chargeBlade = new SkillChargeBlade(SkillMelee.Type.RIGHTCLICK).setRequireSneak(false);
+	public final SkillBase vandelize = new SkillVandelize(SkillMelee.Type.ENTITY_LEFTCLICK);
+	public final SkillBase smash = new SkillSmash(SkillMelee.Type.STOPPED_USING).setRequireSneak(false);
+	public final SkillBase roundabout = new SkillRoundabout(SkillMelee.Type.RIGHTCLICK).setRequireSneak(false);
 	
-	public final SkillBase gust = new SkillGust();
-	public final SkillBase kaleidoScope = new SkillKaleidoScope();
-	public final SkillBase chargeBlade = new SkillChargeBlade();
-	public final SkillBase vandelize = new SkillVandelize();
-	
-	public class SkillGust extends SkillBase{
+	public class SkillRoundabout extends SkillMelee{
 
+		public SkillRoundabout(Type type) {
+			super(type);
+			// TODO 自動生成されたコンストラクター・スタブ
+		}
+		@Override
+		public boolean canInvoke(World world,EntityPlayer ep,ItemStack is,XYZPos pos){
+
+			if(!LivingDebuff.hasDebuff(ep, Debuffs.roundabout)){
+				return super.canInvoke(world, ep, is, pos);
+			}
+
+			return false;
+		}
 		@Override
 		public void invokeSkill(InvokeSkill helper) {
-			helper.owner.playSound("mob.wither.shoot", 0.5F, 1.8F / (helper.owner.getRNG().nextFloat() * 0.4F + 1.2F));
-			Vec3 lookvec = helper.owner.getLookVec();
-			helper.owner.setVelocity(lookvec.xCoord*2.5, 0, lookvec.zCoord*2.5);
-			LivingDebuff.addLivingDebuff(helper.owner, new LivingState(Debuffs.gust,100,false));
+			helper.owner.playSound("mob.sheep.step", 0.5F, 1.8F / (helper.owner.getRNG().nextFloat() * 0.4F + 1.2F));
+			PacketParticle pp = new PacketParticle(StaticWords.getParticleNumber(StaticWords.particleCrit),helper.owner.getEntityId(),5);
+			Unsaga.packetPipeline.sendToAllAround(pp, PacketUtil.getTargetPointNear(helper.owner));
+			LivingDebuff.addLivingDebuff(helper.owner, new LivingState(Debuffs.antiFallDamage,10,true));
+			LivingDebuff.addLivingDebuff(helper.owner, new LivingState(Debuffs.roundabout,5,true));
+			helper.owner.motionY += 0.8;
+
+		}
+		
+	}
+	public class SkillSmash extends SkillMelee{
+
+		public SkillSmash(Type type) {
+			super(type);
+			// TODO 自動生成されたコンストラクター・スタブ
+		}
+		
+		@Override
+		public void invokeSkill(InvokeSkill helper) {
+			helper.setFailed(true);
+			World world = helper.world;
+			EntityLivingBase ep = helper.owner;
+			List<EntityLivingBase> entlist = world.getEntitiesWithinAABB(EntityLivingBase.class, ep.boundingBox.expand(2.0D, 1.0D, 2.0D));
+			ep.swingItem();
+			if(entlist!=null && !entlist.isEmpty()){
+				for(EntityLivingBase damageentity:entlist){
+					if(damageentity!=ep){
+						helper.attack(damageentity, null,helper.charge);
+						helper.damageWeapon();
+					}
+				}
+			}
+		}
+	}
+	public class SkillGust extends SkillMelee{
+
+		public SkillGust(Type type) {
+			super(type);
+			// TODO 自動生成されたコンストラクター・スタブ
+		}
+		
+		@Override
+		public boolean canInvoke(World world,EntityPlayer ep,ItemStack is,XYZPos pos){
+			if(this.isGust(is)){
+				return super.canInvoke(world, ep, is, pos);
+			}
+			return false;
+		}
+		
+		public void setGust(ItemStack is,boolean par1){
+			UtilNBT.setFreeTag(is, ItemSwordUnsaga.GUSTKEY, par1);
+		}
+		
+		public boolean isGust(ItemStack is){
+			return (UtilNBT.hasKey(is, ItemSwordUnsaga.GUSTKEY)? UtilNBT.readFreeTagBool(is, ItemSwordUnsaga.GUSTKEY) : false);
+		}
+		
+		@Override
+		public void invokeSkill(InvokeSkill helper) {
+			this.setGust(helper.weapon, false);
+			if(helper.charge>15.0F){
+				helper.owner.playSound("mob.wither.shoot", 0.5F, 1.8F / (helper.owner.getRNG().nextFloat() * 0.4F + 1.2F));
+				Vec3 lookvec = helper.owner.getLookVec();
+				helper.owner.setVelocity(lookvec.xCoord*2.5, 0, lookvec.zCoord*2.5);
+				LivingDebuff.addLivingDebuff(helper.owner, new LivingState(Debuffs.gust,100,false));
+			}else{
+				helper.setFailed(true);
+			}
+
 			return;
 		}
 		
@@ -52,7 +134,12 @@ public class SkillSword extends SkillEffect{
 		return;
 	}
 
-	public class SkillVandelize extends SkillBase{
+	public class SkillVandelize extends SkillMelee{
+
+		public SkillVandelize(Type type) {
+			super(type);
+			// TODO 自動生成されたコンストラクター・スタブ
+		}
 
 		@Override
 		public void invokeSkill(InvokeSkill parent) {
@@ -85,7 +172,12 @@ public class SkillSword extends SkillEffect{
 
 	}
 
-	public class SkillKaleidoScope extends SkillBase{
+	public class SkillKaleidoScope extends SkillMelee{
+
+		public SkillKaleidoScope(Type type) {
+			super(type);
+			// TODO 自動生成されたコンストラクター・スタブ
+		}
 
 		@Override
 		public void invokeSkill(InvokeSkill parent) {
@@ -129,12 +221,24 @@ public class SkillSword extends SkillEffect{
 
 	}
 
-	public class SkillChargeBlade extends SkillBase{
+	public class SkillChargeBlade extends SkillMelee{
 
+		public SkillChargeBlade(Type type) {
+			super(type);
+			// TODO 自動生成されたコンストラクター・スタブ
+		}
+		
+		@Override
+		public boolean canInvoke(World world,EntityPlayer ep,ItemStack is,XYZPos pos){
+			if(ep.isSprinting()){
+				return super.canInvoke(world, ep, is, pos);
+			}
+			return false;
+		}
 		@Override
 		public void invokeSkill(InvokeSkill parent) {
 			parent.owner.playSound("mob.wither.shoot", 0.5F, 1.8F / (parent.owner.getRNG().nextFloat() * 0.4F + 1.2F));
-			CauseKnockBack knock = new CauseKnockBack(parent.world, 1.5F);
+			CauseAddVelocity knock = new CauseAddVelocity(parent.world, parent);
 			knock.setSkillEffectHelper(parent);
 			AxisAlignedBB bb = parent.owner.boundingBox.expand(2.0D, 1.0D, 2.0D);
 			knock.causeRangeDamage(bb, parent.getDamageSource(), parent.getModifiedAttackDamage(false, 0));

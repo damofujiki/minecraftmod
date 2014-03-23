@@ -22,6 +22,7 @@ public class StaticWords {
 	public static final String particleExplode = "explode";
 	public static final String particleBubble = "bubble";
 	public static final String particleReddust = "reddust";
+	public static final String particleCrit = "crit";
 	public static HashMap<Integer,String> particleMap;
 	public static HashMap<Integer,String> soundMap;
 	
@@ -46,6 +47,7 @@ public class StaticWords {
 		particleMap.put(9, "explode");
 		particleMap.put(10,particleBubble);
 		particleMap.put(11,particleReddust);
+		particleMap.put(12, particleCrit);
 		soundMap = new HashMap();
 		soundMap.put(1, "mob.endermen.portal");
 		soundMap.put(2, "mob.ghast.fireball");

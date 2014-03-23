@@ -1,9 +1,10 @@
 package hinasch.mods.unlsaga.misc.util;
 
 import hinasch.lib.UtilNBT;
+import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.item.armor.ItemAccessory;
 import hinasch.mods.unlsaga.item.weapon.ItemBowUnsaga;
@@ -11,6 +12,8 @@ import hinasch.mods.unlsaga.item.weapon.ItemStaffUnsaga;
 import hinasch.mods.unlsaga.misc.ability.Ability;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
+import hinasch.mods.unlsaga.misc.ability.skill.Skill;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillMelee;
 
 import java.util.Iterator;
 import java.util.List;
@@ -22,6 +25,7 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
 
 public class HelperUnsagaWeapon {
 	
@@ -185,6 +189,8 @@ public class HelperUnsagaWeapon {
 		}
     }
 		
+    
+    
     //TODO マテリアルシステム見直し
     public static void initWeapon(ItemStack is,String mat,int weight){
     	if(is.getItem() instanceof IUnsagaMaterial){
@@ -198,5 +204,26 @@ public class HelperUnsagaWeapon {
 		return;
     }
     
+    
+    public static SkillMelee getSkillMelee(SkillMelee.Type type,ItemStack par1ItemStack,EntityPlayer par2EntityPlayer,World par3World,XYZPos pos){
+		HelperAbility abHelper  = new HelperAbility(par1ItemStack, par2EntityPlayer);
+		SkillMelee pickedSkillEffect = null;
+		if(abHelper.getGainedAbilities().isPresent()){
+			for(Ability ability:abHelper.getGainedAbilities().get()){
+				if(ability instanceof Skill){
+					Skill skill = (Skill)ability;
+					if(skill.getSkillEffect() instanceof SkillMelee){
+						SkillMelee effect = (SkillMelee) skill.getSkillEffect();
+						if(effect.getType()==type && effect.canInvoke(par3World, par2EntityPlayer, par1ItemStack, pos)){
+							pickedSkillEffect = effect;
+						}
+					}
+					
+					
+				}
+			}
+		}
+		return pickedSkillEffect;
+    }
 
 }

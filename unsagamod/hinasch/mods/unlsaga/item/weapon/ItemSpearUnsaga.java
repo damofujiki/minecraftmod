@@ -10,7 +10,9 @@ import hinasch.mods.unlsaga.item.weapon.base.ItemSpearBase;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillMelee;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
@@ -64,16 +66,25 @@ public class ItemSpearUnsaga extends ItemSpearBase {
 	{
 		int ac = 20;
 		int j = this.getMaxItemUseDuration(par1ItemStack) - par4;
-		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.aiming, par1ItemStack)){
-			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer,AbilityRegistry.aiming , par1ItemStack);
-			helper.setCharge(j);
-			helper.doSkill();
+		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.STOPPED_USING, par1ItemStack, par3EntityPlayer, par2World, XYZPos.entityPosToXYZ(par3EntityPlayer));
+		if(pickedSkillEffect!=null){
+			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer, pickedSkillEffect.getSkill(), par1ItemStack);
+			if(helper!=null){
+				helper.setCharge(j);
+				helper.doSkill();
+				
+			}
 		}
-		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.acupuncture, par1ItemStack)){
-			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer,AbilityRegistry.acupuncture , par1ItemStack);
-			helper.setCharge(j);
-			helper.doSkill();
-		}
+//		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.aiming, par1ItemStack)){
+//			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer,AbilityRegistry.aiming , par1ItemStack);
+//			helper.setCharge(j);
+//			helper.doSkill();
+//		}
+//		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.acupuncture, par1ItemStack)){
+//			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer,AbilityRegistry.acupuncture , par1ItemStack);
+//			helper.setCharge(j);
+//			helper.doSkill();
+//		}
 	}
 
 
@@ -81,11 +92,19 @@ public class ItemSpearUnsaga extends ItemSpearBase {
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
 	{
 
-
-		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.swing, par1ItemStack) && par3EntityPlayer.isSneaking()){
-			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer, AbilityRegistry.swing, par1ItemStack);
-			helper.doSkill();
+		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.RIGHTCLICK, par1ItemStack, par3EntityPlayer, par2World, XYZPos.entityPosToXYZ(par3EntityPlayer));
+		if(pickedSkillEffect!=null){
+			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer, pickedSkillEffect.getSkill(), par1ItemStack);
+			if(helper!=null){
+				helper.doSkill();
+				
+			}
 		}
+//
+//		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.swing, par1ItemStack) && par3EntityPlayer.isSneaking()){
+//			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer, AbilityRegistry.swing, par1ItemStack);
+//			helper.doSkill();
+//		}
 		if (HelperAbility.hasAbilityFromItemStack(AbilityRegistry.aiming, par1ItemStack) && par3EntityPlayer.isSneaking())
 		{
 			UtilNBT.setFreeTag(par1ItemStack, KEYisAiming, true);
@@ -104,13 +123,22 @@ public class ItemSpearUnsaga extends ItemSpearBase {
 	@Override
 	public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
 	{
-		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.grassHopper, par1ItemStack)){
-			InvokeSkill helper = new InvokeSkill(par3World,par2EntityPlayer,AbilityRegistry.grassHopper,par1ItemStack);
-
-			helper.setUsePoint(new XYZPos(par4,par5,par6));
-			helper.doSkill();
-
+		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.USE, par1ItemStack, par2EntityPlayer, par3World, new XYZPos(par4,par5,par6));
+		if(pickedSkillEffect!=null){
+			InvokeSkill helper = new InvokeSkill(par3World, par2EntityPlayer, pickedSkillEffect.getSkill(), par1ItemStack);
+			if(helper!=null){
+				helper.setUsePoint(new XYZPos(par4,par5,par6));
+				helper.doSkill();
+				
+			}
 		}
+//		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.grassHopper, par1ItemStack)){
+//			InvokeSkill helper = new InvokeSkill(par3World,par2EntityPlayer,AbilityRegistry.grassHopper,par1ItemStack);
+//
+//			helper.setUsePoint(new XYZPos(par4,par5,par6));
+//			helper.doSkill();
+//
+//		}
 		return false;
 	}
 

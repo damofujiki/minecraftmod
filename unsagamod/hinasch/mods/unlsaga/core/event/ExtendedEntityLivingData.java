@@ -164,6 +164,7 @@ public class ExtendedEntityLivingData implements IExtendedEntityProperties{
 			HashSet<LivingDebuff> removes = new HashSet();
 			for(LivingDebuff ldebuff:ldata.debuffSet){
 				if(ldebuff.getDebuff().number==debuff.number){
+
 					removes.add(ldebuff);
 				}
 			}
@@ -171,6 +172,7 @@ public class ExtendedEntityLivingData implements IExtendedEntityProperties{
 			//同期エラーを防ぐ
 			if(!removes.isEmpty()){
 				for(LivingDebuff remov:removes){
+					
 					ldata.debuffSet.remove(remov);
 				}
 			}

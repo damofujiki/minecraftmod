@@ -94,4 +94,6 @@ public class LivingState extends LivingDebuff{
 
 		}
 	}
+	
+
 }

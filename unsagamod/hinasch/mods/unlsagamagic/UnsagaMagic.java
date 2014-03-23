@@ -12,6 +12,7 @@ import hinasch.mods.unlsagamagic.misc.CreativeTabsUnsagaMagic;
 import hinasch.mods.unlsagamagic.misc.element.ElementLibrary;
 import hinasch.mods.unlsagamagic.misc.element.UnsagaElement;
 import hinasch.mods.unlsagamagic.misc.spell.Spells;
+import hinasch.mods.unlsagamagic.tileentity.TileEntityFireWall;
 import net.minecraft.block.Block;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.item.Item;
@@ -99,6 +100,8 @@ public class UnsagaMagic {
 		GameRegistry.registerItem(itemSpellBook, "itemSpellBook");
 		GameRegistry.registerItem(itemBlender, "itemBlender");
 		
+		GameRegistry.registerTileEntity(TileEntityFireWall.class, "unsaga.firewall");
 		GameRegistry.registerBlock(blockFireWall,"blockFireWall");
+		
 	}
 }

@@ -3,7 +3,7 @@ package hinasch.mods.unlsaga.client.gui;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.inventory.container.ContainerChestUnsaga;
 import hinasch.mods.unlsaga.misc.translation.Translation;
-import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsaga;
+import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsagaNew;
 import net.minecraft.client.gui.GuiButton;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.player.EntityPlayer;
@@ -22,12 +22,12 @@ public class GuiChest extends GuiContainer{
 	public static final int DEFUSE = 3;
 	public static final int DIVINATION = 4;
 
-	public TileEntityChestUnsaga theChest;
+	public TileEntityChestUnsagaNew theChest;
 	public EntityPlayer openPlayer;
 
 	protected ContainerChestUnsaga container;
 
-	public GuiChest(TileEntityChestUnsaga chest,EntityPlayer ep) {
+	public GuiChest(TileEntityChestUnsagaNew chest,EntityPlayer ep) {
 		super(new ContainerChestUnsaga(chest,ep));
 		this.container = (ContainerChestUnsaga) this.inventorySlots;
 		this.theChest = chest;
@@ -67,7 +67,7 @@ public class GuiChest extends GuiContainer{
 	{
 
 
-		fontRendererObj.drawString(Translation.localize("word.chest")+" LV"+this.theChest.getChestLevel(), 8, 6, 0x404040);
+		fontRendererObj.drawString(Translation.localize("word.chest")+" LV:"+this.theChest.getChestLevel(), 8, 6, 0x404040);
 		
 		//fontRenderer.drawString("Result:"+getSpellStr(), 8, (ySize - 96) + 2, 0x404040);
 	}
@@ -81,6 +81,8 @@ public class GuiChest extends GuiContainer{
 			{
 				return;
 			}
+
+			
 
 
 			container.onButtonPushed(par1GuiButton.id);

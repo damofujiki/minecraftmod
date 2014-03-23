@@ -20,9 +20,9 @@ import hinasch.mods.unlsaga.entity.EntityGolemUnsaga;
 import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
 import hinasch.mods.unlsaga.entity.projectile.EntityArrowUnsaga;
 import hinasch.mods.unlsaga.entity.projectile.EntityBarrett;
-import hinasch.mods.unlsaga.entity.projectile.EntityBoulder;
-import hinasch.mods.unlsaga.entity.projectile.EntityFireArrow;
-import hinasch.mods.unlsaga.entity.projectile.EntityFlyingAxe;
+import hinasch.mods.unlsaga.entity.projectile.EntityBoulderNew;
+import hinasch.mods.unlsaga.entity.projectile.EntityFireArrowNew;
+import hinasch.mods.unlsaga.entity.projectile.EntityFlyingAxeNew;
 import hinasch.mods.unlsaga.entity.projectile.EntitySolutionLiquid;
 import hinasch.mods.unlsaga.misc.module.UnsagaMagicHandlerClient;
 import hinasch.mods.unlsaga.network.CommonProxy;
@@ -73,11 +73,11 @@ public class ClientProxy extends CommonProxy{
 	public void registerRenderers(){
 		RenderingRegistry.registerEntityRenderingHandler(EntityArrowUnsaga.class, new RenderArrowUnsaga());
 		RenderingRegistry.registerEntityRenderingHandler(EntityBarrett.class, new RenderBarrett(1.0F));
-		RenderingRegistry.registerEntityRenderingHandler(EntityFlyingAxe.class, new RenderFlyingAxe(1.0F));
+		RenderingRegistry.registerEntityRenderingHandler(EntityFlyingAxeNew.class, new RenderFlyingAxe(1.0F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityTreasureSlime.class, new RenderTreasureSlime(new ModelSlime(16), new ModelSlime(0), 0.25F));
 		RenderingRegistry.registerEntityRenderingHandler(EntityGolemUnsaga.class, new RenderGolemUnsaga());
-		RenderingRegistry.registerEntityRenderingHandler(EntityFireArrow.class, new RenderThrowableItem(1.0F,Items.fire_charge,0));
-		RenderingRegistry.registerEntityRenderingHandler(EntityBoulder.class, new RenderThrowableItem(1.0F,UnsagaItems.itemMaterials,18));
+		RenderingRegistry.registerEntityRenderingHandler(EntityFireArrowNew.class, new RenderThrowableItem(1.0F,Items.fire_charge,0));
+		RenderingRegistry.registerEntityRenderingHandler(EntityBoulderNew.class, new RenderThrowableItem(1.0F,UnsagaItems.itemMaterials,18));
 		RenderingRegistry.registerEntityRenderingHandler(EntitySolutionLiquid.class, new RenderThrowableItem(1.0F,Items.slime_ball,0));
 		if(UnsagaConfigs.module.isMagicEnabled()){
 			this.proxyUnsagaSpell = new UnsagaMagicHandlerClient();

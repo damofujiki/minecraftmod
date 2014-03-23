@@ -17,7 +17,7 @@ public class ScannerBreakBlock extends AbstractScanner{
 	@Override
 	public void hook(World world, Block currentBlock, XYZPos currentPos) {
 
-		currentBlock.dropXpOnBlockBreak(world, startPoint.x, startPoint.y, startPoint.z, currentBlock.getExpDrop(world, compareBlock.metadata, 0));
+		currentBlock.dropXpOnBlockBreak(world, startPoint.x, startPoint.y, startPoint.z, currentBlock.getExpDrop(world, compareBlock.getMeta(), 0));
 		HSLibs.playBlockBreakSFX(world, currentPos, compareBlock);
 
 

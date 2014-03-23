@@ -44,14 +44,19 @@ public class SkillStaff extends SkillEffect{
 		if(parent.skill==AbilityRegistry.rockCrusher)this.doRockcrusher(parent);
 	}
 	
-	public final SkillBase bellRinger = new SkillBellRinger();
-	public final SkillBase earthDragon = new SkillEarthDragon(8.0D,8.0D);
-	public final SkillBase grandSlam = new SkillGrandSlam(10.0D,3.0D);
-	public final SkillBase skullCrusher = new SkillSkullCrusher();
-	public final SkillBase pulverizer = new SkillPulverizer();
-	public final SkillBase rockCrusher = new SkillRockCrusher();
+	public final SkillBase bellRinger = new SkillBellRinger(SkillMelee.Type.USE);
+	public final SkillBase earthDragon = new SkillEarthDragon(SkillMelee.Type.USE,8.0D,8.0D);
+	public final SkillBase grandSlam = new SkillGrandSlam(SkillMelee.Type.USE,10.0D,3.0D);
+	public final SkillBase skullCrusher = new SkillSkullCrusher(SkillMelee.Type.ENTITY_LEFTCLICK);
+	public final SkillBase pulverizer = new SkillPulverizer(SkillMelee.Type.USE);
+	public final SkillBase rockCrusher = new SkillRockCrusher(SkillMelee.Type.USE);
 	
-	public class SkillBellRinger extends SkillBase{
+	public class SkillBellRinger extends SkillMelee{
+
+		public SkillBellRinger(Type type) {
+			super(type);
+			// TODO 自動生成されたコンストラクター・スタブ
+		}
 
 		@Override
 		public void invokeSkill(InvokeSkill parent) {
@@ -162,8 +167,8 @@ public class SkillStaff extends SkillEffect{
 
 
 		
-		public SkillGrandSlam(double horizontal, double vertical) {
-			super(horizontal, vertical);
+		public SkillGrandSlam(SkillMelee.Type type,double horizontal, double vertical) {
+			super(type,horizontal, vertical);
 			this.onGroundOnly = true;
 		}
 
@@ -213,7 +218,12 @@ public class SkillStaff extends SkillEffect{
 
 	}
 
-	public class SkillPulverizer extends SkillBase{
+	public class SkillPulverizer extends SkillMelee{
+
+		public SkillPulverizer(Type type) {
+			super(type);
+			// TODO 自動生成されたコンストラクター・スタブ
+		}
 
 		@Override
 		public void invokeSkill(InvokeSkill helper) {
@@ -244,7 +254,12 @@ public class SkillStaff extends SkillEffect{
 		
 	}
 	
-	public class SkillRockCrusher extends SkillBase{
+	public class SkillRockCrusher extends SkillMelee{
+
+		public SkillRockCrusher(Type type) {
+			super(type);
+			// TODO 自動生成されたコンストラクター・スタブ
+		}
 
 		@Override
 		public void invokeSkill(InvokeSkill parent) {
@@ -257,7 +272,7 @@ public class SkillStaff extends SkillEffect{
 			parent.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
 			PairID compareBlock = HSLibs.getBlockDatas(world, up);
 			scheduledBreak.add(up);
-			if(HSLibs.isOreBlock(compareBlock) && parent.owner.canHarvestBlock(compareBlock.blockObj)){
+			if(HSLibs.isOreBlock(compareBlock) && parent.owner.canHarvestBlock(compareBlock.getBlockObject())){
 				
 				if(world.isRemote){
 					return;
@@ -265,9 +280,9 @@ public class SkillStaff extends SkillEffect{
 				ScannerBreakBlock scannerBreak = new ScannerBreakBlock(compareBlock, up);
 				scannerBreak.doScan(world, 5);
 			}else{
-				if(compareBlock.blockObj.getHarvestLevel(compareBlock.metadata)<=harvestLevel+1){
+				if(compareBlock.getBlockObject().getHarvestLevel(compareBlock.getMeta())<=harvestLevel+1){
 					
-					compareBlock.blockObj.dropXpOnBlockBreak(parent.world, up.x, up.y, up.z, compareBlock.blockObj.getExpDrop(parent.world, compareBlock.metadata, 0));
+					compareBlock.getBlockObject().dropXpOnBlockBreak(parent.world, up.x, up.y, up.z, compareBlock.getBlockObject().getExpDrop(parent.world, compareBlock.getMeta(), 0));
 					HSLibs.playBlockBreakSFX(world, up, compareBlock);
 				}
 			}
@@ -314,7 +329,7 @@ public class SkillStaff extends SkillEffect{
 		parent.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
 		PairID compareBlock = HSLibs.getBlockDatas(world, up);
 		scheduledBreak.add(up);
-		if(HSLibs.isOreBlock(compareBlock) && parent.owner.canHarvestBlock(compareBlock.blockObj)){
+		if(HSLibs.isOreBlock(compareBlock) && parent.owner.canHarvestBlock(compareBlock.getBlockObject())){
 			
 			if(world.isRemote){
 				return;
@@ -355,9 +370,9 @@ public class SkillStaff extends SkillEffect{
 //			}
 			//this.BreakChainReaction(parent.world,parent.owner,up, new PairID(blockUsePoint,meta),0);
 		}else{
-			if(compareBlock.blockObj.getHarvestLevel(compareBlock.metadata)<=harvestLevel+1){
+			if(compareBlock.getBlockObject().getHarvestLevel(compareBlock.getMeta())<=harvestLevel+1){
 				
-				compareBlock.blockObj.dropXpOnBlockBreak(parent.world, up.x, up.y, up.z, compareBlock.blockObj.getExpDrop(parent.world, compareBlock.metadata, 0));
+				compareBlock.getBlockObject().dropXpOnBlockBreak(parent.world, up.x, up.y, up.z, compareBlock.getBlockObject().getExpDrop(parent.world, compareBlock.getMeta(), 0));
 				HSLibs.playBlockBreakSFX(world, up, compareBlock);
 			}
 		}
@@ -365,7 +380,12 @@ public class SkillStaff extends SkillEffect{
 	}
 	
 
-	public class SkillSkullCrusher extends SkillBase{
+	public class SkillSkullCrusher extends SkillMelee{
+
+		public SkillSkullCrusher(Type type) {
+			super(type);
+			// TODO 自動生成されたコンストラクター・スタブ
+		}
 
 		@Override
 		public void invokeSkill(InvokeSkill helper) {
@@ -387,8 +407,8 @@ public class SkillStaff extends SkillEffect{
 	
 	public class SkillEarthDragon extends SkillRangedAttack{
 
-		public SkillEarthDragon(double horizontal, double vertical) {
-			super(horizontal, vertical);
+		public SkillEarthDragon(SkillMelee.Type type,double horizontal, double vertical) {
+			super(type,horizontal, vertical);
 			this.onGroundOnly = true;
 		}
 		
@@ -401,7 +421,7 @@ public class SkillStaff extends SkillEffect{
 		public void hookStart(InvokeSkill helper){
 			helper.owner.swingItem();
 			XYZPos up = helper.usepoint;
-			helper.world.playSoundEffect(up.dx, up.dy, up.dz, "random.explode", 4.0F, (1.0F + (helper.owner.worldObj.rand.nextFloat() - helper.owner.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+			helper.playExplodeSound(up);
 			helper.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
 
 		}

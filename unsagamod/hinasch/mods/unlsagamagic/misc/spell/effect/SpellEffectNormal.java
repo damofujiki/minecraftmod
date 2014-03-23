@@ -6,10 +6,9 @@ import hinasch.lib.PairIDList;
 import hinasch.lib.ScanHelper;
 import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.core.FiveElements;
 import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
-import hinasch.mods.unlsaga.entity.projectile.EntityBoulder;
-import hinasch.mods.unlsaga.entity.projectile.EntityFireArrow;
+import hinasch.mods.unlsaga.entity.projectile.EntityBoulderNew;
+import hinasch.mods.unlsaga.entity.projectile.EntityFireArrowNew;
 import hinasch.mods.unlsaga.misc.debuff.Buff;
 import hinasch.mods.unlsaga.misc.debuff.Debuff;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
@@ -22,17 +21,18 @@ import hinasch.mods.unlsaga.misc.util.DamageSourceUnsaga;
 import hinasch.mods.unlsaga.misc.util.LockOnHelper;
 import hinasch.mods.unlsaga.network.packet.PacketHandlerClientThunder;
 import hinasch.mods.unlsaga.network.packet.PacketParticle;
-import hinasch.mods.unlsaga.network.packet.PacketSound;
 import hinasch.mods.unlsaga.network.packet.PacketUtil;
 import hinasch.mods.unlsagamagic.UnsagaMagic;
 import hinasch.mods.unlsagamagic.item.ItemSpellBook;
+import hinasch.mods.unlsagamagic.tileentity.TileEntityFireWall;
 
 import java.util.HashSet;
+import java.util.Set;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockOre;
 import net.minecraft.block.BlockRedstoneOre;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.EnumCreatureAttribute;
 import net.minecraft.entity.effect.EntityLightningBolt;
@@ -51,7 +51,7 @@ import net.minecraft.item.ItemDye;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
-import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.oredict.OreDictionary;
 
@@ -107,8 +107,8 @@ public class SpellEffectNormal{
 				Entity target = parentInvoke.getTarget().get();
 				EntityLightningBolt thunder = new EntityLightningBolt(parentInvoke.world,target.posX,target.posY,target.posZ);
 				parentInvoke.world.spawnEntityInWorld(thunder);
-				DamageSourceUnsaga ds = new DamageSourceUnsaga(null,parentInvoke.invoker,parentInvoke.spell.hurtLP,DamageHelper.Type.MAGIC);
-				ds.setElement(FiveElements.EnumElement.WOOD);
+				DamageSourceUnsaga ds = parentInvoke.getDamageSource();
+				ds.setSubDamageType(DamageHelper.SubType.ELECTRIC);
 				target.attackEntityFrom(ds, parentInvoke.spell.hurtHP*parentInvoke.getAmp());
 				PacketHandlerClientThunder pl = new PacketHandlerClientThunder(XYZPos.entityPosToXYZ(target));
 				Unsaga.packetPipeline.sendToAllAround(pl, PacketUtil.getTargetPointNear(target));
@@ -175,12 +175,12 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void addEntityList(InvokeSpell parent,Multimap<String,Integer> entityList,EntityLivingBase ent){
+		public void addEntityList(InvokeSpell parent,Multimap<String,Object> entityList,EntityLivingBase ent){
 			if(ent instanceof IAnimals && !(ent instanceof EntityAmbientCreature || ent instanceof IMob)&& ent!=parent.invoker){
-				
-				int distance = (int) (ent.getDistanceSqToEntity(parent.invoker));
+				XYZPos distance_pos = XYZPos.entityPosToXYZ(ent).subtract(XYZPos.entityPosToXYZ(parent.invoker));
+				distance_pos.setAsBlockPos(true);
 
-				entityList.put(ent.getCommandSenderName(), distance);
+				entityList.put(ent.getCommandSenderName(), distance_pos);
 
 			}
 		}
@@ -197,13 +197,15 @@ public class SpellEffectNormal{
 
 		@Override
 		public void addEntityList(InvokeSpell invoke,
-				Multimap<String, Integer> entityList, EntityLivingBase ent) {
+				Multimap<String, Object> entityList, EntityLivingBase ent) {
 			if(ent instanceof IMob && ent!=invoke.invoker){
 				if(!(ent.getCreatureAttribute()==EnumCreatureAttribute.UNDEAD)){
 					
-					int distance = (int) (ent.getDistanceSqToEntity(invoke.invoker));
+					XYZPos distance_pos = XYZPos.entityPosToXYZ(ent).subtract(XYZPos.entityPosToXYZ(invoke.invoker));
+					distance_pos.setAsBlockPos(true);
 
-					entityList.put(ent.getCommandSenderName(), distance);
+					entityList.put(ent.getCommandSenderName(), distance_pos);
+
 					if(this.isAmplified){
 						LivingDebuff.addDebuff(ent, Debuffs.detected, (int) (20*invoke.getAmp()));
 					}
@@ -245,7 +247,7 @@ public class SpellEffectNormal{
 		}
 		
 	}
-	public class SpellBoulder extends SpellBase{
+	public class SpellBoulder extends SpellProjectile{
 
 		public SpellBoulder() {
 			super();
@@ -253,24 +255,13 @@ public class SpellEffectNormal{
 		}
 
 		@Override
-		public void invokeSpell(InvokeSpell spell) {
-			spell.world.playSoundAtEntity(spell.invoker, "mob.ghast.fireball", 1.0F, 1.0F / (spell.world.rand.nextFloat() * 0.4F + 1.2F) + 1.0F * 0.5F);
-			EntityBoulder var8 = new EntityBoulder(spell.world, spell.invoker, 1.0F*1.5F);
+		public Entity getProjectileEntity(InvokeSpell spell){
+			EntityBoulderNew var8 = new EntityBoulderNew(spell.world, spell.invoker, 1.0F*1.5F);
 			int knockback = Math.round(5.0F*spell.getAmp());
-			if(knockback>12){
-				knockback=12;
-			}
-			if(knockback<1){
-				knockback=1;
-			}
-			var8.setKnockbackStrength(knockback);
-			var8.canBePickedUp = 0;
-			var8.setDamage(var8.getDamage()+(1.0*spell.getAmp()));
-			if (!spell.world.isRemote)
-			{
-				spell.world.spawnEntityInWorld(var8);
-			}
-			return;
+			knockback = MathHelper.clamp_int(knockback, 1, 12);
+			var8.setKnockBackModifier(knockback);
+			var8.setDamage(spell.getSpell().hurtHP*spell.getAmp());
+			return var8;
 			
 		}
 		
@@ -300,31 +291,24 @@ public class SpellEffectNormal{
 		}
 		
 	}
-	public class SpellFireArrow extends SpellBase{
+	
+	public class SpellFireArrow extends SpellProjectile{
 
 		public SpellFireArrow() {
 			super();
 			// TODO 自動生成されたコンストラクター・スタブ
 		}
-
+		
 		@Override
-		public void invokeSpell(InvokeSpell parent) {
-			PacketSound ps = new PacketSound(1008,parent.invoker.getEntityId(),PacketSound.MODE.AUX);
-			Unsaga.packetPipeline.sendToAllAround(ps, PacketUtil.getTargetPointNear(parent.invoker));
-			//PacketDispatcher.sendPacketToPlayer(ps.getPacket(),(Player)parent.invoker);
-			EntityFireArrow var8 = new EntityFireArrow(parent.world, parent.invoker, 1.5F*1.5F);
-			var8.setFire(100);
-			var8.canBePickedUp = 0;
-			var8.setDamage(var8.getDamage()+(int)(1.0F*parent.getAmp()));
-			if (!parent.world.isRemote)
-			{
-				parent.world.spawnEntityInWorld(var8);
-			}
-			return;
-			
+		public Entity getProjectileEntity(InvokeSpell parent){
+			EntityFireArrowNew firearrow = new EntityFireArrowNew(parent.world, parent.invoker, 1.5F*1.5F);
+			firearrow.setFire(100);
+			firearrow.setDamage(parent.spell.hurtHP*parent.getAmp());
+			return firearrow;
 		}
 		
 	}
+	
 	public class SpellAnimalCharm extends SpellBase{
 
 		public SpellAnimalCharm() {
@@ -411,7 +395,7 @@ public class SpellEffectNormal{
 
 		public SpellHeroism() {
 			super();
-			this.potions = Lists.newArrayList(Potion.damageBoost);
+			this.buffs = Lists.newArrayList(Debuffs.powerup);
 		}
 
 		
@@ -443,7 +427,7 @@ public class SpellEffectNormal{
 		
 		public SpellMeditation() {
 			super();
-			// TODO 自動生成されたコンストラクター・スタブ
+			this.isSelf = true;
 		}
 
 		
@@ -458,7 +442,6 @@ public class SpellEffectNormal{
 			for(Buff buff:addBuffs){
 				LivingDebuff.addDebuff(target, buff, 15*(int)parent.getAmp());
 			}
-			//LivingDebuff.addDebuff(target, DebuffRegistry.);
 		}
 
 
@@ -482,6 +465,7 @@ public class SpellEffectNormal{
 	}
 	public class SpellDetectGold extends SpellBase{
 
+		public Set<Class<? extends Block>> blockClasses = Sets.newHashSet(BlockOre.class,BlockRedstoneOre.class);
 		public SpellDetectGold() {
 			super();
 			// TODO 自動生成されたコンストラクター・スタブ
@@ -496,46 +480,34 @@ public class SpellEffectNormal{
 			PairIDList pairList = new PairIDList();
 			scan.setWorld(parent.world);
 			for(;scan.hasNext();scan.next()){
-				if(!scan.isAirBlock() && scan.sy>0 && scan.sy<255){
+				if(!scan.isAirBlock() && scan.isValidHeight()){
 					//Block block = scan.getBlock();
 					PairID blocknumber = this.worldHelper.getBlockDatas(scan.getAsXYZPos());
 					boolean flag = false;
-					if(blocknumber.blockObj instanceof BlockOre || blocknumber.blockObj instanceof BlockRedstoneOre){
-						Unsaga.debug(blocknumber);
-						if(blocknumber.blockObj==Blocks.diamond_ore){
+					Unsaga.debug(blocknumber);
+					if(HSLibs.instanceOf(blocknumber.getBlockObject(),blockClasses)){
+
+						if(blocknumber.getBlockObject()==Blocks.diamond_ore){
 							if(diacheck){
-								if(pairList.contains(blocknumber)){
-									pairList.addStack(blocknumber, 1);
-								}else{
-									pairList.list.add(blocknumber.setStack(1));
-								}
+								pairList.addStack(blocknumber, 1);
 							}
 
 						}else{
-							if(pairList.contains(blocknumber)){
-								pairList.addStack(blocknumber, 1);
-							}else{
-								pairList.list.add(blocknumber.setStack(1));
-							}
+							pairList.addStack(blocknumber, 1);
 						}
 
 						flag = true;
 
 					}
-					String orekey = OreDictionary.getOreName(OreDictionary.getOreID(new ItemStack(blocknumber.blockObj,1,scan.getMetadata())));
+					String orekey = OreDictionary.getOreName(OreDictionary.getOreID(new ItemStack(blocknumber.getBlockObject(),1,scan.getMetadata())));
 					if(!orekey.equals("Unknown") && orekey.toLowerCase().contains("ore") && !flag){
-						if(pairList.contains(blocknumber)){
-							pairList.addStack(blocknumber, 1);
-						}else{
-							pairList.list.add(blocknumber.setStack(1));
-						}
+						pairList.addStack(blocknumber, 1);
 					}
 				}
 			}
 			if(!pairList.list.isEmpty()){
 				for(PairID pairid:pairList.list){
-					String name = pairid.blockObj.getLocalizedName(); //"Unknown";
-					//name = HSLibs.getItemNameFromPair(pairid);
+					String name = pairid.getBlockObject().getLocalizedName(); //"Unknown";
 					builder.append(name).append(":").append(pairid.stack).append("/");
 				}
 			}
@@ -543,10 +515,8 @@ public class SpellEffectNormal{
 			String message = new String(builder);
 			if(message.equals("")){
 				ChatUtil.addMessage(parent.invoker, "msg.spell.metal.notfound");
-				//parent.invoker.addChatMessage(Translation.localize("msg.spell.metal.notfound"));
 			}else{
 				ChatUtil.addMessageNoLocalized(parent.invoker, message);
-				//parent.invoker.addChatMessage(message);
 			}
 
 			return;
@@ -559,55 +529,27 @@ public class SpellEffectNormal{
 
 		public SpellAbyss() {
 			super();
-			// TODO 自動生成されたコンストラクター・スタブ
 		}
 
 		@Override
 		public void invokeSpell(InvokeSpell parent) {
 			float amp = parent.getAmp();
-			AxisAlignedBB bb = parent.invoker.boundingBox.expand(9.0D+amp, 4.0D+amp, 9.0D+amp);
-			Entity nearent = parent.world.findNearestEntityWithinAABB(EntityLivingBase.class, bb, parent.invoker);
+			
+			EntityLivingBase target = parent.getTargetOrfindTarget();
 
-			if(nearent!=null){
-				if(HSLibs.isEnemy(nearent,parent.invoker)){
-					EntityLiving nearTarget = (EntityLiving)nearent;
 
-					if(amp<1.0){
-						amp=1.0F;
-					}
-					if(amp>4.0){
-						amp=4.0F;
-					}
-					float f3 = 0.25F;
-					
-					PacketParticle pk = new PacketParticle(1,nearTarget.getEntityId(),25);
-					Unsaga.packetPipeline.sendToAllAround(pk, PacketUtil.getTargetPointNear(nearTarget));
-					//PacketDispatcher.sendPacketToAllPlayers(pk.getPacket());
-					
-					//PacketSound ps = new PacketSound(el.getEntityId(),1,1);
-					//PacketDispatcher.sendPacketToPlayer(ps.getPacket(),(Player)parent.invoker);
-					nearTarget.playSound("mob.endermen.portal", 1.0F, 1.0F);
-					int rand1 = parent.world.rand.nextInt(30*(int)amp);
-					if(rand1>100){
-						rand1 = 100;
-					}
-					int at = 8*(int)amp;
-					System.out.println(at);
-					//DamageSource ds = new DamageSourceUnsaga(null, parent.invoker, parent.getSpell().hurtLP, DamageHelper.Type.MAGIC);
-					
-					nearTarget.attackEntityFrom(parent.getDamageSource(), at);
-
-					int time = Math.round((float)240*amp);
-					if(time>600){
-						time = 600;
-					}
-					if(parent.world.rand.nextInt(100)<=rand1){
-						nearTarget.addPotionEffect(new PotionEffect(Potion.moveSlowdown.id,time , (int)amp));
-					}
-					//UtilSkill.tryLPHurt(15, 1, el, par3EntityPlayer);
+			if(target!=null){
+				PacketParticle pk = new PacketParticle(1,target.getEntityId(),25);
+				Unsaga.packetPipeline.sendToAllAround(pk, PacketUtil.getTargetPointNear(target));
+				target.playSound("mob.endermen.portal", 1.0F, 1.0F);
+				DamageSourceUnsaga ds = parent.getDamageSource();
+				target.attackEntityFrom(ds, parent.spell.hurtHP);
+				int time = HSLibs.getPotionTime((int) (15*parent.getAmp()));
+				if(parent.world.rand.nextDouble()<=0.5D*parent.getAmp()){
+					target.addPotionEffect(new PotionEffect(Potion.moveSlowdown.id,time , (int)amp));
 				}
-
 			}
+
 			return;
 			
 		}
@@ -622,35 +564,14 @@ public class SpellEffectNormal{
 
 		@Override
 		public void invokeSpell(InvokeSpell parent) {
-			AxisAlignedBB bb = parent.invoker.boundingBox.expand(9.0D, 4.0D, 9.0D);
-
-			System.out.println(bb);
-
-			float amp = parent.getAmp();
-			Entity nearent = parent.world.findNearestEntityWithinAABB(EntityLiving.class, bb, parent.invoker);
-
-			System.out.println(nearent);
-			if(nearent!=null){
-				//UnsagaCore.logc(par3EntityPlayer, Translation.trJP("Sucess")+" "+Translation.trJP("Weakness"));
-
-
-				if(HSLibs.isEnemy(nearent, parent.invoker)){
-					EntityLiving el = (EntityLiving)nearent;
-
-					if(amp<1.0){
-						amp=1.0F;
-					}
-					if(amp>4.0){
-						amp=4.0F;
-					}
-					int time = Math.round((float)250*amp);
-					if(time>1000){
-						time = 1000;
-					}
-					el.addPotionEffect(new PotionEffect(Potion.weakness.id,time , (int)amp));
-				}
-
+			EntityLivingBase target = parent.getTargetOrfindTarget();
+			int amp = (int) (1*parent.getAmp());
+			
+			if(target!=null){
+				int time = HSLibs.getPotionTime((int) (25*parent.getAmp()));
+				target.addPotionEffect(new PotionEffect(Potion.weakness.id,time , amp));
 			}
+
 			return;
 			
 		}
@@ -673,14 +594,14 @@ public class SpellEffectNormal{
 
 
 			ScanHelper scan = new ScanHelper(parent.invoker,8,6);
+			scan.setWorld(parent.world);
 
 			for(;scan.hasNext();scan.next()){
 				ItemStack dummy = new ItemStack(Items.dye,1,0);
 				if(parent.world.rand.nextInt(100)<prob){
-					PacketParticle pp = new PacketParticle(new XYZPos(scan.sx,scan.sy,scan.sz),3,5);
-					if(!parent.world.isRemote){
-						Unsaga.packetPipeline.sendTo(pp, (EntityPlayerMP) parent.invoker);
-					}
+					PacketParticle pp = new PacketParticle(scan.getAsXYZPos(),3,5);
+					Unsaga.packetPipeline.sendToAllAround(pp, PacketUtil.getTargetPointNear(scan.getAsXYZPos(), scan.world));
+					
 					
 					if(parent.invoker instanceof EntityPlayer){
 						ItemDye.applyBonemeal(dummy, parent.world, scan.sx, scan.sy, scan.sz, (EntityPlayer) parent.invoker);
@@ -706,8 +627,8 @@ public class SpellEffectNormal{
 		public void invokeSpell(InvokeSpell parent) {
 			if(ItemSpellBook.readPosition(parent.spellbook)!=null){
 				if(!parent.world.isRemote){
-					int ampli = (int)(3.0F + parent.getAmp());
-					ampli = MathHelper.clamp_int(ampli, 0, 12);
+					int ampli = (int)(400 * parent.getAmp());
+					ampli = MathHelper.clamp_int(ampli, 10, 3000);
 					XYZPos pos = ItemSpellBook.readPosition(parent.spellbook);
 					XYZPos start = new XYZPos(pos.x-1,pos.y+5,pos.z-1);
 					XYZPos end = new XYZPos(pos.x+1,pos.y+1,pos.z+1);
@@ -722,7 +643,11 @@ public class SpellEffectNormal{
 						}
 
 						if(flag){
-							parent.world.setBlock(scan.sx, scan.sy, scan.sz, UnsagaMagic.blockFireWall,ampli,3);
+							this.worldHelper.setBlock(scan.getAsXYZPos(), new PairID(UnsagaMagic.blockFireWall,0));
+							TileEntity te = this.worldHelper.getTileEntity(scan.getAsXYZPos());
+							if(te instanceof TileEntityFireWall){
+								((TileEntityFireWall) te).init(ampli);
+							}
 						}
 
 
@@ -731,7 +656,6 @@ public class SpellEffectNormal{
 
 			}else{
 				ChatUtil.addMessage(parent.invoker, "msg.spell.notfound.position");
-				//parent.invoker.addChatMessage(Translation.localize("msg.spell.notfound.position"));
 			}
 			
 		}

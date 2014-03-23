@@ -96,7 +96,7 @@ public class UnsagaMaterials {
 		
 		public static void init(){
 			availableMap.put(EnumUnsagaTools.SWORD, makeSetInOrder(failed,categorywood,stone,bestial,copper,lead,silver,meteoricIron,iron,fairieSilver,dragonHeart,steels,bone));
-			availableMap.put(EnumUnsagaTools.SPEAR, makeSetInOrder(failed,categorywood,stone,bestial,copper,silver,lead,meteoricIron,iron,corundums,fairieSilver,obsidian,steels,diamond,dragonHeart,bone));
+			availableMap.put(EnumUnsagaTools.SPEAR, makeSetInOrder(failed,categorywood,stone,bestial,copper,silver,lead,meteoricIron,iron,corundums,fairieSilver,obsidian,steels,diamond,dragonHeart,bone,damascus));
 			availableMap.put(EnumUnsagaTools.AXE, makeSetInOrder(failed,stone,bestial,copper,silver,lead,meteoricIron,iron,fairieSilver,obsidian,damascus,steels,bone,dragonHeart));
 			availableMap.put(EnumUnsagaTools.STAFF, makeSetInOrder(failed,categorywood,stone,bestial,bone,copper,silver,meteoricIron,lead,iron,obsidian,fairieSilver,steels,diamond,corundums,damascus,dragonHeart));
 			availableMap.put(EnumUnsagaTools.BOW, makeSetInOrder(failed,categorywood,bone,copper,lead,meteoricIron,iron,steels,fairieSilver,damascus,dragonHeart));

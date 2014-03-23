@@ -1,6 +1,10 @@
 package hinasch.mods.unlsaga.core.init;
 
 import hinasch.lib.FileObject;
+import hinasch.lib.RecipeUtil;
+import hinasch.lib.RecipeUtil.Recipe;
+import hinasch.lib.RecipeUtil.Recipe.Shaped;
+import hinasch.lib.RecipeUtil.Recipe.Shapelss;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.misc.translation.Translation;
@@ -11,8 +15,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 import cpw.mods.fml.common.registry.GameRegistry;
 import cpw.mods.fml.common.registry.LanguageRegistry;
 
@@ -48,6 +54,12 @@ public class UnsagaToolInitializer {
 		this.materialAvailable = new HashMap();
 		this.noUseParentHeader = new HashSet();
 		this.wordParticle = "の";
+	}
+	
+	protected UnsagaToolInitializer(FileObject fo){
+		this();
+		this.fileObj = fo;
+		
 	}
 
 	
@@ -100,8 +112,11 @@ public class UnsagaToolInitializer {
 					itemarray[i].setCreativeTab(Unsaga.tabUnsaga).setUnlocalizedName("unsaga."+category+"."+child.name);
 					GameRegistry.registerItem(itemarray[i],category+"."+child.name,Unsaga.modid);
 
-					//fileObj.write(itemarray[i].getUnlocalizedName()+".name=\r\n");
+					if(fileObj!=null){
+						fileObj.write(itemarray[i].getUnlocalizedName()+".name=\r\n");
 
+					}
+					
 					Unsaga.debug("itemarray:"+i+":"+"-"+"register:"+category+"."+child);
 
 				}
@@ -117,7 +132,10 @@ public class UnsagaToolInitializer {
 				itemarray[i].setCreativeTab(Unsaga.tabUnsaga).setUnlocalizedName("unsaga."+category+"."+uns.name);
 				GameRegistry.registerItem(itemarray[i],category+"."+uns.name,Unsaga.modid);
 
-				//fileObj.write(itemarray[i].getUnlocalizedName()+".name=\r\n");
+				if(fileObj!=null){
+					fileObj.write(itemarray[i].getUnlocalizedName()+".name=\r\n");
+
+				}
 				Unsaga.debug("itemarray:"+i+":"+"-"+"register:"+category+"."+uns);
 			}
 
@@ -283,6 +301,40 @@ public class UnsagaToolInitializer {
 		return Unsaga.translation.getLocalized(key+".name", lang).equals("")? true : false;
 	}
 
-	
+	public Set<UnsagaMaterial> getUnpackedAvailables(){
+		Set<UnsagaMaterial> set = new HashSet();
+		for(UnsagaMaterial material:this.materialAvailable.values()){
+			if(material.hasSubMaterials()){
+				for(UnsagaMaterial sub:material.getSubMaterials().values()){
+					set.add(sub);
+				}
+			}else{
+				set.add(material);
+			}
+		}
+		return set;
+	}
+	public void regsiterRecipes(Recipe recipebase,EnumUnsagaTools category){
+		Recipe recipe = recipebase;
+		Set<UnsagaMaterial> unpacked = this.getUnpackedAvailables();
+		for(UnsagaMaterial material:unpacked){
+			Unsaga.debug(material+":"+category+"のレシピを登録準備");
+			ItemStack is = UnsagaItems.getItemStack(category, material, 1, 0);
+			if(is!=null){
+				if(material.getAssociatedItem().isPresent()){
+					ItemStack mate = material.getAssociatedItem().get();
+					Unsaga.debug("レシピを"+mate+"に入れ替えて登録");
+					recipe.getChangedRecipe(mate);
+					Unsaga.debug(recipe.getChangedRecipe(mate).toString());
+					if(recipe instanceof Shaped){
+						RecipeUtil.addShapedRecipe(is, ((Shaped) recipe).getChangedRecipe(mate));
+					}
+					if(recipe instanceof Shapelss){
+						RecipeUtil.addShapelessRecipe(is, ((Shapelss) recipe).getChangedRecipe(mate));
+					}
+				}
+			}
+		}
+	}
 
 }

@@ -1,12 +1,13 @@
 package hinasch.mods.unlsaga.core.init;
 
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.block.BlockChestUnsaga;
+import hinasch.mods.unlsaga.block.BlockChestUnsagaNew;
 import hinasch.mods.unlsaga.block.BlockDataUnsaga;
 import hinasch.mods.unlsaga.block.BlockFallStone;
 import hinasch.mods.unlsaga.block.BlockOreUnsagaNew;
 import hinasch.mods.unlsaga.item.etc.ItemBlockOreUnsaga;
-import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsaga;
+import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsagaNew;
+import hinasch.mods.unlsaga.tileentity.TileEntityFallStone;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.item.ItemBlock;
@@ -42,7 +43,7 @@ public class UnsagaBlocks {
 
 	public static void registerValues() {
 
-		blockChestUnsaga = new BlockChestUnsaga(0).setBlockName("unsaga.chest").setHardness(2.5F).setCreativeTab(Unsaga.tabUnsaga);
+		blockChestUnsaga = new BlockChestUnsagaNew().setBlockName("unsaga.chest").setHardness(2.5F).setCreativeTab(Unsaga.tabUnsaga);
 		blockFallStone = new BlockFallStone(Material.rock).setHardness(2.0F).setResistance(10.0F).setStepSound(Block.soundTypeStone)
 				.setBlockName("unsaga.stonefalling").setCreativeTab(Unsaga.tabUnsaga);
 		//blockAir = new BlockNothing(blockAirID,Material.air).setHardness(100.0F).setUnlocalizedName("unsaga.nothing");
@@ -54,12 +55,14 @@ public class UnsagaBlocks {
 		}
 		//blockOreUnsaga = new BlockOreUnsaga().setHardness(3.0F).setResistance(5.0F).setStepSound(Block.soundTypeStone)
 		//		.setBlockName("unsaga.ore").setCreativeTab(Unsaga.tabUnsaga);
-		tileEntityChestUnsaga = TileEntityChestUnsaga.class;
+		//tileEntityChestUnsaga = TileEntityChestUnsaga.class;
 		
 
-		GameRegistry.registerTileEntity(tileEntityChestUnsaga, "unsaga.tileEntityChestUnsaga");
+		GameRegistry.registerTileEntity(TileEntityChestUnsagaNew.class, "unsaga.tileEntityChestUnsaga");
+		GameRegistry.registerTileEntity(TileEntityFallStone.class, "unsaga.fallingStone");
 		//GameRegistry.registerTileEntity(TileEntityShapeMemory.class, "unsaga.tileEntityShapeMemory");
 		GameRegistry.registerBlock(blockChestUnsaga,ItemBlock.class,"bonuschest",Unsaga.modid);
+		
 		GameRegistry.registerBlock(blockFallStone,ItemBlock.class,"fallstone",Unsaga.modid);
 	}
 

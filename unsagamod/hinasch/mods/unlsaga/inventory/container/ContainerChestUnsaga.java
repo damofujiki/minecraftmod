@@ -1,5 +1,6 @@
 package hinasch.mods.unlsaga.inventory.container;
 
+import hinasch.lib.HSLibs;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.gui.GuiChest;
 import hinasch.mods.unlsaga.misc.ability.Ability;
@@ -7,27 +8,45 @@ import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.misc.util.ChatMessageHandler;
+import hinasch.mods.unlsaga.misc.util.HelperChestUnsaga;
 import hinasch.mods.unlsaga.network.packet.PacketGuiButton;
-import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsaga;
+import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsagaNew;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.Container;
 
 public class ContainerChestUnsaga extends Container{
 
-	public TileEntityChestUnsaga chest;
+	public TileEntityChestUnsagaNew chest;
+	public HelperChestUnsaga helper;
 	protected EntityPlayer openPlayer;
+	protected boolean setClose;
 
 	protected int id;
 
 
-	public ContainerChestUnsaga(TileEntityChestUnsaga chest, EntityPlayer ep) {
+	public ContainerChestUnsaga(TileEntityChestUnsagaNew chest, EntityPlayer ep) {
 		this.openPlayer = ep;
 		this.chest = chest;
+		this.setClose = false;
+		this.helper = new HelperChestUnsaga(chest);
 	}
 	@Override
 	public boolean canInteractWith(EntityPlayer entityplayer) {
-		// TODO 自動生成されたメソッド・スタブ
-		return this.openPlayer==entityplayer;
+		if(this.chest==null){
+			return false;
+		}
+		if(this.chest.hasChestOpened()){
+			return false;
+		}
+		if(this.openPlayer.openContainer==this){
+			if(this.setClose){
+				return false;
+			}
+			return this.openPlayer==entityplayer;
+		}
+
+		return false;
+
 	}
 
 
@@ -46,19 +65,16 @@ public class ContainerChestUnsaga extends Container{
 
 	}
 	public void onPacketData() {
+		HSLibs.closeScreen(openPlayer);
 		if(id==GuiChest.OPEN){
-			openPlayer.openContainer = openPlayer.inventoryContainer;
-			boolean flag = this.chest.activateChest(openPlayer);
-			if(flag){
-				this.chest.setItemsToChest(this.chest.getWorldObj().rand);
-				this.chest.chestFunc(this.openPlayer);
-			}
+			this.chest.activateChest(this.openPlayer);
+
 
 		}
 		if(id==GuiChest.UNLOCK){
-			openPlayer.openContainer = openPlayer.inventoryContainer;
+
 			if(HelperAbility.hasAbilityLiving(openPlayer, AbilityRegistry.unlock)>0){
-				this.chest.tryUnlock(openPlayer);
+				this.helper.tryUnlock(openPlayer);
 			}else{
 				ChatMessageHandler.sendChatToPlayer(openPlayer, Translation.localize("msg.has.noability"));
 			}
@@ -66,18 +82,18 @@ public class ContainerChestUnsaga extends Container{
 
 		}
 		if(id==GuiChest.DEFUSE){
-			openPlayer.openContainer = openPlayer.inventoryContainer;
+
 			if(HelperAbility.hasAbilityLiving(openPlayer, AbilityRegistry.defuse)>0){
-				this.chest.tryDefuse(openPlayer);
+				this.helper.tryDefuse(openPlayer);
 			}else{
 				ChatMessageHandler.sendChatToPlayer(openPlayer, Translation.localize("msg.has.noability"));
 			}
 
 		}
 		if(id==GuiChest.DIVINATION){
-			openPlayer.openContainer = openPlayer.inventoryContainer;
+
 			if(HelperAbility.hasAbilityLiving(openPlayer, AbilityRegistry.divination)>0){
-				this.chest.divination(openPlayer);
+				this.helper.divination(openPlayer);
 			}else{
 				ChatMessageHandler.sendChatToPlayer(openPlayer, Translation.localize("msg.has.noability"));
 			}

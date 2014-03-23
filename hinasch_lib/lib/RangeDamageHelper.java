@@ -1,13 +1,12 @@
 package hinasch.lib;
 
-import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillEffectHelper;
+import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
 
 import java.util.List;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.monster.EntityGhast;
-import net.minecraft.entity.monster.EntityMob;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;
@@ -16,65 +15,58 @@ public class RangeDamageHelper {
 
 
 	public World world;
-	public SkillEffectHelper helper;
+	public InvokeSkill helper;
+	public EntityPlayer ep;
 	public RangeDamageHelper(World world){
 		this.world = world;
 	}
 	
-	public RangeDamageHelper(World world,SkillEffectHelper parent){
+	public RangeDamageHelper(World world,InvokeSkill parent){
 		this.world = world;
 		this.helper = parent;
 	}
 	
-	public void setSkillEffectHelper(SkillEffectHelper parent){
+	public void setSkillEffectHelper(InvokeSkill parent){
 		this.helper = parent;
 	}
-	public void doCauseDamage(AxisAlignedBB bb,float damage,DamageSource damagesource,boolean isEnemyOnly){
-		causeDamage(this,this.world,bb,damage,damagesource,isEnemyOnly);
+	
+
+	
+	public static AxisAlignedBB makeBBFromPlayer(EntityPlayer player,double horizontal,double vertical){
+		return player.boundingBox.expand(horizontal,vertical,horizontal);
 	}
 	
-	public static void causeDamage(RangeDamageHelper parent,World world,AxisAlignedBB bb,float damage,DamageSource damagesource,boolean isEnemyOnly){
-		Entity damageEntity = damagesource.getEntity();
-		if(isEnemyOnly){
-			List<EntityMob> moblist = world.getEntitiesWithinAABB(EntityMob.class, bb);
-			if(!moblist.isEmpty()){
-				for(EntityMob mob:moblist){
-					if(mob!=damageEntity){
-						attackMob(parent,mob, damagesource, damage);
-						if(parent!=null){
-							parent.takeEntityLiving(mob,damagesource);
+	public void causeRangeDamage(AxisAlignedBB bb,DamageSource ds,float damage,boolean onGroundOnly){
+		causeDamage(this.world,this,bb,ds,damage,onGroundOnly);
+	}
+	
+	public void causeRangeDamage(AxisAlignedBB bb,DamageSource ds,float damage){
+		causeDamage(this.world,this,bb,ds,damage);
+	}
+	
+	public static void causeDamage(World world,RangeDamageHelper rangeHelper,AxisAlignedBB bb,DamageSource ds,float damage){
+		causeDamage(world,rangeHelper,bb,ds,damage,false);
+	}
+	public static void causeDamage(World world,RangeDamageHelper rangeHelper,AxisAlignedBB bb,DamageSource ds,float damage,boolean onGroundOnly){
+		Entity damageEntity = ds.getEntity();
+		List<EntityLivingBase> mobs = world.getEntitiesWithinAABB(EntityLivingBase.class, bb);
+		if(!mobs.isEmpty()){
+			for(EntityLivingBase mob:mobs){
+				if(mob!=damageEntity){
+					boolean flag = true;
+					if(mob instanceof EntityPlayer && damageEntity instanceof EntityPlayer){
+						if(!((EntityPlayer) mob).canAttackPlayer((EntityPlayer) damageEntity));{
+							flag = false;
 						}
 					}
-
-
-				}
-			}
-			List<EntityGhast> ghasts = world.getEntitiesWithinAABB(EntityGhast.class, bb);
-			if(!ghasts.isEmpty()){
-				for(EntityGhast ghast:ghasts){
-					if(ghast!=damageEntity){
-						attackMob(parent,ghast, damagesource, damage);
-						if(parent!=null){
-							parent.takeEntityLiving(ghast,damagesource);
+					if(flag){
+						if((mob.onGround && onGroundOnly) || !onGroundOnly){
+							mob.attackEntityFrom(ds, damage);
+							if(rangeHelper!=null){
+								rangeHelper.takeEntityLiving(mob, ds);
+							}
 						}
 					}
-
-
-					
-				}
-			}
-
-		}else{
-			List<EntityLivingBase> moblist = world.getEntitiesWithinAABB(EntityLivingBase.class, bb);
-			if(!moblist.isEmpty()){
-				for(EntityLivingBase mob:moblist){
-					if(mob!=damageEntity){
-						attackMob(parent,mob, damagesource, damage);
-						if(parent!=null){
-							parent.takeEntityLiving(mob,damagesource);
-						}
-					}
-
 
 
 				}
@@ -82,18 +74,7 @@ public class RangeDamageHelper {
 		}
 
 	}
-	
-	protected static void attackMob(RangeDamageHelper parent,Entity mob,DamageSource ds,float damage){
-		if(parent!=null){
-			if(parent.helper!=null){
-				parent.helper.attack(mob, null);
-			}
-			
-		}else{
-			mob.attackEntityFrom(ds,damage);
-		}
-		
-	}
+
 	public void takeEntityLiving(EntityLivingBase living,DamageSource source){
 		
 	}

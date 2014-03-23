@@ -1,6 +1,7 @@
 package hinasch.lib;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
@@ -8,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockOre;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.entity.EntityPlayerSP;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -20,6 +22,8 @@ import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.IMob;
 import net.minecraft.entity.passive.EntityTameable;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.entity.projectile.EntityArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
@@ -39,6 +43,7 @@ import net.minecraftforge.oredict.OreDictionary;
 import com.google.common.base.Optional;
 
 import cpw.mods.fml.common.registry.LanguageRegistry;
+import cpw.mods.fml.relauncher.ReflectionHelper;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
@@ -54,6 +59,92 @@ public class HSLibs {
 	public static int getPotionTime(int sec){
 		return sec*20;
 	}
+	
+	public static boolean isEntityStopped(Entity entity){
+		
+		System.out.println(entity.posX + entity.posY + entity.posZ);
+		return entity.posX + entity.posY + entity.posZ <= 0.00001D;
+	}
+	
+
+	public static <T> boolean listContains(Collection<T> c,T... elements){
+		int var1 = 0;
+		for(T element:elements){
+			if(c.contains(element)){
+				var1 += 1;
+			}
+		}
+		if(var1>=c.size()){
+			return true;
+		}
+		return false;
+	}
+	
+	public static <T> boolean instanceOf(Object par1,Collection<Class<? extends T>> classes){
+		//int var1 = 0;
+		
+		for(Class cls:classes){
+			System.out.println(par1.getClass().getSimpleName()+":"+cls.getSimpleName());
+			if(cls.isInstance(par1) || par1.getClass()==cls){
+				
+				return true;
+			}
+		}
+
+		return false;
+	}
+	public static void closeScreen(EntityPlayer ep){
+		if(ep instanceof EntityPlayerMP){
+			((EntityPlayerMP)ep).closeScreen();
+		}
+		if(ep instanceof EntityPlayerSP){
+			((EntityPlayerSP)ep).closeScreen();
+		}
+		return;
+	}
+	
+	public static boolean isArrowInGround(EntityArrow arrow){
+		
+		Class arrowClass = arrow.getClass();
+		try {
+			
+			Field f = ReflectionHelper.findField(arrowClass, "inGround");
+			//Field f = arrowClass.getDeclaredField("inGround");
+			f.setAccessible(true);
+			return f.getBoolean(arrow);
+		} catch (SecurityException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		return false;
+	}
+	
+	public static int getArrowTickInGround(EntityArrow arrow){
+		Class arrowClass = arrow.getClass();
+		try {
+			Field f = ReflectionHelper.findField(arrowClass, "ticksInGround");
+			//Field f = arrowClass.getDeclaredField("ticksInGround");
+			f.setAccessible(true);
+			return f.getInt(arrow);
+		} catch (SecurityException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} catch (IllegalArgumentException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
 	@Deprecated
 	public static void langSet(String par1,String par3,Object par2){
 		//System.out.println(par1+":"+par3+":"+par2);
@@ -63,13 +154,13 @@ public class HSLibs {
 	}
 	
 	public static boolean isOreBlock(PairID blockdata){
-		if(blockdata.blockObj instanceof BlockOre ){
+		if(blockdata.getBlockObject() instanceof BlockOre ){
 			return true;
 		}
-		if(blockdata.blockObj==Blocks.redstone_ore || blockdata.blockObj==Blocks.lit_redstone_ore ){
+		if(blockdata.getBlockObject()==Blocks.redstone_ore || blockdata.getBlockObject()==Blocks.lit_redstone_ore ){
 			return true;
 		}
-		ItemStack is = new ItemStack(blockdata.blockObj,1,blockdata.metadata);
+		ItemStack is = new ItemStack(blockdata.getBlockObject(),1,blockdata.getMeta());
 		if(OreDictionary.getOreName(OreDictionary.getOreID(is)).contains("ore")){
 			return true;
 		}
@@ -78,7 +169,7 @@ public class HSLibs {
 
 	public static boolean canBreakAndEffectiveBlock(World world,EntityPlayer ep,String toolclass,XYZPos pos){
 		PairID blockdata = HSLibs.getBlockDatas(world, pos);
-		int harvestLevel = blockdata.blockObj.getHarvestLevel(blockdata.metadata);
+		int harvestLevel = blockdata.getBlockObject().getHarvestLevel(blockdata.getMeta());
 		if(ep.getHeldItem()==null){
 			return false;
 		}
@@ -88,26 +179,33 @@ public class HSLibs {
 		//Unsaga.debug("harvestlevel:"+harvestLevel+" toolHArvestLevel:"+toolHarvestLevel);
 		//Unsaga.debug(toolclass+"effective:"+blockdata.blockObj.isToolEffective(toolclass, blockdata.metadata));
 		boolean flag1 = harvestLevel<=toolHarvestLevel;
-		boolean flag2 = blockdata.blockObj.isToolEffective(toolclass, blockdata.metadata);
-		boolean flag3 = blockdata.blockObj.getBlockHardness(world, pos.x,pos.y,pos.z)>0;
-		if(blockdata.blockObj==Blocks.redstone_ore || blockdata.blockObj==Blocks.lit_redstone_ore ){
+		boolean flag2 = blockdata.getBlockObject().isToolEffective(toolclass, blockdata.getMeta());
+		boolean flag3 = blockdata.getBlockObject().getBlockHardness(world, pos.x,pos.y,pos.z)>0;
+		if(blockdata.getBlockObject()==Blocks.redstone_ore || blockdata.getBlockObject()==Blocks.lit_redstone_ore ){
 			flag2 = true;
 		}
 		return flag1 && flag2 && flag3;
 	}
-	public static void playBlockBreakSFX(World world,XYZPos pos,PairID blockdata){
-		world.playAuxSFX(2001, pos.x, pos.y, pos.z, Block.getIdFromBlock(blockdata.blockObj) + (blockdata.metadata  << 12));
+	public static void playBlockBreakSFX(World world,XYZPos pos,PairID blockdata,boolean sw){
+		world.playAuxSFX(2001, pos.x, pos.y, pos.z, Block.getIdFromBlock(blockdata.getBlockObject()) + (blockdata.getMeta()  << 12));
 		if(!world.isRemote){
 			boolean flag = world.setBlockToAir(pos.x, pos.y, pos.z);
-			if (blockdata.blockObj != null && flag) {
-				blockdata.blockObj.onBlockDestroyedByPlayer(world, pos.x, pos.y, pos.z, blockdata.metadata);
+			if (blockdata.getBlockObject() != null && flag) {
+				blockdata.getBlockObject().onBlockDestroyedByPlayer(world, pos.x, pos.y, pos.z, blockdata.getMeta());
 
-				blockdata.blockObj.dropBlockAsItem(world, pos.x, pos.y, pos.z, blockdata.metadata,1);
+				if(!sw){
+					blockdata.getBlockObject().dropBlockAsItem(world, pos.x, pos.y, pos.z, blockdata.getMeta(),1);
+				}
+				
 
 
 
 			}
 		}
+	}
+	
+	public static void playBlockBreakSFX(World world,XYZPos pos,PairID blockdata){
+		playBlockBreakSFX(world,pos,blockdata,false);
 	}
 	
 	public static PairID getBlockDatas(World world,XYZPos pos){
@@ -128,7 +226,7 @@ public class HSLibs {
 	}
 
 	public static String getItemNameFromPair(PairID pair){
-		ItemStack is = new ItemStack(pair.blockObj,1,pair.metadata);
+		ItemStack is = new ItemStack(pair.getBlockObject(),1,pair.getMeta());
 		String key = is.getItem().getUnlocalizedName(is);
 		String name = LanguageRegistry.instance().getStringLocalization(key+".name", "en_US");
 		return name.equals("") ? key : name;

@@ -129,6 +129,7 @@ public class PacketPipeline extends MessageToMessageCodec<FMLProxyPacket, Abstra
         this.registerPacket(PacketSound.class);
         this.registerPacket(PacketSyncChest.class);
         this.registerPacket(PacketHandlerClientThunder.class);
+        this.registerPacket(PacketSyncDebuff.class);
         //ここでパケットクラスの登録をする。
         //this.registerPacket(KeyHandlingPacket.class);
     }

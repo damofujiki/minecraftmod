@@ -85,16 +85,16 @@ public class AbilityRegistry {
 	
 	public static final Skill kaleidoscope = new Skill(100,"Bopeep","変幻自在",20,6,DamageHelper.Type.SWORD,5).setSkillEffect(skillSword.kaleidoScope);
 	public static final Skill slash = new Skill(101,"Slash","払い抜け",5,3,DamageHelper.Type.SWORD,3).setSkillEffect(null);
-	public static final Skill smash = new Skill(102,"Smash","スマッシュ",15,3,DamageHelper.Type.SWORD,8).setSkillEffect(skillSword.gust);
-	public static final Skill roundabout = new Skill(103,"Roundabout","転",0,0,DamageHelper.Type.SWORD,6).setSkillEffect(null);
-	public static final Skill chargeBlade = new Skill(104,"Charge Blade","追突剣",5,0,DamageHelper.Type.SWORDPUNCH,8).setSkillEffect(skillSword.chargeBlade);
+	public static final Skill smash = new Skill(102,"Smash","スマッシュ",15,3,DamageHelper.Type.SWORD,8).setSkillEffect(skillSword.smash);
+	public static final Skill roundabout = new Skill(103,"Roundabout","転",0,0,DamageHelper.Type.SWORD,6).setSkillEffect(skillSword.roundabout);
+	public static final Skill chargeBlade = new Skill(104,"Charge Blade","追突剣",0,0,DamageHelper.Type.SWORDPUNCH,8).setSkillEffect(skillSword.chargeBlade);
 	public static final Skill gust = new Skill(105,"Gust","逆風の太刀",9,0,DamageHelper.Type.SWORD,5).setSkillEffect(skillSword.gust);
 	public static final Skill vandalize = new Skill(106,"Vandalize","ヴァンダライズ",10,0,DamageHelper.Type.SWORD,15).setSkillEffect(skillSword.vandelize);
 	public static final Skill tomahawk = new Skill(107,"Tomahawk","トマホーク",5,0,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(null);
-	public static final Skill fujiView = new Skill(108,"Fuji View","富嶽百景",8,0,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(skillAxe.fujiView);
+	public static final Skill fujiView = new Skill(108,"Fuji View","富嶽百景",12,0,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(skillAxe.fujiView);
 	public static final Skill skyDrive = new Skill(109,"Skydrive","スカイドライブ",10,0,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(skillAxe.skyDrive);
 	public static final Skill woodBreakerPhoenix = new Skill(111,"Wood Breaker Phoenix","マキ割りフェニックス",10,0,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(skillAxe.woodBreaker);
-	public static final Skill woodChopper = new Skill(110,"Wood Chopper","大木断",5,0,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(skillAxe.new SkillWoodChopper());
+	public static final Skill woodChopper = new Skill(110,"Wood Chopper","大木断",5,0,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(skillAxe.woodChopper);
 	public static final Skill aiming = new Skill(120,"Aiming","エイミング",10,2,DamageHelper.Type.SPEAR,15).setSkillEffect(skillSpear.aiming);
 	public static final Skill acupuncture = new Skill(121,"Acupuncture","独妙点穴",20,2,DamageHelper.Type.SPEAR,25).setSkillEffect(skillSpear.acupuncture);
 	public static final Skill swing = new Skill(122,"Swing","スウィング",-10,2,DamageHelper.Type.SWORDPUNCH,15).setSkillEffect(skillSpear.swing);;
@@ -118,7 +118,7 @@ public class AbilityRegistry {
 	public static final HashSet<Ability> healDowns = Sets.newHashSet(healDown5,healDown10,healDown15,healDown20,healDown25);
 	public static final HashSet<Ability> healUps = Sets.newHashSet(healUp5,healUp10);
 	
-	public static final HashSet<Skill> requireCoolingSet = Sets.newHashSet(vandalize,skyDrive,grandSlam,zapper);
+	public static final HashSet<Skill> requireCoolingSet = Sets.newHashSet(fujiView,vandalize,skyDrive,grandSlam,zapper);
 	
 	public static Map<Potion,Ability> againstPotionMap = new HashMap();
 	
@@ -303,8 +303,9 @@ public class AbilityRegistry {
 	
 	private Optional<List<Ability>> getInheritAbilityList(EnumUnsagaTools category,UnsagaMaterial material){
 		if(!this.inheritAbilityMap.isEmpty()){
-			if(this.inheritAbilityMap.get(category.toString()+"."+material.name)!=null){
-				return Optional.of(this.inheritAbilityMap.get(category.toString()+"."+material.name));
+			String key = category.toString()+"."+material.name;
+			if(this.inheritAbilityMap.get(key)!=null){
+				return Optional.of(this.inheritAbilityMap.get(key));
 			}
 			
 		}

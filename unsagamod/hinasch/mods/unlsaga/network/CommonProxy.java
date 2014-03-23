@@ -13,7 +13,7 @@ import hinasch.mods.unlsaga.inventory.container.ContainerChestUnsaga;
 import hinasch.mods.unlsaga.inventory.container.ContainerEquipment;
 import hinasch.mods.unlsaga.inventory.container.ContainerSmithUnsaga;
 import hinasch.mods.unlsaga.misc.module.UnsagaMagicContainerHandler;
-import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsaga;
+import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsagaNew;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.inventory.GuiContainer;
 import net.minecraft.entity.NpcMerchant;
@@ -73,7 +73,7 @@ public class CommonProxy implements IGuiHandler{
 		}
 		if(ID==Unsaga.guiNumber.chest){
 			Unsaga.debug("きてます");
-			TileEntityChestUnsaga chest = (TileEntityChestUnsaga)world.getTileEntity(x, y, z);
+			TileEntityChestUnsagaNew chest = (TileEntityChestUnsagaNew)world.getTileEntity(x, y, z);
 			if(Minecraft.getMinecraft().currentScreen==null && chest!=null){
 				Unsaga.debug("GUI");
 				return new GuiChest(chest,player);
@@ -139,7 +139,7 @@ public class CommonProxy implements IGuiHandler{
 			
 		}
 		if(ID==Unsaga.guiNumber.chest){
-			TileEntityChestUnsaga chest = (TileEntityChestUnsaga)world.getTileEntity(x, y, z);
+			TileEntityChestUnsagaNew chest = (TileEntityChestUnsagaNew)world.getTileEntity(x, y, z);
 			if(player.openContainer == player.inventoryContainer && chest!=null){
 				Unsaga.debug("Container");
 				return new ContainerChestUnsaga(chest,player);

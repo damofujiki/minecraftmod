@@ -1,12 +1,13 @@
 package hinasch.mods.unlsaga.misc.debuff.state;
 
-import hinasch.mods.unlsaga.entity.projectile.EntityBoulder;
+import hinasch.mods.unlsaga.entity.projectile.EntityBoulderNew;
 import hinasch.mods.unlsaga.entity.projectile.EntitySolutionLiquid;
 import hinasch.mods.unlsaga.misc.debuff.Debuff;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingState;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateRandomThrow;
+import hinasch.mods.unlsagamagic.misc.spell.Spells;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 
@@ -37,9 +38,9 @@ public class StateRandomThrow extends State{
 	
 	public Entity getThrowingEntity(LivingState parent,EntityLivingBase thrower,double dx,double dy,double dz){
 		if(this==Debuffs.stoneShower){
-			EntityBoulder var8 = new EntityBoulder(thrower.worldObj, thrower, 1.0F * 2.0F,dx,dy,dz);
-			var8.canBePickedUp = 0;
-			var8.setDamage(var8.getDamage()+(float)((LivingStateRandomThrow)parent).amp);
+			EntityBoulderNew var8 = new EntityBoulderNew(thrower.worldObj, thrower, 1.0F * 2.0F);
+			var8.setLocationAndAngles(var8.posX+dx, var8.posY+dy, var8.posZ+dz, var8.rotationYaw, var8.rotationPitch);
+			var8.setDamage(Spells.stoneShower.hurtHP+parent.getModifierAttackBuff(thrower));
 			return var8;
 		}
 		if(this==Debuffs.thunderCrap){

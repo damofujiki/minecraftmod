@@ -9,6 +9,8 @@ import net.minecraft.entity.EntityLivingBase;
 
 public abstract class SpellHealing extends SpellBase{
 
+	protected boolean isSelf = false;
+	
 	public SpellHealing(){
 		
 	}
@@ -16,14 +18,14 @@ public abstract class SpellHealing extends SpellBase{
 
 	@Override
 	public void invokeSpell(InvokeSpell parent) {
-		float heal = Math.round(parent.spell.hurtHP*parent.getAmp());
-		if(parent.getTarget().isPresent()){
+		float heal = parent.spell.hurtHP*parent.getAmp();
+		if(parent.getTarget().isPresent() && !this.isSelf){
 
 			EntityLivingBase target = parent.getTarget().get();
-			target.heal(heal);
+			target.heal(heal);			
 			this.hookHealing(parent,target);
 			String mesbase = Translation.localize("msg.heal");
-			String formatted = String.format(mesbase, target.getCommandSenderName(),heal);
+			String formatted = String.format(mesbase, target.getCommandSenderName(),Math.round(heal));
 			ChatUtil.addMessageNoLocalized(parent.invoker, formatted);
 			PacketParticle pp = new PacketParticle(3,target.getEntityId(),10);
 
@@ -34,7 +36,7 @@ public abstract class SpellHealing extends SpellBase{
 			parent.invoker.heal(heal);
 			this.hookHealing(parent,parent.invoker);
 			String mesbase = Translation.localize("msg.heal");
-			String formatted = String.format(mesbase, parent.invoker.getCommandSenderName(),heal);
+			String formatted = String.format(mesbase, parent.invoker.getCommandSenderName(),Math.round(heal));
 			ChatUtil.addMessageNoLocalized(parent.invoker, formatted);
 			PacketParticle pp = new PacketParticle(3,parent.invoker.getEntityId(),3);
 			Unsaga.packetPipeline.sendToAllAround(pp, PacketUtil.getTargetPointNear(parent.invoker));

@@ -2,6 +2,8 @@ package hinasch.mods.unlsaga.entity.projectile;
 
 import hinasch.lib.HSLibs;
 import hinasch.lib.RangeDamageHelper;
+import hinasch.lib.XYZPos;
+import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.util.DamageHelper;
 import hinasch.mods.unlsaga.misc.util.DamageSourceUnsaga;
@@ -53,6 +55,7 @@ public class EntityFlyingAxe extends EntityThrowable implements IProjectile
 	private boolean isSkydrive = false;
 	private boolean search = false;
 	private boolean inGround = false;
+	protected XYZPos startPos;
 	public float rotation = 0;
 	private int tick = 0;
 
@@ -148,6 +151,7 @@ public class EntityFlyingAxe extends EntityThrowable implements IProjectile
 			par3 = 0;
 			//this.boundingBox = this.boundingBox.expand(0.1D, 0.1D, 0.1D);
 		}
+		this.startPos = XYZPos.entityPosToXYZ(this);
 		this.setThrowableHeading(this.motionX, this.motionY, this.motionZ, par3 * 1.5F, 1.0F);
 	}
 
@@ -437,18 +441,21 @@ public class EntityFlyingAxe extends EntityThrowable implements IProjectile
 
 		this.tick += 1;
 
+		Unsaga.debug("tick:"+tick+" X:"+this.motionX+" Y:"+this.motionY+" Z:"+this.motionZ);
 		if(this.tick>5000){
 			this.tick = 0;
 		}
 		this.rotation = MathHelper.wrapAngleTo180_float(this.rotation);
 
 		if(isSkydrive){
-			if(tick<=5){
-				this.motionX = 0;
-				this.motionY += this.getGravityVelocity();
-				this.motionZ = 0;
+			if(tick<10){
+				//this.setPosition(startPos.dx, startPos.dy, startPos.dz);
+				//this.setVelocity(0, 0, 0);
+
+				
 			}
-			if(tick==6){
+			
+			if(tick==10){
 				//ターゲットがいなかったらガストを探す
 				if(this.target==null){
 					this.target = (EntityLivingBase) this.worldObj.findNearestEntityWithinAABB(EntityGhast.class, this.boundingBox.expand(20.0D, 20.0D, 20.0D), this);
@@ -467,23 +474,23 @@ public class EntityFlyingAxe extends EntityThrowable implements IProjectile
 
 					double var1 = 0;
 					double var2 = 0.06D;
-					if(sub.xCoord!=0){
-					
-						if(sub.xCoord<0){
-							var1 = -var2 / sub.xCoord;
-						}else{
-							var1 = var2 / sub.xCoord;
-						}
-						
-					}else{
-						var1 = 0.00000001D;
-					}
+//					if(sub.xCoord!=0){
+//					
+//						if(sub.xCoord<0){
+//							var1 = -var2 / sub.xCoord;
+//						}else{
+//							var1 = var2 / sub.xCoord;
+//						}
+//						
+//					}else{
+//						var1 = 0.00000001D;
+//					}
 					sub.normalize();
 					this.motionX += sub.xCoord * var1;
 					this.motionZ += sub.zCoord * var1;
 					this.motionY += sub.yCoord * var1;
 
-					this.motionY += this.getGravityVelocity();
+					//this.motionY += this.getGravityVelocity();
 //					this.motionX = this.cut(this.motionX,0.1D);
 //					this.motionZ = this.cut(this.motionZ,0.1D);
 //					this.motionY = this.cut(this.motionY,0.1D);
@@ -524,6 +531,14 @@ public class EntityFlyingAxe extends EntityThrowable implements IProjectile
 //		}
 	}
     
+	
+    protected float getGravityVelocity()
+    {
+    	if(this.isSkydrive){
+    		return 0.0F;
+    	}
+        return 0.03F;
+    }
 	/**
 	 * (abstract) Protected helper method to read subclass entity data from NBT.
 	 */

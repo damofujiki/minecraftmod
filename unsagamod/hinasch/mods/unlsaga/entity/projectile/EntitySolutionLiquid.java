@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.entity.projectile;
 
-import hinasch.lib.PairID;
+import hinasch.lib.HSLibs;
+import hinasch.lib.RangeDamageHelper;
 import hinasch.lib.WorldHelper;
 import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
@@ -8,14 +9,13 @@ import hinasch.mods.unlsaga.misc.util.DamageHelper;
 import hinasch.mods.unlsaga.misc.util.DamageSourceUnsaga;
 import hinasch.mods.unlsaga.network.packet.PacketHandlerClientThunder;
 import hinasch.mods.unlsaga.network.packet.PacketUtil;
-import hinasch.mods.unlsagamagic.misc.spell.effect.ScannerElectricShock;
+import hinasch.mods.unlsagamagic.misc.spell.Spells;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;
-import net.minecraft.entity.effect.EntityLightningBolt;
 import net.minecraft.entity.projectile.EntityThrowable;
-import net.minecraft.init.Blocks;
+import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.world.World;
 
@@ -59,34 +59,31 @@ public class EntitySolutionLiquid extends EntityThrowable implements IProjectile
 
 	private void doThunderCrap(MovingObjectPosition mop) {
 		if(mop.typeOfHit==MovingObjectPosition.MovingObjectType.BLOCK || mop.typeOfHit==MovingObjectPosition.MovingObjectType.ENTITY){
-//			XYZPos pos = null;
-//			switch(mop.typeOfHit){
-//			case BLOCK:
-//				pos = new XYZPos(mop.blockX,mop.blockY,mop.blockZ);
-//				break;
-//			case ENTITY:
-//				pos = XYZPos.entityPosToXYZ(mop.entityHit);
-//				break;
-//			default:
-//				return;
-//			}
+			DamageSourceUnsaga ds = new DamageSourceUnsaga(null,this.getThrower(),Spells.thunderCrap.hurtLP,DamageHelper.Type.MAGIC,this);
+			ds.setSubDamageType(DamageHelper.SubType.ELECTRIC);
 			WorldHelper helper = new WorldHelper(this.worldObj);
-			EntityLightningBolt bolt = new EntityLightningBolt(this.worldObj,this.posX,this.posY,this.posZ);
+			AxisAlignedBB bb = HSLibs.getBounding(XYZPos.entityPosToXYZ(this), 2, 1);
+			RangeDamageHelper.causeDamage(worldObj, null, bb, ds, Spells.thunderCrap.hurtHP);
+
 			if(!this.worldObj.isRemote){
 			
-				this.worldObj.spawnEntityInWorld(bolt);
+
+	            this.worldObj.playSoundEffect(this.posX, this.posY, this.posZ, "ambient.weather.thunder", 10000.0F, 0.8F + this.rand.nextFloat() * 0.2F);
 				PacketHandlerClientThunder pt = new PacketHandlerClientThunder(XYZPos.entityPosToXYZ(this));
 				Unsaga.packetPipeline.sendToAllAround(pt, PacketUtil.getTargetPointNear(this));
 				//液体のキャッチが不安定なのでもうちょっと範囲広げる
-				if(helper.findNearMaterial(this.worldObj,Material.water, XYZPos.entityPosToXYZ(this), 3)!=null){
-					XYZPos pos = helper.findNearMaterial(worldObj,Material.water, XYZPos.entityPosToXYZ(this), 3);
-					Unsaga.debug("液体発見");
-					PairID compare = new PairID(Blocks.water,0).setCheckMetadata(false);
-					compare.sameBlocks.add(new PairID(Blocks.flowing_water,0).setCheckMetadata(false));
+				if(helper.findNearMaterial(this.worldObj,Material.water, XYZPos.entityPosToXYZ(this), 15)!=null){
 					
-					
-					ScannerElectricShock shocker = new ScannerElectricShock(compare,pos,this.getThrower());
-					shocker.doScan(this.worldObj, 7);
+					XYZPos pos = helper.findNearMaterial(worldObj,Material.water, XYZPos.entityPosToXYZ(this), 15);
+					bb = HSLibs.getBounding(pos, 2, 1);
+					RangeDamageHelper.causeDamage(worldObj, null, bb, ds, Spells.thunderCrap.hurtHP);
+//					Unsaga.debug("液体発見");
+//					PairID compare = new PairID(Blocks.water,0).setCheckMetadata(false);
+//					compare.sameBlocks.add(new PairID(Blocks.flowing_water,0).setCheckMetadata(false));
+//					
+//					
+//					ScannerElectricShock shocker = new ScannerElectricShock(compare,pos,this.getThrower());
+//					shocker.doScan(this.worldObj, 10);
 				}
 				
 				

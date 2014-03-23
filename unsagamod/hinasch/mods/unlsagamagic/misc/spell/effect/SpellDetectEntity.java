@@ -27,7 +27,7 @@ public abstract class SpellDetectEntity extends SpellBase{
 		AxisAlignedBB bb = spell.invoker.boundingBox.expand(range, range,range);
 		List<EntityLivingBase> entlist = spell.world.getEntitiesWithinAABB(EntityLivingBase.class, bb);
 		StringBuilder strbuilder = new StringBuilder();
-		Multimap<String,Integer> entityList =  ArrayListMultimap.create();
+		Multimap<String,Object> entityList =  ArrayListMultimap.create();
 		for(EntityLivingBase ent:entlist){
 			Unsaga.debug(spell.spell.nameJp);
 
@@ -35,7 +35,7 @@ public abstract class SpellDetectEntity extends SpellBase{
 		}
 		
 		for(String key:entityList.keySet()){
-			strbuilder.append(key).append(":").append(entityList.get(key)).append("m").append("/");
+			strbuilder.append(key).append(":").append(entityList.get(key)).append("/");
 		}
 		String stri = new String(strbuilder);
 		if(!spell.world.isRemote && !stri.equals("")){
@@ -44,5 +44,5 @@ public abstract class SpellDetectEntity extends SpellBase{
 		}
 	}
 		
-	abstract public void addEntityList(InvokeSpell invoke,Multimap<String,Integer> entityList,EntityLivingBase entity);
+	abstract public void addEntityList(InvokeSpell invoke,Multimap<String,Object> entityList,EntityLivingBase entity);
 }

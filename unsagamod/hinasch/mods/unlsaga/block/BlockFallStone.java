@@ -1,21 +1,27 @@
 package hinasch.mods.unlsaga.block;
 
+import hinasch.lib.WorldHelper;
+import hinasch.lib.XYZPos;
+import hinasch.mods.unlsaga.tileentity.TileEntityFallStone;
+
 import java.util.Random;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockFalling;
+import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.entity.item.EntityFallingBlock;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
-public class BlockFallStone extends BlockFalling
+public class BlockFallStone extends BlockFalling implements ITileEntityProvider
 {
     /** Do blocks fall instantly to where they stop or do they fall over time */
     public static boolean fallInstantly = false;
@@ -63,19 +69,19 @@ public class BlockFallStone extends BlockFalling
     @Override
     public IIcon getIcon(int par1, int par2)
     {
-    	if(par2==5){
-    		return Blocks.netherrack.getBlockTextureFromSide(0);
-    	}
-    	if(par2==3){
-    		return Blocks.dirt.getBlockTextureFromSide(0);
-    	}
-        return Blocks.cobblestone.getBlockTextureFromSide(0);
+    	return this.getBlockFromMeta(par2).getBlockTextureFromSide(0);
     }
 
     
     @Override
     public void onBlockAdded(World par1World, int par2, int par3, int par4)
     {
+    	WorldHelper worldHelper = new WorldHelper(par1World);
+    	XYZPos pos = new XYZPos(par2,par3,par4);
+    	TileEntity te = worldHelper.getTileEntity(pos);
+    	if(te instanceof TileEntityFallStone){
+    		((TileEntityFallStone) te).init(this.getBlockFromMeta(worldHelper.getBlockMetadata(pos)), 0);
+    	}
         par1World.scheduleBlockUpdate(par2, par3, par4, this, this.tickRate());
     }
 
@@ -174,23 +180,27 @@ public class BlockFallStone extends BlockFalling
         }
     }
 
+    public Block getBlockFromMeta(int meta){
+    	switch(meta){
+    	case 5:
+    		return Blocks.netherrack;
+    	case 3:
+    		return Blocks.dirt;
+    	default:
+    		return Blocks.cobblestone;
+    	}
+    }
     /**
      * Called when the falling block entity for this block hits the ground and turns back into a block
      */
-    public void onFinishFalling(World par1World, int par2, int par3, int par4, int par5) {
-    	
-    	if(par1World.getBlockMetadata(par2, par3, par4)==5){
-    		par1World.setBlock(par2, par3, par4, Blocks.netherrack, 0, 2);
-    		return;
-    	}
-    	if(par1World.getBlockMetadata(par2, par3, par4)==3){
-    		par1World.setBlock(par2, par3, par4, Blocks.dirt, 0, 2);
-    		return;
-    	}
-    	
-    		par1World.setBlock(par2, par3, par4, Blocks.cobblestone, 0, 2);
-    	
-    }
+//    public void onFinishFalling(World par1World, int par2, int par3, int par4, int par5) {
+//    	
+//    	Block blockObj = this.getBlockFromMeta(par1World.getBlockMetadata(par2, par3, par4));
+//
+//    	
+//    	par1World.setBlock(par2, par3, par4, blockObj, 0, 2);
+//    
+//    }
     
     @Override
     public Item getItemDropped(int par1, Random par2Random, int par3)
@@ -198,4 +208,26 @@ public class BlockFallStone extends BlockFalling
         return null;
     }
 
+	@Override
+	public TileEntity createNewTileEntity(World var1, int var2) {
+		if(!var1.isRemote){
+			return new TileEntityFallStone();
+		}
+		return null;
+	}
+
+	@Override
+    public void breakBlock(World p_149749_1_, int p_149749_2_, int p_149749_3_, int p_149749_4_, Block p_149749_5_, int p_149749_6_)
+    {
+        super.breakBlock(p_149749_1_, p_149749_2_, p_149749_3_, p_149749_4_, p_149749_5_, p_149749_6_);
+        p_149749_1_.removeTileEntity(p_149749_2_, p_149749_3_, p_149749_4_);
+    }
+	
+	@Override
+    public boolean onBlockEventReceived(World p_149696_1_, int p_149696_2_, int p_149696_3_, int p_149696_4_, int p_149696_5_, int p_149696_6_)
+    {
+        super.onBlockEventReceived(p_149696_1_, p_149696_2_, p_149696_3_, p_149696_4_, p_149696_5_, p_149696_6_);
+        TileEntity tileentity = p_149696_1_.getTileEntity(p_149696_2_, p_149696_3_, p_149696_4_);
+        return tileentity != null ? tileentity.receiveClientEvent(p_149696_5_, p_149696_6_) : false;
+    }
 }

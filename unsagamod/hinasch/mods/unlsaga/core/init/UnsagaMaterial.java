@@ -96,7 +96,7 @@ public class UnsagaMaterial {
 	}
 	public Optional<ItemStack> getAssociatedItem(){
 		if(this.associatedItem!=null){
-			return Optional.of(new ItemStack(this.associatedItem.itemObj,1,this.associatedItem.metadata));
+			return Optional.of(new ItemStack(this.associatedItem.getItemObject(),1,this.associatedItem.getMeta()));
 		}
 		return Optional.absent();
 	}

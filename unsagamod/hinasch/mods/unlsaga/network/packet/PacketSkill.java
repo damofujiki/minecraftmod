@@ -70,6 +70,7 @@ public class PacketSkill extends AbstractPacket{
 			if(player.getHeldItem()!=null){
 				InvokeSkill helper = new InvokeSkill(player.worldObj, player, AbilityRegistry.woodBreakerPhoenix,player.getHeldItem() );
 				helper.setUsePoint(pos);
+				helper.setPrepared(true);
 				helper.doSkill();
 			}
 			

@@ -4,10 +4,12 @@ import hinasch.lib.HSLibs;
 import hinasch.lib.XYZPos;
 import hinasch.mods.unlsagamagic.misc.element.IUnsagaElements;
 import hinasch.mods.unlsagamagic.misc.spell.SpellMixTable;
+import hinasch.mods.unlsagamagic.tileentity.TileEntityFireWall;
 
 import java.util.Random;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.Entity;
@@ -17,6 +19,7 @@ import net.minecraft.entity.projectile.EntityFireball;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.init.Blocks;
 import net.minecraft.potion.Potion;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.IIcon;
@@ -24,16 +27,14 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 
-public class BlockFireWall extends Block implements IUnsagaElements{
+public class BlockFireWall extends BlockContainer implements IUnsagaElements{
 
 	public IIcon[] iconArray;
 	private IIcon[] theIcon;
 
 	public BlockFireWall() {
 		super(Material.circuits);
-		this.setTickRandomly(true);
-		//this.setTextureName("fire");
-		// TODO 自動生成されたコンストラクター・スタブ
+
 	}
 
 	public int idDropped(int par1, Random par2Random, int par3)
@@ -41,20 +42,7 @@ public class BlockFireWall extends Block implements IUnsagaElements{
 		return -1;
 	}
 
-	@Override
-	public void updateTick(World par1World, int par2, int par3, int par4, Random par5Random) 
-	{
-		if (par1World.getBlockMetadata(par2, par3, par4)==0)
-		{
-			par1World.setBlockToAir(par2, par3, par4);
-		}
 
-		if(par1World.rand.nextInt(2)==0){
-			int meta = par1World.getBlockMetadata(par2, par3, par4)-1;
-			meta = MathHelper.clamp_int(meta, 0, 15);
-			par1World.setBlockMetadataWithNotify(par2, par3, par4, meta, 3);
-		}
-	}
 
 	@Override
 	public IIcon getIcon(int par1, int par2)
@@ -254,4 +242,12 @@ public class BlockFireWall extends Block implements IUnsagaElements{
 		// TODO 自動生成されたメソッド・スタブ
 		return new SpellMixTable(1.0F,0,0,-0.5F,0,0);
 	}
+
+	@Override
+	public TileEntity createNewTileEntity(World var1, int var2) {
+		
+		return new TileEntityFireWall();
+	}
+	
+
 }
