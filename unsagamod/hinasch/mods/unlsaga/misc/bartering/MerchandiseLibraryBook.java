@@ -1,6 +1,6 @@
 package hinasch.mods.unlsaga.misc.bartering;
 
-import hinasch.lib.LibraryBook;
+import com.hinasch.lib.LibraryBook;
 
 public class MerchandiseLibraryBook extends LibraryBook{
 

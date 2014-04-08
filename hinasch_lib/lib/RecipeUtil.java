@@ -1,7 +1,4 @@
-package hinasch.lib;
-
-import hinasch.lib.RecipeUtil.Recipe.Shaped;
-import hinasch.lib.RecipeUtil.Recipe.Shapelss;
+package com.hinasch.lib;
 
 import java.util.List;
 
@@ -14,19 +11,29 @@ import net.minecraftforge.oredict.ShapedOreRecipe;
 import net.minecraftforge.oredict.ShapelessOreRecipe;
 
 import com.google.common.collect.Lists;
+import com.hinasch.lib.RecipeUtil.Recipe.Shaped;
+import com.hinasch.lib.RecipeUtil.Recipe.Shapelss;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
 public class RecipeUtil {
 	public static enum changeable {CHANGEABLE};
 	
-	public static List<ItemStack> getRequireItemStacksFromRecipe(IRecipe recipe){
-		List<ItemStack> itemsList = null;
+	public static List<Object> getRequireItemStacksFromRecipe(IRecipe recipe){
+		System.out.println(recipe);
+		List<Object> itemsList = null;
 		if(recipe instanceof ShapelessRecipes){
 			itemsList = ((ShapelessRecipes)recipe).recipeItems;
 		}
 		if(recipe instanceof ShapedRecipes){
-			ItemStack[] isarray = ((ShapedRecipes)recipe).recipeItems;
+			Object[] isarray = ((ShapedRecipes)recipe).recipeItems;
+			itemsList = Lists.newArrayList(isarray);
+		}
+		if(recipe instanceof ShapelessOreRecipe){
+			itemsList = ((ShapelessOreRecipe)recipe).getInput();
+		}
+		if(recipe instanceof ShapedOreRecipe){
+			Object[] isarray = ((ShapedOreRecipe)recipe).getInput();
 			itemsList = Lists.newArrayList(isarray);
 		}
 		return itemsList;

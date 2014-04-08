@@ -1,9 +1,7 @@
 package hinasch.mods.unlsaga.misc.bartering;
 
-import hinasch.lib.LibraryBook;
-import hinasch.lib.LibraryShelf;
-import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.misc.smith.MaterialInfo;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -11,6 +9,8 @@ import net.minecraft.item.Item.ToolMaterial;
 import net.minecraft.item.ItemStack;
 
 import com.google.common.base.Optional;
+import com.hinasch.lib.LibraryBook;
+import com.hinasch.lib.LibraryShelf;
 
 public class MerchandiseLibrary extends LibraryShelf{
 
@@ -23,7 +23,10 @@ public class MerchandiseLibrary extends LibraryShelf{
 			libSet.add(new MerchandiseLibraryBook(Blocks.cobblestone,5));
 			libSet.add(new MerchandiseLibraryBook(Blocks.sand,10));
 			libSet.add(new MerchandiseLibraryBook(Blocks.glass,20));
+			libSet.add(new MerchandiseLibraryBook(Blocks.obsidian,500));
 			libSet.add(new MerchandiseLibraryBook("ingotGold",1000));
+			libSet.add(new MerchandiseLibraryBook("ingotIron",500));
+			libSet.add(new MerchandiseLibraryBook(Items.iron_ingot,500));
 			libSet.add(new MerchandiseLibraryBook(Items.gold_ingot,900));
 			libSet.add(new MerchandiseLibraryBook(Items.redstone,100));
 			libSet.add(new MerchandiseLibraryBook(Items.rotten_flesh,5));
@@ -36,6 +39,8 @@ public class MerchandiseLibrary extends LibraryShelf{
 			libSet.add(new MerchandiseLibraryBook(Items.diamond,5000));
 			libSet.add(new MerchandiseLibraryBook(ToolMaterial.GOLD,1000));
 			libSet.add(new MerchandiseLibraryBook(Items.bone,100));
+			libSet.add(new MerchandiseLibraryBook(Items.stick,5));
+			libSet.add(new MerchandiseLibraryBook(Items.coal,30));
 			libSet.add(new MerchandiseLibraryBook(Blocks.gravel,10));
 			libSet.add(new MerchandiseLibraryBook(Items.wheat,20));
 			libSet.add(new MerchandiseLibraryBook(Items.leather,100));
@@ -70,6 +75,8 @@ public class MerchandiseLibrary extends LibraryShelf{
 		}
 		return price;
 	}
+	
+	
 //	public Optional<Integer> findPrice(ItemStack is){
 //		if(this.findInfo(is).isPresent()){
 //			MerchandiseLibraryBook info = (MerchandiseLibraryBook)this.findInfo(is).get();

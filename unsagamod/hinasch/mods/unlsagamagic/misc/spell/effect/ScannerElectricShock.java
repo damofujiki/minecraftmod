@@ -1,9 +1,5 @@
 package hinasch.mods.unlsagamagic.misc.spell.effect;
 
-import hinasch.lib.AbstractScanner;
-import hinasch.lib.HSLibs;
-import hinasch.lib.PairID;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.FiveElements;
 import hinasch.mods.unlsaga.misc.util.DamageHelper;
@@ -11,6 +7,11 @@ import hinasch.mods.unlsaga.misc.util.DamageSourceUnsaga;
 import hinasch.mods.unlsagamagic.misc.spell.Spells;
 
 import java.util.List;
+
+import com.hinasch.lib.AbstractScanner;
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.PairID;
+import com.hinasch.lib.XYZPos;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.EntityLivingBase;

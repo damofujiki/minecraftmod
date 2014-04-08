@@ -6,7 +6,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.smith.ValidPayment.EnumPayValues;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 
 import java.util.Map;
 import java.util.Random;
@@ -23,6 +23,7 @@ public class ForgingTool {
 	public static final String wellDone = "well";
 	public static final String failed = "failed";
 	public static final String normal = "good";
+	public static enum EnumWorkResult {WELL,FAILED,GOOD};
 	
 	public UnsagaMaterial materialForged;
 	public MaterialInfo base;
@@ -48,7 +49,7 @@ public class ForgingTool {
 	}
 	public ItemStack getForgedItemStack(){
 		ItemStack newstack = UnsagaItems.getItemStack(this.categoryForge, this.materialForged, 1, this.damageForged);
-		HelperUnsagaWeapon.initWeapon(newstack, this.materialForged.name, this.weightForged);
+		HelperUnsagaItem.initWeapon(newstack, this.materialForged.name, this.weightForged);
 		if(this.newenchantMap.isPresent()){
 			EnchantmentHelper.setEnchantments(newenchantMap.get(), newstack);
 		}
@@ -60,6 +61,12 @@ public class ForgingTool {
 		return newstack;
 	}
 	
+	public void doForge(EnumPayValues pay){
+		this.decideForgedMaterial();
+		this.calcForgedDamage();
+		this.prepareTransplantEnchant(pay);
+		this.calcForgedWeight();
+	}
 	public void calcForgedWeight(){
 		int forged = 0;
 		int baseweight = this.base.getWeight();
@@ -74,7 +81,7 @@ public class ForgingTool {
 		Optional<UnsagaMaterial> transformed = MaterialTransform.drawTransformed(baseMaterial, subMaterial, rand);
 		if(transformed.isPresent()){
 			this.materialForged = transformed.get();
-			if(!UnsagaItems.isValidItemForMaterial(this.categoryForge, this.materialForged)){
+			if(!UnsagaItems.isValidItemAsMaterial(this.categoryForge, this.materialForged)){
 				this.materialForged = this.baseMaterial;
 			}
 		}else{
@@ -111,9 +118,9 @@ public class ForgingTool {
 	}
 	
 	//アビリティの移植
-	public String transplantAbilities(ItemStack forged,EntityPlayer ep,EnumPayValues pay){
+	public EnumWorkResult transplantAbilities(ItemStack forged,EntityPlayer ep,EnumPayValues pay){
 		if(!HelperAbility.canGainAbility(forged) || !HelperAbility.canGainAbility(this.base.is)){
-			return normal;
+			return EnumWorkResult.GOOD;
 		}
 		HelperAbility helperBaseItem = new HelperAbility(this.base.is,ep);
 		HelperAbility helperForged = new HelperAbility(forged,ep);
@@ -121,22 +128,22 @@ public class ForgingTool {
 			helperForged.setAbilityListToNBT(helperBaseItem.getGainedAbilities().get());
 		}
 		
-		String rt = normal;
+		EnumWorkResult rt = EnumWorkResult.GOOD;
 		Random rand = ep.getRNG();
 		switch(pay){
 		case HIGH:
 			if(rand.nextInt(100)<20){
 				helperForged.gainSomeAbility(rand);
-				rt = wellDone;
+				rt = EnumWorkResult.WELL;
 			}
 			
 			break;
 			
 		case MID:
-			rt = helperForged.forgetSomeAbilityFromProb(rand, 25) ? failed : normal;
+			rt = helperForged.forgetSomeAbilityFromProb(rand, 25) ? EnumWorkResult.FAILED : EnumWorkResult.GOOD;
 			break;
 		case LOW:
-			rt = helperForged.forgetSomeAbilityFromProb(rand, 60) ? failed : normal;
+			rt = helperForged.forgetSomeAbilityFromProb(rand, 60) ? EnumWorkResult.FAILED : EnumWorkResult.GOOD;
 			break;
 		
 		

@@ -8,7 +8,7 @@ import hinasch.mods.unlsaga.item.IExtendedReach;
 import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 
 import java.util.HashMap;
 import java.util.List;
@@ -34,7 +34,7 @@ public class ItemSpearBase extends ItemSword implements IUnsagaMaterial,IExtende
 
 	public final UnsagaMaterial unsMaterial;
 	protected final HashMap<String,Icon> iconMap = new HashMap();
-	protected final HelperUnsagaWeapon helper;
+	protected final HelperUnsagaItem helper;
 	protected IIcon[] icons;
 
 	protected final float weaponDamage;
@@ -46,7 +46,7 @@ public class ItemSpearBase extends ItemSword implements IUnsagaMaterial,IExtende
 		this.weaponDamage = 3.0F + material.getToolMaterial().getDamageVsEntity();
 		this.setMaxDamage((int)((float)material.getToolMaterial().getMaxUses()*0.8F));
 		this.icons = new IIcon[2];
-		this.helper = new HelperUnsagaWeapon(this.unsMaterial,this.itemIcon,EnumUnsagaTools.SPEAR);
+		this.helper = new HelperUnsagaItem(this.unsMaterial,this.itemIcon,EnumUnsagaTools.SPEAR);
 	}
 
 	@Override

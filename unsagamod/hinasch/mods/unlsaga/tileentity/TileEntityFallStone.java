@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.tileentity;
 
-import hinasch.lib.XYZPos;
+import com.hinasch.lib.XYZPos;
+
 import hinasch.mods.unlsaga.Unsaga;
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;

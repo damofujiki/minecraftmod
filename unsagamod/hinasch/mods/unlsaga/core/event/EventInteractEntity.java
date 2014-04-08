@@ -1,7 +1,8 @@
 package hinasch.mods.unlsaga.core.event;
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.XYZPos;
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.XYZPos;
+
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemAxeUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;

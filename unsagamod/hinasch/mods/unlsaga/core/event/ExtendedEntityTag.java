@@ -1,10 +1,11 @@
 package hinasch.mods.unlsaga.core.event;
 
-import hinasch.lib.CSVText;
 import hinasch.mods.unlsaga.Unsaga;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.hinasch.lib.CSVText;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.projectile.EntityArrow;

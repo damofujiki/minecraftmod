@@ -1,4 +1,4 @@
-package hinasch.lib;
+package com.hinasch.lib;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -18,6 +18,12 @@ public class WorldHelper {
 		if(pairid.getBlockObject()!=null){
 			world.setBlock(pos.x, pos.y, pos.z, pairid.getBlockObject(), pairid.getMeta(), 3);
 		}
+		
+	}
+	
+	public void setBlock(XYZPos pos,Block block){
+		world.setBlock(pos.x, pos.y, pos.z, block);
+		
 		
 	}
 	

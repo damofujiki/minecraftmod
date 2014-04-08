@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
-import hinasch.lib.XYZPos;
+import com.hinasch.lib.XYZPos;
+
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.ability.skill.Skill;
 import net.minecraft.entity.player.EntityPlayer;

@@ -1,9 +1,5 @@
 package hinasch.mods.unlsaga.misc.ability;
 
-import hinasch.lib.CSVText;
-import hinasch.lib.HSLibs;
-import hinasch.lib.UtilList;
-import hinasch.lib.UtilNBT;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
@@ -11,7 +7,7 @@ import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.misc.util.ChatMessageHandler;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 import hinasch.mods.unlsaga.network.packet.PacketSound;
 
 import java.util.ArrayList;
@@ -26,6 +22,10 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.MathHelper;
 
 import com.google.common.base.Optional;
+import com.hinasch.lib.CSVText;
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.UtilList;
+import com.hinasch.lib.UtilNBT;
 
 public class HelperAbility {
 
@@ -43,7 +43,7 @@ public class HelperAbility {
 		this.is = is;
 		IUnsagaMaterial iu = (IUnsagaMaterial)is.getItem();
 		this.category = iu.getCategory();
-		this.material = HelperUnsagaWeapon.getMaterial(is);
+		this.material = HelperUnsagaItem.getMaterial(is);
 		this.maxAbilitySize = ((IGainAbility)is.getItem()).getMaxAbility();
 	}
 
@@ -73,7 +73,7 @@ public class HelperAbility {
 				Unsaga.debug(gainab.getName(1)+"を覚えた:"+this.owner);
 				//msg.gained.ability
 				String mesbase = Translation.localize("msg.gained.ability");
-				String mes = String.format(mesbase, gainab.number);
+				String mes = String.format(mesbase, gainab.getName(Translation.getLang()));
 				if(HSLibs.isServer(player.worldObj)){
 					ChatMessageHandler.sendChatToPlayer(player, mes);
 					
@@ -170,7 +170,7 @@ public class HelperAbility {
 			return getGainedAsIntList(is).get().contains(ab.number);
 		}
 		if(is.getItem() instanceof IUnsagaMaterial){
-			UnsagaMaterial us = HelperUnsagaWeapon.getMaterial(is);
+			UnsagaMaterial us = HelperUnsagaItem.getMaterial(is);
 			EnumUnsagaTools category = ((IUnsagaMaterial)is.getItem()).getCategory();
 			if(Unsaga.abilityRegistry.getInheritAbilities(category, us).isPresent()){
 				return Unsaga.abilityRegistry.getInheritAbilities(category, us).get().contains(ab);

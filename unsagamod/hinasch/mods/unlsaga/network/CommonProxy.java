@@ -1,6 +1,5 @@
 package hinasch.mods.unlsaga.network;
 
-import hinasch.lib.HSLibs;
 import hinasch.mods.unlsaga.DebugUnsaga;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.gui.GuiBartering;
@@ -23,6 +22,7 @@ import net.minecraft.item.Item;
 import net.minecraft.world.World;
 
 import com.google.common.base.Optional;
+import com.hinasch.lib.HSLibs;
 
 import cpw.mods.fml.common.network.IGuiHandler;
 

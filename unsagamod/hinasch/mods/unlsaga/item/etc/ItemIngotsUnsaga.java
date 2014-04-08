@@ -1,7 +1,7 @@
 package hinasch.mods.unlsaga.item.etc;
 
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.core.init.NoFuncItemList;
+import hinasch.mods.unlsaga.core.init.NoFunctionItems;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,9 +43,9 @@ public class ItemIngotsUnsaga extends Item{
     public void registerIcons(IIconRegister par1IconRegister)
     {
         //this.itemIcon = par1IconRegister.registerIcon(UnsagaCore.domain+"ingot");
-        for(Iterator<Integer> ite=NoFuncItemList.getList().keySet().iterator();ite.hasNext();){
+        for(Iterator<Integer> ite=NoFunctionItems.getList().keySet().iterator();ite.hasNext();){
         	int meta = ite.next();
-        	String icn = NoFuncItemList.getList().get(meta).iconname;
+        	String icn = NoFunctionItems.getList().get(meta).iconname;
         	if(icn!=null){
         		if(icn.contains("*")){
         			this.iconMap.put(meta, par1IconRegister.registerIcon(icn.substring(1)));
@@ -61,8 +61,8 @@ public class ItemIngotsUnsaga extends Item{
 	@Override
 	public String getUnlocalizedName(ItemStack par1ItemStack)
 	{
-		int var2 = MathHelper.clamp_int(par1ItemStack.getItemDamage(), 0, NoFuncItemList.length()-1);
-		return super.getUnlocalizedName() + NoFuncItemList.getList().get(var2).name;
+		int var2 = MathHelper.clamp_int(par1ItemStack.getItemDamage(), 0, NoFunctionItems.length()-1);
+		return "item.unsaga."+ NoFunctionItems.getList().get(var2).name;
 	}
 	
 	@Override
@@ -70,10 +70,10 @@ public class ItemIngotsUnsaga extends Item{
     {
 
 		int meta = par1ItemStack.getItemDamage();
-		if(NoFuncItemList.getList().get(meta).rendercolor==0){
+		if(NoFunctionItems.getList().get(meta).rendercolor==0){
 			return 16777215;
 		}
-		return NoFuncItemList.getList().get(meta).rendercolor;
+		return NoFunctionItems.getList().get(meta).rendercolor;
 
 
 
@@ -97,7 +97,7 @@ public class ItemIngotsUnsaga extends Item{
 	@Override
 	public void getSubItems(Item par1, CreativeTabs par2CreativeTabs, List par3List)
 	{
-		for (int var4 = 0; var4 < NoFuncItemList.length(); ++var4)
+		for (int var4 = 0; var4 < NoFunctionItems.length(); ++var4)
 		{
 				par3List.add(new ItemStack(par1, 1, var4));
 			

@@ -1,19 +1,19 @@
 package hinasch.mods.unlsaga.misc.smith;
 
-import hinasch.lib.UtilNBT;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
-import hinasch.mods.unlsaga.core.init.NoFuncItemList;
+import hinasch.mods.unlsaga.core.init.NoFunctionItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.item.etc.ItemIngotsUnsaga;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
-import hinasch.mods.unlsaga.misc.util.NoFuncItem;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
+import hinasch.mods.unlsaga.misc.util.NoFunctionItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 
 import com.google.common.base.Optional;
+import com.hinasch.lib.UtilNBT;
 
 public class MaterialInfo {
 
@@ -31,11 +31,11 @@ public class MaterialInfo {
 			return Optional.of(is.getMaxDamage() - is.getItemDamage());
 		}
 		if(item instanceof ItemIngotsUnsaga){
-			NoFuncItem nofunc = NoFuncItemList.getDataFromMeta(this.is.getItemDamage());
-			return Optional.of(nofunc.forgedamage);
+			NoFunctionItem nofunc = NoFunctionItems.getDataFromMeta(this.is.getItemDamage());
+			return Optional.of(nofunc.repair);
 		}
-		if(Unsaga.materialFactory.find(this.is).isPresent()){
-			MaterialLibraryBook info = (MaterialLibraryBook) Unsaga.materialFactory.find(this.is).get();
+		if(Unsaga.materialLibrary.find(this.is).isPresent()){
+			MaterialLibraryBook info = (MaterialLibraryBook) Unsaga.materialLibrary.find(this.is).get();
 			return Optional.of(info.damage);
 		}
 		return Optional.absent();
@@ -43,7 +43,7 @@ public class MaterialInfo {
 	
 	public int getWeight(){
 		if(UtilNBT.hasKey(this.is, "weight")){
-			return HelperUnsagaWeapon.getCurrentWeight(this.is);
+			return HelperUnsagaItem.getCurrentWeight(this.is);
 			
 		}
 		if(this.getMaterial().isPresent()){
@@ -68,7 +68,7 @@ public class MaterialInfo {
 		Item item = (Item)this.is.getItem();
 		UnsagaMaterial material = null;
 		if(item instanceof IUnsagaMaterial){
-			material = HelperUnsagaWeapon.getMaterial(this.is);
+			material = HelperUnsagaItem.getMaterial(this.is);
 		}
 //		if(item instanceof ItemSword && material==null){
 //			
@@ -83,12 +83,12 @@ public class MaterialInfo {
 		}
 		//無料力アイテムから
 		if(item instanceof ItemIngotsUnsaga && material==null){
-			NoFuncItem nofunc = NoFuncItemList.getDataFromMeta(this.is.getItemDamage());
+			NoFunctionItem nofunc = NoFunctionItems.getDataFromMeta(this.is.getItemDamage());
 			material = nofunc.associated;
 		}
 		
-		if(Unsaga.materialFactory.find(is).isPresent()){
-			MaterialLibraryBook book = (MaterialLibraryBook) Unsaga.materialFactory.find(is).get();
+		if(Unsaga.materialLibrary.find(is).isPresent()){
+			MaterialLibraryBook book = (MaterialLibraryBook) Unsaga.materialLibrary.find(is).get();
 			material = book.material;
 		}
 		//

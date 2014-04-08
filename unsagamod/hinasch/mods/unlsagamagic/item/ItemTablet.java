@@ -1,7 +1,5 @@
 package hinasch.mods.unlsagamagic.item;
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.UtilNBT;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.misc.util.ChatMessageHandler;
@@ -12,6 +10,9 @@ import hinasch.mods.unlsagamagic.misc.spell.Spells;
 
 import java.util.List;
 import java.util.Random;
+
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.UtilNBT;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;
@@ -43,14 +44,16 @@ public class ItemTablet extends Item{
     }
     
 	public static void progressDeciphering(EntityPlayer ep,ItemStack is,int progress){
-		
-		is.damageItem(-progress, ep);
-		if(is.getItemDamage()<=0){
-			is.setItemDamage(0);
-			setDeciphered(is);
-			ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("msg.decipher.finished"));
-			//ep.addChatMessage("finished deciphring the magic tablet.");
+		if(!ep.worldObj.isRemote){
+			is.damageItem(-progress, ep);
+			if(is.getItemDamage()<=0){
+				is.setItemDamage(0);
+				setDeciphered(is);
+				ChatMessageHandler.sendChatToPlayer(ep, Translation.localize("msg.spell.decipher.finished"));
+				//ep.addChatMessage("finished deciphring the magic tablet.");
+			}
 		}
+
 		
 	}
 
@@ -143,10 +146,10 @@ public class ItemTablet extends Item{
 		if(par3EntityPlayer.isSneaking()){
 			if(isDeciphered(par1ItemStack)){
 				boolean flag = ItemSpellBook.writeSpellToBook(par3EntityPlayer, par1ItemStack, getSpell(par1ItemStack));
-				if(flag && par2World.rand.nextInt(100)<20){
-					par1ItemStack.stackSize --;
-					return par1ItemStack;
-				}
+//				if(flag && par2World.rand.nextInt(100)<20){
+//					par1ItemStack.stackSize --;
+//					return par1ItemStack;
+//				}
 			}else{
 				UnsagaMagic.worldElement.figureElements(par2World, par3EntityPlayer);
 				ChatMessageHandler.sendChatToPlayer(par3EntityPlayer, UnsagaMagic.worldElement.getWorldElementInfo());

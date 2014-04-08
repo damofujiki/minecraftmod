@@ -1,4 +1,4 @@
-package hinasch.lib;
+package com.hinasch.lib;
 
 import java.util.HashMap;
 import java.util.Iterator;

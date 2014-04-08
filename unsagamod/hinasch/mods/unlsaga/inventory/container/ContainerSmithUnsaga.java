@@ -1,6 +1,5 @@
 package hinasch.mods.unlsaga.inventory.container;
 
-import hinasch.lib.StaticWords;
 import hinasch.mods.unlsaga.DebugUnsaga;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.gui.GuiSmithUnsaga;
@@ -17,6 +16,8 @@ import io.netty.buffer.ByteBuf;
 
 import java.util.Iterator;
 
+import com.hinasch.lib.StaticWords;
+
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.player.EntityPlayer;
@@ -31,10 +32,10 @@ public class ContainerSmithUnsaga extends Container{
 	protected EntityPlayer ep;
 	protected World worldobj;
 	protected InventorySmithUnsaga inventorySmith;
-	protected final int iPAYMENT = 0;
-	protected final int iBASE = 1;
-	protected final int iMATERIAL = 2;
-	protected final int iFORGED = 3;
+	protected final int inv_PAYMENT = 0;
+	protected final int inv_BASE = 1;
+	protected final int inv_MATERIAL = 2;
+	protected final int inv_FORGED = 3;
 	protected byte currentCategory = 0; //GUI側と同期される
 	protected DebugUnsaga debug;
 
@@ -54,10 +55,10 @@ public class ContainerSmithUnsaga extends Container{
 		Unsaga.debug("Container:"+this.theMerchant);
 		this.worldobj = par2;
 		this.inventorySmith = new InventorySmithUnsaga(ep,this.theMerchant);
-		this.addSlotToContainer(new Slot(this.inventorySmith, this.iPAYMENT, 28, 53)); //Emerald
-		this.addSlotToContainer(new Slot(this.inventorySmith, this.iBASE, 28, 53-(18*2))); //Base Material
-		this.addSlotToContainer(new Slot(this.inventorySmith, this.iMATERIAL, 28+(18*2)-8, 53-(18*2))); //Material2
-		this.addSlotToContainer(new Slot(this.inventorySmith, this.iFORGED, 28+(18*6)+1, 52)); 
+		this.addSlotToContainer(new Slot(this.inventorySmith, this.inv_PAYMENT, 28, 53)); //Emerald
+		this.addSlotToContainer(new Slot(this.inventorySmith, this.inv_BASE, 28, 53-(18*2))); //Base Material
+		this.addSlotToContainer(new Slot(this.inventorySmith, this.inv_MATERIAL, 28+(18*2)-8, 53-(18*2))); //Material2
+		this.addSlotToContainer(new Slot(this.inventorySmith, this.inv_FORGED, 28+(18*6)+1, 52)); 
 
 		for (int i = 0; i < 3; ++i)
 		{
@@ -93,29 +94,7 @@ public class ContainerSmithUnsaga extends Container{
 				}
 			}
 		}
-		//GUIを閉じた時の動作
-		//		super.onContainerClosed(this.ep);
-		//		World worldObj = this.ep.worldObj;
-		//
-		//		if(this.inventorySmith!=null){
-		//			this.theMerchant.setCustomer((EntityPlayer)null);
-		//			if (!worldObj.isRemote)
-		//			{
-		//				for (int var2 = 0; var2<this.inventorySmith.getSizeInventory(); ++var2)
-		//				{
-		//					ItemStack var3 = this.inventorySmith.getStackInSlotOnClosing(var2);
-		//
-		//
-		//					if (var3 != null)
-		//					{
-		//
-		//
-		//						this.ep.dropPlayerItem(var3);
-		//					}
-		//				}
-		//			}
-		//			//UnsagaCore.instance.clearTileEntityBlender(entityplayer);
-		//		}
+
 	}
 	public void onButtonPushed(int id, byte category) {
 		PacketGuiButton pb = new PacketGuiButton(PacketGuiButton.GUI_FORGE,id,category);
@@ -153,7 +132,7 @@ public class ContainerSmithUnsaga extends Container{
 				baseItemInfo = new MaterialInfo(this.inventorySmith.getBaseItem());
 				if(baseItemInfo.getMaterial().isPresent()){
 					UnsagaMaterial material = baseItemInfo.getMaterial().get();
-					if(UnsagaItems.isValidItemForMaterial(category, material)){
+					if(UnsagaItems.isValidItemAsMaterial(category, material)){
 						Unsaga.debug("ベースおｋです");
 						flagcount +=1;
 					}
@@ -172,16 +151,14 @@ public class ContainerSmithUnsaga extends Container{
 			if(flagcount>=4){
 				this.worldobj.playSoundAtEntity((Entity) this.theMerchant, StaticWords.soundAnvilUse, 1.0F, 1.0F);
 				ForgingTool newforge = new ForgingTool(category,baseItemInfo, subItemInfo,this.worldobj.rand);
-				newforge.decideForgedMaterial();
-				newforge.calcForgedDamage();
-				newforge.prepareTransplantEnchant(this.getPaymentValue());
-				newforge.calcForgedWeight();
+				newforge.doForge(getPaymentValue());
 				ItemStack newstack = newforge.getForgedItemStack();
-				newforge.transplantAbilities(newstack, this.ep, this.getPaymentValue());
-				this.inventorySmith.setInventorySlotContents(iFORGED, newstack);
-				this.inventorySmith.decrStackSize(iBASE, 1);
-				this.inventorySmith.decrStackSize(iMATERIAL, 1);
-				this.inventorySmith.decrStackSize(iPAYMENT, 1);
+				ForgingTool.EnumWorkResult result = newforge.transplantAbilities(newstack, this.ep, this.getPaymentValue());
+				Unsaga.debug(result);
+				this.inventorySmith.setInventorySlotContents(inv_FORGED, newstack);
+				this.inventorySmith.decrStackSize(inv_BASE, 1);
+				this.inventorySmith.decrStackSize(inv_MATERIAL, 1);
+				this.inventorySmith.decrStackSize(inv_PAYMENT, 1);
 			}
 		}
 

@@ -1,3 +1,4 @@
+package com.hinasch.lib;
 //package hinasch.lib;
 //
 //import hinasch.mods.unlsaga.core.init.UnsagaMaterial;

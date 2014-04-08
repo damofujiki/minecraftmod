@@ -1,10 +1,5 @@
 package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.PairID;
-import hinasch.lib.RangeDamageHelper;
-import hinasch.lib.ScanHelper;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.util.ChatUtil;
@@ -14,6 +9,12 @@ import hinasch.mods.unlsaga.misc.util.rangedamage.CauseExplode;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.PairID;
+import com.hinasch.lib.RangeDamageHelper;
+import com.hinasch.lib.ScanHelper;
+import com.hinasch.lib.XYZPos;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.monster.EntitySkeleton;
@@ -71,7 +72,7 @@ public class SkillStaff extends SkillEffect{
 			for(int i=0;i<40;i++){
 				if(parent.usepoint.y-i>0){
 					if(parent.world.isAirBlock(parent.usepoint.x, parent.usepoint.y-i, parent.usepoint.z)){
-						if(detectRoom(parent.world,parent.owner,parent.usepoint.x,parent.usepoint.y-i,parent.usepoint.z)){
+						if(detectRoom(parent.world,parent.getOwnerEP(),parent.usepoint.x,parent.usepoint.y-i,parent.usepoint.z)){
 
 							sw=true;
 						}
@@ -124,7 +125,7 @@ public class SkillStaff extends SkillEffect{
 		for(int i=0;i<40;i++){
 			if(parent.usepoint.y-i>0){
 				if(parent.world.isAirBlock(parent.usepoint.x, parent.usepoint.y-i, parent.usepoint.z)){
-					if(detectRoom(parent.world,parent.owner,parent.usepoint.x,parent.usepoint.y-i,parent.usepoint.z)){
+					if(detectRoom(parent.world,parent.getOwnerEP(),parent.usepoint.x,parent.usepoint.y-i,parent.usepoint.z)){
 
 						sw=true;
 					}
@@ -237,7 +238,7 @@ public class SkillStaff extends SkillEffect{
 				if(!helper.world.isRemote){
 					boolean flag = false;
 					float hardness = scan.getBlock().getBlockHardness(helper.world, scan.sx, scan.sy, scan.sz);
-					if(HSLibs.canBreakAndEffectiveBlock(helper.world,helper.owner,"pickaxe",scan.getAsXYZPos())){
+					if(HSLibs.canBreakAndEffectiveBlock(helper.world,helper.getOwnerEP(),"pickaxe",scan.getAsXYZPos())){
 						flag = true;
 					}
 					if(flag){
@@ -272,13 +273,16 @@ public class SkillStaff extends SkillEffect{
 			parent.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
 			PairID compareBlock = HSLibs.getBlockDatas(world, up);
 			scheduledBreak.add(up);
-			if(HSLibs.isOreBlock(compareBlock) && parent.owner.canHarvestBlock(compareBlock.getBlockObject())){
+			if(HSLibs.isOreBlock(compareBlock) && parent.getOwnerEP().canHarvestBlock(compareBlock.getBlockObject())){
 				
 				if(world.isRemote){
 					return;
 				}
 				ScannerBreakBlock scannerBreak = new ScannerBreakBlock(compareBlock, up);
 				scannerBreak.doScan(world, 5);
+				if(!parent.world.isRemote){
+					parent.weapon.damageItem(scannerBreak.breaked*2, parent.owner);
+				}
 			}else{
 				if(compareBlock.getBlockObject().getHarvestLevel(compareBlock.getMeta())<=harvestLevel+1){
 					
@@ -303,7 +307,7 @@ public class SkillStaff extends SkillEffect{
 			if(!helper.world.isRemote){
 				boolean flag = false;
 				float hardness = scan.getBlock().getBlockHardness(helper.world, scan.sx, scan.sy, scan.sz);
-				if(HSLibs.canBreakAndEffectiveBlock(helper.world,helper.owner,"pickaxe",scan.getAsXYZPos())){
+				if(HSLibs.canBreakAndEffectiveBlock(helper.world,helper.getOwnerEP(),"pickaxe",scan.getAsXYZPos())){
 					flag = true;
 				}
 				if(flag){
@@ -329,7 +333,7 @@ public class SkillStaff extends SkillEffect{
 		parent.world.spawnParticle("largeexplode", (double)up.dx+0.5D, (double)up.dy+1, (double)up.dz+0.5D, 1.0D, 0.0D, 0.0D);
 		PairID compareBlock = HSLibs.getBlockDatas(world, up);
 		scheduledBreak.add(up);
-		if(HSLibs.isOreBlock(compareBlock) && parent.owner.canHarvestBlock(compareBlock.getBlockObject())){
+		if(HSLibs.isOreBlock(compareBlock) && parent.getOwnerEP().canHarvestBlock(compareBlock.getBlockObject())){
 			
 			if(world.isRemote){
 				return;

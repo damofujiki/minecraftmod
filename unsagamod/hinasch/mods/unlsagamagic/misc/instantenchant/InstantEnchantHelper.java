@@ -1,8 +1,8 @@
 package hinasch.mods.unlsagamagic.misc.instantenchant;
 
-import hinasch.lib.UtilNBT;
-
 import java.util.Set;
+
+import com.hinasch.lib.UtilNBT;
 
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.SharedMonsterAttributes;

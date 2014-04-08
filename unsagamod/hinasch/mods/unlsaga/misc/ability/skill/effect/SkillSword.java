@@ -1,9 +1,5 @@
 package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.StaticWords;
-import hinasch.lib.UtilNBT;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemSwordUnsaga;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
@@ -16,6 +12,11 @@ import hinasch.mods.unlsaga.network.packet.PacketUtil;
 
 import java.util.List;
 import java.util.Random;
+
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.StaticWords;
+import com.hinasch.lib.UtilNBT;
+import com.hinasch.lib.XYZPos;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;

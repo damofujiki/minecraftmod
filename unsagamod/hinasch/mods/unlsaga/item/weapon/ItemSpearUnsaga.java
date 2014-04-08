@@ -1,8 +1,9 @@
 package hinasch.mods.unlsaga.item.weapon;
 
 
-import hinasch.lib.UtilNBT;
-import hinasch.lib.XYZPos;
+import com.hinasch.lib.UtilNBT;
+import com.hinasch.lib.XYZPos;
+
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
@@ -12,7 +13,7 @@ import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillMelee;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.EnumAction;
@@ -66,7 +67,7 @@ public class ItemSpearUnsaga extends ItemSpearBase {
 	{
 		int ac = 20;
 		int j = this.getMaxItemUseDuration(par1ItemStack) - par4;
-		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.STOPPED_USING, par1ItemStack, par3EntityPlayer, par2World, XYZPos.entityPosToXYZ(par3EntityPlayer));
+		SkillMelee pickedSkillEffect = HelperUnsagaItem.getSkillMelee(SkillMelee.Type.STOPPED_USING, par1ItemStack, par3EntityPlayer, par2World, XYZPos.entityPosToXYZ(par3EntityPlayer));
 		if(pickedSkillEffect!=null){
 			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer, pickedSkillEffect.getSkill(), par1ItemStack);
 			if(helper!=null){
@@ -92,7 +93,7 @@ public class ItemSpearUnsaga extends ItemSpearBase {
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
 	{
 
-		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.RIGHTCLICK, par1ItemStack, par3EntityPlayer, par2World, XYZPos.entityPosToXYZ(par3EntityPlayer));
+		SkillMelee pickedSkillEffect = HelperUnsagaItem.getSkillMelee(SkillMelee.Type.RIGHTCLICK, par1ItemStack, par3EntityPlayer, par2World, XYZPos.entityPosToXYZ(par3EntityPlayer));
 		if(pickedSkillEffect!=null){
 			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer, pickedSkillEffect.getSkill(), par1ItemStack);
 			if(helper!=null){
@@ -123,7 +124,7 @@ public class ItemSpearUnsaga extends ItemSpearBase {
 	@Override
 	public boolean onItemUse(ItemStack par1ItemStack, EntityPlayer par2EntityPlayer, World par3World, int par4, int par5, int par6, int par7, float par8, float par9, float par10)
 	{
-		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.USE, par1ItemStack, par2EntityPlayer, par3World, new XYZPos(par4,par5,par6));
+		SkillMelee pickedSkillEffect = HelperUnsagaItem.getSkillMelee(SkillMelee.Type.USE, par1ItemStack, par2EntityPlayer, par3World, new XYZPos(par4,par5,par6));
 		if(pickedSkillEffect!=null){
 			InvokeSkill helper = new InvokeSkill(par3World, par2EntityPlayer, pickedSkillEffect.getSkill(), par1ItemStack);
 			if(helper!=null){

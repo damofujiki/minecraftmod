@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.network.packet;
 
-import hinasch.lib.AbstractPacket;
+import com.hinasch.lib.AbstractPacket;
+
 import hinasch.mods.unlsaga.misc.debuff.Debuff;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;

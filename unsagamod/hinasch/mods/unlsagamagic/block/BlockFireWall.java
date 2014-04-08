@@ -1,12 +1,13 @@
 package hinasch.mods.unlsagamagic.block;
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsagamagic.misc.element.IUnsagaElements;
 import hinasch.mods.unlsagamagic.misc.spell.SpellMixTable;
 import hinasch.mods.unlsagamagic.tileentity.TileEntityFireWall;
 
 import java.util.Random;
+
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.XYZPos;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;

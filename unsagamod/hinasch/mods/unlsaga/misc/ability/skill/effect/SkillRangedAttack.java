@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
-import hinasch.lib.RangeDamageHelper;
+import com.hinasch.lib.RangeDamageHelper;
+
 import net.minecraft.util.AxisAlignedBB;
 
 public class SkillRangedAttack extends SkillMelee{

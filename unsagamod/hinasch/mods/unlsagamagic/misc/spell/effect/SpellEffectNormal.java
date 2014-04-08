@@ -1,10 +1,5 @@
 package hinasch.mods.unlsagamagic.misc.spell.effect;
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.PairID;
-import hinasch.lib.PairIDList;
-import hinasch.lib.ScanHelper;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
 import hinasch.mods.unlsaga.entity.projectile.EntityBoulderNew;
@@ -13,7 +8,7 @@ import hinasch.mods.unlsaga.misc.debuff.Buff;
 import hinasch.mods.unlsaga.misc.debuff.Debuff;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
-import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateCrimsonFlare;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateFireStorm;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.misc.util.ChatUtil;
 import hinasch.mods.unlsaga.misc.util.DamageHelper;
@@ -52,12 +47,20 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.PairID;
+import com.hinasch.lib.PairIDList;
+import com.hinasch.lib.RangeDamageHelper;
+import com.hinasch.lib.ScanHelper;
+import com.hinasch.lib.StaticWords;
+import com.hinasch.lib.XYZPos;
 
 public class SpellEffectNormal{
 
@@ -86,6 +89,8 @@ public class SpellEffectNormal{
 	public final SpellBase purify = new SpellPurify();
 	public final SpellBase recycle = new SpellRecycle();
 	public final SpellBase weakness = new SpellWeakness();
+	public final SpellBase superSonic = new SpellSuperSonic(5.0D,5.0D);
+	public final SpellBase waterShield = new SpellWaterShield();
 
 	public static SpellEffectNormal getInstance(){
 		if(INSTANCE==null){
@@ -94,11 +99,55 @@ public class SpellEffectNormal{
 		return INSTANCE;
 
 	}
+	public class SpellSuperSonic extends SpellRangedAttack{
+
+		public SpellSuperSonic(double horizontal, double vertical) {
+			super(horizontal, vertical);
+			
+		}
+		
+		@Override
+		public void hookStart(InvokeSpell parent){
+			parent.playExplodeSound(XYZPos.entityPosToXYZ(parent.getInvoker()));
+			PacketParticle pp = new PacketParticle(StaticWords.getParticleNumber(StaticWords.particleExplode),parent.getInvoker().getEntityId(),1);
+			Unsaga.packetPipeline.sendToAllAround(pp, PacketUtil.getTargetPointNear(parent.getInvoker()));
+		}
+		
+		@Override
+		public RangeDamageHelper getCustomizedRangeDamageHelper(InvokeSpell parent){
+			return new RangeDamageSuperSonic(parent);
+		}
+		
+		@Override
+		public DamageSource getDamageSource(InvokeSpell parent){
+			DamageSourceUnsaga ds = parent.getDamageSource();
+			ds.setSubDamageType(DamageHelper.SubType.LIGHT);
+			return ds;
+		}
+		
+		public class RangeDamageSuperSonic extends RangeDamageHelper{
+
+			protected InvokeSpell parent;
+			public RangeDamageSuperSonic(InvokeSpell parent) {
+				super(parent.world);
+				this.parent = parent;
+			}
+			
+
+			
+			@Override
+			public void takeEntityLiving(EntityLivingBase living,DamageSource source){
+				if(living.getCreatureAttribute()==EnumCreatureAttribute.ARTHROPOD || living instanceof EntityAnimal){
+					LivingDebuff.addLivingDebuff(living, new LivingDebuff(Debuffs.sleep,(int) (10*parent.getAmp())));
+				}
+			}
+		}
+	}
+	
 	public class SpellCallThunder extends SpellBase{
 
 		public SpellCallThunder() {
-			//super();
-			// TODO 自動生成されたコンストラクター・スタブ
+
 		}
 
 		@Override
@@ -131,9 +180,7 @@ public class SpellEffectNormal{
 		@Override
 		public void hookHealing(InvokeSpell parent, EntityLivingBase target) {
 			if(parent.getAmp()>1.5F){
-				target.removePotionEffect(Potion.poison.id);
-				target.removePotionEffect(Potion.wither.id);
-				target.removePotionEffect(Potion.blindness.id);
+				HSLibs.removePotionEffects(target, Potion.poison,Potion.wither,Potion.blindness);
 			}
 			
 		}
@@ -154,13 +201,13 @@ public class SpellEffectNormal{
 			if(parent.getTarget().isPresent()){
 				xyz = XYZPos.entityPosToXYZ(parent.getTarget().get());
 			}else{
-				EntityLivingBase nearent = LockOnHelper.searchEntityNear(parent.invoker, Debuffs.spellTarget);
+				EntityLivingBase nearent = LockOnHelper.searchEntityNear(parent.getInvoker(), Debuffs.spellTarget);
 				if(nearent!=null){
 					xyz = XYZPos.entityPosToXYZ(nearent);
 				}
 			}
-			if(xyz!=null && !LivingDebuff.hasDebuff(parent.invoker, Debuffs.crimsonFlare)){
-				LivingDebuff.addLivingDebuff(parent.invoker, new LivingStateCrimsonFlare(Debuffs.crimsonFlare,100,xyz.x,xyz.y,xyz.z,amp,-1));
+			if(xyz!=null && !LivingDebuff.hasDebuff(parent.getInvoker(), Debuffs.crimsonFlare)){
+				LivingDebuff.addLivingDebuff(parent.getInvoker(), new LivingStateFireStorm(Debuffs.crimsonFlare,100,xyz.x,xyz.y,xyz.z,amp,-1));
 
 			}
 			
@@ -176,11 +223,12 @@ public class SpellEffectNormal{
 
 		@Override
 		public void addEntityList(InvokeSpell parent,Multimap<String,Object> entityList,EntityLivingBase ent){
-			if(ent instanceof IAnimals && !(ent instanceof EntityAmbientCreature || ent instanceof IMob)&& ent!=parent.invoker){
-				XYZPos distance_pos = XYZPos.entityPosToXYZ(ent).subtract(XYZPos.entityPosToXYZ(parent.invoker));
+			if(ent instanceof IAnimals && !(ent instanceof EntityAmbientCreature || ent instanceof IMob)&& ent!=parent.getInvoker()){
+				XYZPos distance_pos = XYZPos.entityPosToXYZ(ent).subtract(XYZPos.entityPosToXYZ(parent.getInvoker()));
+				String hpstr = "[H:"+Math.round(ent.getHealth())+"]";
 				distance_pos.setAsBlockPos(true);
 
-				entityList.put(ent.getCommandSenderName(), distance_pos);
+				entityList.put(ent.getCommandSenderName(), distance_pos+hpstr);
 
 			}
 		}
@@ -198,13 +246,13 @@ public class SpellEffectNormal{
 		@Override
 		public void addEntityList(InvokeSpell invoke,
 				Multimap<String, Object> entityList, EntityLivingBase ent) {
-			if(ent instanceof IMob && ent!=invoke.invoker){
-				if(!(ent.getCreatureAttribute()==EnumCreatureAttribute.UNDEAD)){
+			if(ent instanceof IMob && ent!=invoke.getInvoker()){
+				if(!(ent.isEntityUndead())){
 					
-					XYZPos distance_pos = XYZPos.entityPosToXYZ(ent).subtract(XYZPos.entityPosToXYZ(invoke.invoker));
+					XYZPos distance_pos = XYZPos.entityPosToXYZ(ent).subtract(XYZPos.entityPosToXYZ(invoke.getInvoker()));
 					distance_pos.setAsBlockPos(true);
-
-					entityList.put(ent.getCommandSenderName(), distance_pos);
+					String hpstr = "[H:"+Math.round(ent.getHealth())+"]";
+					entityList.put(ent.getCommandSenderName(), distance_pos+hpstr);
 
 					if(this.isAmplified){
 						LivingDebuff.addDebuff(ent, Debuffs.detected, (int) (20*invoke.getAmp()));
@@ -226,19 +274,19 @@ public class SpellEffectNormal{
 		@Override
 		public void invokeSpell(InvokeSpell spell) {
 			ItemStack is = null;
-			if(spell.invoker instanceof EntityPlayer){
-				is = ((EntityPlayer)spell.invoker).inventory.getStackInSlot(0);
+			if(spell.getInvoker() instanceof EntityPlayer){
+				is = ((EntityPlayer)spell.getInvoker()).inventory.getStackInSlot(0);
 			}else{
-				is = spell.invoker.getHeldItem();
+				is = spell.getInvoker().getHeldItem();
 			}
 
 			//HashSet<Class> validClasses = Sets.newHashSet(ItemSword.class,ItemAxe.class,ItemTool.class,ItemArmor.class,Item
 			if(is!=null && is.getItem().isRepairable()){
-				int repair = 20+spell.invoker.getRNG().nextInt(15);
+				int repair = 20+spell.getInvoker().getRNG().nextInt(15);
 				String str = Translation.localize("msg.spell.repair");
 				String formatted = String.format(str, repair);
-				ChatUtil.addMessageNoLocalized(spell.invoker, formatted);
-				//spell.invoker.addChatMessage(formatted);
+				ChatUtil.addMessageNoLocalized(spell.getInvoker(), formatted);
+				//spell.getInvoker().addChatMessage(formatted);
 				if(!spell.world.isRemote){
 					is.setItemDamage(-repair);
 				}
@@ -256,7 +304,7 @@ public class SpellEffectNormal{
 
 		@Override
 		public Entity getProjectileEntity(InvokeSpell spell){
-			EntityBoulderNew var8 = new EntityBoulderNew(spell.world, spell.invoker, 1.0F*1.5F);
+			EntityBoulderNew var8 = new EntityBoulderNew(spell.world, spell.getInvoker(), 1.0F*1.5F);
 			int knockback = Math.round(5.0F*spell.getAmp());
 			knockback = MathHelper.clamp_int(knockback, 1, 12);
 			var8.setKnockBackModifier(knockback);
@@ -268,9 +316,12 @@ public class SpellEffectNormal{
 	}
 	public class SpellMagicLock extends SpellBase{
 
+		protected Set<Class<? extends Entity>> classesEntity = new HashSet();
+		
 		public SpellMagicLock() {
 			super();
-			// TODO 自動生成されたコンストラクター・スタブ
+			classesEntity.add(EntitySlime.class);
+			classesEntity.add(EntityTreasureSlime.class);
 		}
 
 		@Override
@@ -280,10 +331,9 @@ public class SpellEffectNormal{
 				target = spell.getTarget().get();
 
 			}else{
-				target = LockOnHelper.searchEntityNear(spell.invoker, Debuffs.spellTarget);
+				target = LockOnHelper.searchEntityNear(spell.getInvoker(), Debuffs.spellTarget);
 			}
-			if(target instanceof EntitySlime || target instanceof EntityTreasureSlime){
-				//EntitySlime slime = (EntitySlime)spell.getTarget().get();
+			if(HSLibs.instanceOf(target, classesEntity)){
 				target.addPotionEffect(new PotionEffect(Potion.weakness.id, 100*(int)spell.getAmp(),2*(int)spell.getAmp()));
 				LivingDebuff.addDebuff(target, Debuffs.lockSlime, 30);
 			}
@@ -301,7 +351,7 @@ public class SpellEffectNormal{
 		
 		@Override
 		public Entity getProjectileEntity(InvokeSpell parent){
-			EntityFireArrowNew firearrow = new EntityFireArrowNew(parent.world, parent.invoker, 1.5F*1.5F);
+			EntityFireArrowNew firearrow = new EntityFireArrowNew(parent.world, parent.getInvoker(), 1.5F*1.5F);
 			firearrow.setFire(100);
 			firearrow.setDamage(parent.spell.hurtHP*parent.getAmp());
 			return firearrow;
@@ -322,30 +372,30 @@ public class SpellEffectNormal{
 				if(spell.getTarget().get() instanceof EntityTameable){
 					EntityTameable tameable = (EntityTameable)spell.getTarget().get();
 					tameable.setTamed(true);
-					tameable.setOwner(spell.invoker.getCommandSenderName());
+					tameable.setOwner(spell.getInvoker().getCommandSenderName());
 					
 					PacketParticle pp = new PacketParticle(2,tameable.getEntityId(),10);
-					if(!spell.invoker.worldObj.isRemote){
-						Unsaga.packetPipeline.sendTo(pp, (EntityPlayerMP) spell.invoker);
+					if(!spell.getInvoker().worldObj.isRemote){
+						Unsaga.packetPipeline.sendTo(pp, (EntityPlayerMP) spell.getInvoker());
 					}
 					
-					//PacketDispatcher.sendPacketToPlayer(pp.getPacket(), (Player)spell.invoker);
+					//PacketDispatcher.sendPacketToPlayer(pp.getPacket(), (Player)spell.getInvoker());
 					return;
 				}
-				if(spell.invoker instanceof EntityPlayer){
+				if(spell.getInvoker() instanceof EntityPlayer){
 					if(spell.getTarget().get() instanceof EntityHorse){
 						EntityHorse horse = (EntityHorse)spell.getTarget().get();
-						horse.setTamedBy((EntityPlayer) spell.invoker);
+						horse.setTamedBy((EntityPlayer) spell.getInvoker());
 						PacketParticle pp = new PacketParticle(2,horse.getEntityId(),10);
-						if(!spell.invoker.worldObj.isRemote){
-							Unsaga.packetPipeline.sendTo(pp, (EntityPlayerMP) spell.invoker);
+						if(!spell.getInvoker().worldObj.isRemote){
+							Unsaga.packetPipeline.sendTo(pp, (EntityPlayerMP) spell.getInvoker());
 						}
 						return;
 
 					}
 					if(spell.getTarget().get() instanceof EntityAnimal){
 						EntityAnimal animal = (EntityAnimal)spell.getTarget().get();
-						animal.func_146082_f((EntityPlayer) spell.invoker);
+						animal.func_146082_f((EntityPlayer) spell.getInvoker());
 						return;
 
 					}
@@ -368,19 +418,19 @@ public class SpellEffectNormal{
 			int remain = (int)((float)20 * parentInvoke.getAmp());
 			switch(parentInvoke.spell.element){
 			case FIRE:
-				LivingDebuff.addDebuff(parentInvoke.invoker, Debuffs.fireVeil, remain);
+				LivingDebuff.addDebuff(parentInvoke.getInvoker(), Debuffs.fireVeil, remain);
 				break;
 			case WATER:
-				LivingDebuff.addDebuff(parentInvoke.invoker, Debuffs.waterVeil, remain);
+				LivingDebuff.addDebuff(parentInvoke.getInvoker(), Debuffs.waterVeil, remain);
 				break;
 			case EARTH:
-				LivingDebuff.addDebuff(parentInvoke.invoker, Debuffs.earthVeil, remain);
+				LivingDebuff.addDebuff(parentInvoke.getInvoker(), Debuffs.earthVeil, remain);
 				break;
 			case WOOD:
-				LivingDebuff.addDebuff(parentInvoke.invoker, Debuffs.woodVeil, remain);
+				LivingDebuff.addDebuff(parentInvoke.getInvoker(), Debuffs.woodVeil, remain);
 				break;
 			case METAL:
-				LivingDebuff.addDebuff(parentInvoke.invoker, Debuffs.metalVeil, remain);
+				LivingDebuff.addDebuff(parentInvoke.getInvoker(), Debuffs.metalVeil, remain);
 				break;
 			case FORBIDDEN:
 				break;
@@ -395,7 +445,8 @@ public class SpellEffectNormal{
 
 		public SpellHeroism() {
 			super();
-			this.buffs = Lists.newArrayList(Debuffs.powerup);
+			//this.buffs = Lists.newArrayList(Debuffs.powerup);
+			this.potions = Lists.newArrayList(Potion.damageBoost);
 		}
 
 		
@@ -409,6 +460,15 @@ public class SpellEffectNormal{
 		
 	}
 
+	public class SpellWaterShield extends SpellAddBuff{
+
+		public SpellWaterShield() {
+			super();
+			this.buffs = Lists.newArrayList(Debuffs.waterShield);
+		}
+		
+	}
+	
 	public class SpellLifeBoost extends SpellAddBuff{
 
 		public SpellLifeBoost() {
@@ -475,13 +535,13 @@ public class SpellEffectNormal{
 		public void invokeSpell(InvokeSpell parent) {
 			int prob = (int)(25.0F * parent.getAmp());
 			boolean diacheck = parent.world.rand.nextInt(100)<prob;
-			ScanHelper scan = new ScanHelper(parent.invoker,16,16);
+			ScanHelper scan = new ScanHelper(parent.getInvoker(),16,16);
 			StringBuilder builder = new StringBuilder();
 			PairIDList pairList = new PairIDList();
 			scan.setWorld(parent.world);
 			for(;scan.hasNext();scan.next()){
 				if(!scan.isAirBlock() && scan.isValidHeight()){
-					//Block block = scan.getBlock();
+
 					PairID blocknumber = this.worldHelper.getBlockDatas(scan.getAsXYZPos());
 					boolean flag = false;
 					Unsaga.debug(blocknumber);
@@ -514,9 +574,9 @@ public class SpellEffectNormal{
 
 			String message = new String(builder);
 			if(message.equals("")){
-				ChatUtil.addMessage(parent.invoker, "msg.spell.metal.notfound");
+				ChatUtil.addMessage(parent.getInvoker(), "msg.spell.metal.notfound");
 			}else{
-				ChatUtil.addMessageNoLocalized(parent.invoker, message);
+				ChatUtil.addMessageNoLocalized(parent.getInvoker(), message);
 			}
 
 			return;
@@ -593,7 +653,7 @@ public class SpellEffectNormal{
 
 
 
-			ScanHelper scan = new ScanHelper(parent.invoker,8,6);
+			ScanHelper scan = new ScanHelper(parent.getInvoker(),8,6);
 			scan.setWorld(parent.world);
 
 			for(;scan.hasNext();scan.next()){
@@ -603,8 +663,8 @@ public class SpellEffectNormal{
 					Unsaga.packetPipeline.sendToAllAround(pp, PacketUtil.getTargetPointNear(scan.getAsXYZPos(), scan.world));
 					
 					
-					if(parent.invoker instanceof EntityPlayer){
-						ItemDye.applyBonemeal(dummy, parent.world, scan.sx, scan.sy, scan.sz, (EntityPlayer) parent.invoker);
+					if(parent.getInvoker() instanceof EntityPlayer){
+						ItemDye.applyBonemeal(dummy, parent.world, scan.sx, scan.sy, scan.sz, (EntityPlayer) parent.getInvoker());
 					}
 					
 				}
@@ -620,14 +680,13 @@ public class SpellEffectNormal{
 
 		public SpellFireWall() {
 			super();
-			// TODO 自動生成されたコンストラクター・スタブ
 		}
 
 		@Override
 		public void invokeSpell(InvokeSpell parent) {
 			if(ItemSpellBook.readPosition(parent.spellbook)!=null){
 				if(!parent.world.isRemote){
-					int ampli = (int)(400 * parent.getAmp());
+					int ampli = (int)(800 * parent.getAmp());
 					ampli = MathHelper.clamp_int(ampli, 10, 3000);
 					XYZPos pos = ItemSpellBook.readPosition(parent.spellbook);
 					XYZPos start = new XYZPos(pos.x-1,pos.y+5,pos.z-1);
@@ -635,10 +694,11 @@ public class SpellEffectNormal{
 					XYZPos[] swapped = XYZPos.swap(start, end);
 					ScanHelper scan = new ScanHelper(swapped[0],swapped[1]);
 					scan.setWorld(parent.world);
+					
 					for(;scan.hasNext();scan.next()){
 						boolean flag = false;
 						flag = scan.isAirBlock() ? true : false;
-						if(!scan.isAirBlock() && scan.getBlock().isReplaceable(parent.world, scan.sx, scan.sy, scan.sz)){
+						if(!scan.isAirBlock() && this.worldHelper.isReplaceable(scan.getAsXYZPos())){
 							flag = true;
 						}
 
@@ -647,6 +707,7 @@ public class SpellEffectNormal{
 							TileEntity te = this.worldHelper.getTileEntity(scan.getAsXYZPos());
 							if(te instanceof TileEntityFireWall){
 								((TileEntityFireWall) te).init(ampli);
+								HSLibs.sendDescriptionPacketToAllPlayer(parent.world, te);
 							}
 						}
 
@@ -655,7 +716,7 @@ public class SpellEffectNormal{
 				}
 
 			}else{
-				ChatUtil.addMessage(parent.invoker, "msg.spell.notfound.position");
+				ChatUtil.addMessage(parent.getInvoker(), "msg.spell.notfound.position");
 			}
 			
 		}

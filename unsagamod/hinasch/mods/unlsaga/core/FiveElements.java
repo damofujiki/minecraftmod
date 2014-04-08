@@ -1,9 +1,10 @@
 package hinasch.mods.unlsaga.core;
 
-import hinasch.lib.StaticWords;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 
 import java.util.EnumSet;
+
+import com.hinasch.lib.StaticWords;
 
 public class FiveElements {
 

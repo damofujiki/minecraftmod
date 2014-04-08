@@ -27,6 +27,13 @@ public class EntityFireArrowNew extends EntityThrowableBase{
 
 	}
 	
+	
+    public EntityFireArrowNew(World par1World, EntityLivingBase par2EntityLivingBase, EntityLivingBase par3EntityLivingBase, float par4, float par5)
+    {
+    
+    	super(par1World,par2EntityLivingBase,par3EntityLivingBase,par4,par5);
+    }
+	
     public void drawParticles(World par1World, int par2, int par3, int par4, Random par5Random)
     {
     	if(par5Random.nextInt(5)==0){

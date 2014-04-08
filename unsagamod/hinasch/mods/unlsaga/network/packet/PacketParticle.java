@@ -1,8 +1,5 @@
 package hinasch.mods.unlsaga.network.packet;
 
-import hinasch.lib.AbstractPacket;
-import hinasch.lib.StaticWords;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.UnsagaParticles;
 import hinasch.mods.unlsaga.client.particle.EntityUnsagaFX;
@@ -10,6 +7,10 @@ import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.util.Random;
+
+import com.hinasch.lib.AbstractPacket;
+import com.hinasch.lib.StaticWords;
+import com.hinasch.lib.XYZPos;
 
 import net.minecraft.client.entity.EntityClientPlayerMP;
 import net.minecraft.entity.Entity;
@@ -104,8 +105,7 @@ public class PacketParticle extends AbstractPacket{
 						double d0 = en.posX + 0.5D + r * Math.sin(t);
 						double d1 = en.posY + 0.0D + par5Random.nextDouble();
 						double d2 = en.posZ + 0.5D + r * Math.cos(t);
-			 
-						// パーティクルの移動速度。+0.03Dで上昇する
+
 						double d3 = Math.sin(t) / 64.0D;
 						double d4 = 0.03D;
 						double d5 = Math.cos(t) / 64.0D;
@@ -124,6 +124,10 @@ public class PacketParticle extends AbstractPacket{
 						if(particlestr.equals(StaticWords.particleReddust) && !flag){
 							flag = true;
 							ep.worldObj.spawnParticle(particlestr, en.posX, en.posY + ep.worldObj.rand.nextDouble() * 2.0D, en.posZ, 0.0D,0.0D,0.0D);
+						}
+						if(particlestr.equals(StaticWords.particleExplode) && !flag){
+							flag = true;
+							ep.worldObj.spawnParticle(particlestr, en.posX, en.posY, en.posZ, 0.0D,0.0D,0.0D);
 						}
 						if(!flag){
 							flag = true;

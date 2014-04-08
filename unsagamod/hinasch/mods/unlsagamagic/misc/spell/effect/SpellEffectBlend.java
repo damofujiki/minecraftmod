@@ -1,18 +1,12 @@
 package hinasch.mods.unlsagamagic.misc.spell.effect;
 
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.PairID;
-import hinasch.lib.ScanHelper;
-import hinasch.lib.WorldHelper;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.block.BlockChestUnsaga;
-import hinasch.mods.unlsaga.entity.projectile.EntityBoulder;
+import hinasch.mods.unlsaga.block.BlockChestUnsagaNew;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingBuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
-import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateCrimsonFlare;
+import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateFireStorm;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateRandomThrow;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.misc.util.ChatUtil;
@@ -33,6 +27,11 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.Vec3;
 
 import com.google.common.collect.Lists;
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.PairID;
+import com.hinasch.lib.ScanHelper;
+import com.hinasch.lib.WorldHelper;
+import com.hinasch.lib.XYZPos;
 
 public class SpellEffectBlend {
 
@@ -47,8 +46,17 @@ public class SpellEffectBlend {
 	public final SpellBase reflesh = new SpellReflesh();
 	public final SpellBase stoneShower = new SpellStoneShower();
 	public final SpellBase thudnerCrap = new SpellThunderCrap();
+	public final SpellBase restoration = new SpellRestoration();
 	
-	
+	public class SpellRestoration extends SpellHealing{
+
+		@Override
+		public void hookHealing(InvokeSpell parent, EntityLivingBase target) {
+			
+			
+		}
+		
+	}
 	public class SpellThunderCrap extends SpellBase{
 
 		public SpellThunderCrap() {
@@ -58,8 +66,8 @@ public class SpellEffectBlend {
 
 		@Override
 		public void invokeSpell(InvokeSpell invoke) {
-			if(!LivingDebuff.hasDebuff(invoke.invoker, Debuffs.thunderCrap)){
-				LivingDebuff.addLivingDebuff(invoke.invoker, new LivingStateRandomThrow(Debuffs.thunderCrap,100,10, 1));
+			if(!LivingDebuff.hasDebuff(invoke.getInvoker(), Debuffs.thunderCrap)){
+				LivingDebuff.addLivingDebuff(invoke.getInvoker(), new LivingStateRandomThrow(Debuffs.thunderCrap,100,10, 1));
 				
 			}
 			
@@ -75,20 +83,20 @@ public class SpellEffectBlend {
 
 		@Override
 		public void invokeSpell(InvokeSpell spell) {
-			if(spell.getAmp()>1.5F){
-				spell.world.playSoundAtEntity(spell.invoker, "mob.ghast.fireball", 1.0F, 1.0F / (spell.world.rand.nextFloat() * 0.4F + 1.2F) + 1.0F * 0.5F);
-				
-				EntityBoulder var8 = new EntityBoulder(spell.world, spell.invoker, 1.0F * 2.0F,true);
-				var8.canBePickedUp = 0;
-				var8.setDamage(var8.getDamage()+(1.0*spell.getAmp()));
-				var8.setRangeStoneShower(Math.round(10*spell.getAmp()));
-				if (!spell.world.isRemote)
-				{
-					spell.world.spawnEntityInWorld(var8);
-				}
-			}else{
-				LivingDebuff.addLivingDebuff(spell.invoker, new LivingStateRandomThrow(Debuffs.stoneShower,100,18,(int)(1.0F*spell.getAmp())));
-			}
+//			if(spell.getAmp()>1.5F){
+//				spell.world.playSoundAtEntity(spell.getInvoker(), "mob.ghast.fireball", 1.0F, 1.0F / (spell.world.rand.nextFloat() * 0.4F + 1.2F) + 1.0F * 0.5F);
+//				
+//				EntityBoulderNew var8 = new EntityBoulderNew(spell.world, spell.getInvoker(), 1.0F * 2.0F,true);
+//				var8.canBePickedUp = 0;
+//				var8.setDamage(var8.getDamage()+(1.0*spell.getAmp()));
+//				var8.setRangeStoneShower(Math.round(10*spell.getAmp()));
+//				if (!spell.world.isRemote)
+//				{
+//					spell.world.spawnEntityInWorld(var8);
+//				}
+//			}else{
+				LivingDebuff.addLivingDebuff(spell.getInvoker(), new LivingStateRandomThrow(Debuffs.stoneShower,100,18,(int)(1.0F*spell.getAmp())));
+			//}
 			
 
 			return;
@@ -110,7 +118,7 @@ public class SpellEffectBlend {
 			if(parent.getTarget().isPresent()){
 				LivingDebuff.addLivingDebuff(parent.getTarget().get(), new LivingBuff(Debuffs.leavesShield,remain,amp));
 			}else{
-				LivingDebuff.addLivingDebuff(parent.invoker, new LivingBuff(Debuffs.leavesShield,remain,amp));
+				LivingDebuff.addLivingDebuff(parent.getInvoker(), new LivingBuff(Debuffs.leavesShield,remain,amp));
 			}
 			
 		}
@@ -134,11 +142,11 @@ public class SpellEffectBlend {
 		public void invokeSpell(InvokeSpell parent) {
 			int amp = 1;
 
-			if(parent.invoker.isBurning()){
-				parent.invoker.setFire(0);
+			if(parent.getInvoker().isBurning()){
+				parent.getInvoker().setFire(0);
 			}
 
-			ScanHelper scan = new ScanHelper(parent.invoker,11,5);
+			ScanHelper scan = new ScanHelper(parent.getInvoker(),11,5);
 			scan.setWorld(parent.world);
 
 			for(;scan.hasNext();scan.next()){
@@ -206,14 +214,14 @@ public class SpellEffectBlend {
 				targetid = parent.getTarget().get().getEntityId();
 
 			}else{
-				EntityLivingBase nearent = LockOnHelper.searchEntityNear(parent.invoker, Debuffs.spellTarget);
+				EntityLivingBase nearent = LockOnHelper.searchEntityNear(parent.getInvoker(), Debuffs.spellTarget);
 				if(nearent!=null){
 					xyz = XYZPos.entityPosToXYZ(nearent);
 					targetid = nearent.getEntityId();
 				}
 			}
-			if(targetid!=-1 && !LivingDebuff.hasDebuff(parent.invoker, Debuffs.crimsonFlare)){
-				LivingDebuff.addLivingDebuff(parent.invoker, new LivingStateCrimsonFlare(Debuffs.crimsonFlare,100,xyz.x,xyz.y,xyz.z,amp,targetid));
+			if(targetid!=-1 && !LivingDebuff.hasDebuff(parent.getInvoker(), Debuffs.crimsonFlare)){
+				LivingDebuff.addLivingDebuff(parent.getInvoker(), new LivingStateFireStorm(Debuffs.crimsonFlare,100,xyz.x,xyz.y,xyz.z,amp,targetid));
 
 			}
 
@@ -255,20 +263,20 @@ public class SpellEffectBlend {
 			Unsaga.debug(range);
 
 			boolean found = false;
-			ScanHelper scan = new ScanHelper(parent.invoker,range,range);
+			ScanHelper scan = new ScanHelper(parent.getInvoker(),range,range);
 			scan.setWorld(parent.world);
 			for(;scan.hasNext();scan.next()){
 				if(scan.isValidHeight()){
 					if(!scan.isAirBlock() && scan.getBlock()!=null){
 						Block block = scan.getBlock();
-						if(block instanceof BlockChest || block instanceof BlockChestUnsaga){
+						if(block instanceof BlockChest || block instanceof BlockChestUnsagaNew){
 							Unsaga.debug("発見");
-							XYZPos distance_pos = scan.getAsXYZPos().subtract(XYZPos.entityPosToXYZ(parent.invoker));
+							XYZPos distance_pos = scan.getAsXYZPos().subtract(XYZPos.entityPosToXYZ(parent.getInvoker()));
 							distance_pos.setAsBlockPos(true);
 							Vec3 vec = Vec3.createVectorHelper((int)scan.sx, (int)scan.sy, (int)scan.sz);
-							Vec3 vec2 = parent.invoker.getPosition(1.0F);
+							Vec3 vec2 = parent.getInvoker().getPosition(1.0F);
 							//int distance = (int) (vec2.distanceTo(vec));
-							ChatUtil.addMessageNoLocalized(parent.invoker, "Detect Chest:"+distance_pos.toString());
+							ChatUtil.addMessageNoLocalized(parent.getInvoker(), "Detect Chest:"+distance_pos.toString());
 							found = true;
 						}
 
@@ -279,7 +287,7 @@ public class SpellEffectBlend {
 
 
 			if(!found){
-				ChatUtil.addMessage(parent.invoker, "msg.spell.chest.notfound");
+				ChatUtil.addMessage(parent.getInvoker(), "msg.spell.chest.notfound");
 				
 			}
 			return;
@@ -317,12 +325,12 @@ public class SpellEffectBlend {
 					target.setDead();
 					String str = Translation.localize(Translation.localize("msg.spell.touchgold.succeeded"));
 					String formatted = String.format(str, target.getCommandSenderName());
-					ChatUtil.addMessageNoLocalized(parent.invoker, formatted);
+					ChatUtil.addMessageNoLocalized(parent.getInvoker(), formatted);
 				}else{
 
 
-					ChatUtil.addMessage(parent.invoker, "msg.spell.touchgold.failed");
-					//parent.invoker.addChatMessage(Translation.localize("msg.spell.touchgold.failed"));
+					ChatUtil.addMessage(parent.getInvoker(), "msg.spell.touchgold.failed");
+					//parent.getInvoker().addChatMessage(Translation.localize("msg.spell.touchgold.failed"));
 				}
 				
 			}

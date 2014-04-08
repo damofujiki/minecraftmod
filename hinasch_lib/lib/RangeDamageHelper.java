@@ -1,4 +1,4 @@
-package hinasch.lib;
+package com.hinasch.lib;
 
 import hinasch.mods.unlsaga.misc.ability.skill.effect.InvokeSkill;
 
@@ -54,11 +54,16 @@ public class RangeDamageHelper {
 			for(EntityLivingBase mob:mobs){
 				if(mob!=damageEntity){
 					boolean flag = true;
-					if(mob instanceof EntityPlayer && damageEntity instanceof EntityPlayer){
-						if(!((EntityPlayer) mob).canAttackPlayer((EntityPlayer) damageEntity));{
+					if(damageEntity instanceof EntityLivingBase){
+						if(HSLibs.isSameTeam((EntityLivingBase) damageEntity, mob)){
 							flag = false;
 						}
 					}
+//					if(mob instanceof EntityPlayer && damageEntity instanceof EntityPlayer){
+//						if(!((EntityPlayer) mob).canAttackPlayer((EntityPlayer) damageEntity));{
+//							flag = false;
+//						}
+//					}
 					if(flag){
 						if((mob.onGround && onGroundOnly) || !onGroundOnly){
 							mob.attackEntityFrom(ds, damage);

@@ -1,11 +1,6 @@
 package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.PairID;
-import hinasch.lib.RangeDamageHelper;
-import hinasch.lib.ScanHelper;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.ClientHelper;
 import hinasch.mods.unlsaga.item.weapon.ItemSpearUnsaga;
@@ -20,6 +15,12 @@ import hinasch.mods.unlsaga.misc.util.rangedamage.CauseKnockBack;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.PairID;
+import com.hinasch.lib.RangeDamageHelper;
+import com.hinasch.lib.ScanHelper;
+import com.hinasch.lib.XYZPos;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockCrops;
@@ -278,7 +279,7 @@ public class SkillSpear extends SkillEffect{
 		
 	}
 	public void doSwing(InvokeSkill parent){
-		EntityPlayer ep = parent.owner;
+		EntityPlayer ep = parent.getOwnerEP();
 		ep.swingItem();
 		ep.playSound("mob.wither.shoot", 0.5F, 1.8F / (ep.getRNG().nextFloat() * 0.4F + 1.2F));
 

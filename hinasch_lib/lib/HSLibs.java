@@ -1,4 +1,6 @@
-package hinasch.lib;
+package com.hinasch.lib;
+
+
 
 import java.lang.reflect.Field;
 import java.util.Collection;
@@ -31,7 +33,10 @@ import net.minecraft.item.ItemHoe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
+import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
+import net.minecraft.scoreboard.Team;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.MathHelper;
 import net.minecraft.util.MovingObjectPosition;
@@ -66,7 +71,39 @@ public class HSLibs {
 		return entity.posX + entity.posY + entity.posZ <= 0.00001D;
 	}
 	
+	public static void sendDescriptionPacketToAllPlayer(World world,TileEntity te){
+		if(!world.isRemote){
+			for(Object obj:world.playerEntities){
+				EntityPlayerMP ep = (EntityPlayerMP)obj;
+				ep.playerNetServerHandler.sendPacket(te.getDescriptionPacket());
+			}
+		}
+	}
+	
+	public static void removePotionEffects(EntityLivingBase living,Potion... potions){
+		for(Potion potion:potions){
+			living.removePotionEffect(potion.id);
+		}
+	}
 
+	public static boolean notNull(Object... objs){
+		for(Object obj:objs){
+			if(obj==null){
+				return false;
+			}
+		}
+		return true;
+	}
+	public static boolean isSameTeam(EntityLivingBase owner,EntityLivingBase livingToCompare){
+		Team teamOwner = owner.getTeam();
+		Team teamCompareLiving = livingToCompare.getTeam();
+		System.out.println(owner+"_"+teamOwner+":"+livingToCompare+"_"+teamCompareLiving);
+		if(livingToCompare.isOnSameTeam(owner)){
+			return true;
+		}
+		return false;
+		
+	}
 	public static <T> boolean listContains(Collection<T> c,T... elements){
 		int var1 = 0;
 		for(T element:elements){
@@ -84,7 +121,7 @@ public class HSLibs {
 		//int var1 = 0;
 		
 		for(Class cls:classes){
-			System.out.println(par1.getClass().getSimpleName()+":"+cls.getSimpleName());
+			//System.out.println(par1.getClass().getSimpleName()+":"+cls.getSimpleName());
 			if(cls.isInstance(par1) || par1.getClass()==cls){
 				
 				return true;
@@ -103,43 +140,39 @@ public class HSLibs {
 		return;
 	}
 	
-	public static boolean isArrowInGround(EntityArrow arrow){
+	public static boolean isArrowInGround(EntityArrow arrow,boolean debug){
 		
 		Class arrowClass = arrow.getClass();
 		try {
+			//String fieldName = debug ? "inGround" : "field_70254_i";
+			Field f = ReflectionHelper.findField(arrowClass, "field_70254_i","i","inGround");//ReflectionHelper.findField(arrowClass, "inGround","field_70254_i","i");
 			
-			Field f = ReflectionHelper.findField(arrowClass, "inGround");
 			//Field f = arrowClass.getDeclaredField("inGround");
-			f.setAccessible(true);
+
 			return f.getBoolean(arrow);
 		} catch (SecurityException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 		return false;
 	}
 	
-	public static int getArrowTickInGround(EntityArrow arrow){
+	public static int getArrowTickInGround(EntityArrow arrow,boolean debug){
 		Class arrowClass = arrow.getClass();
 		try {
-			Field f = ReflectionHelper.findField(arrowClass, "ticksInGround");
+			//String fieldName = debug ? "ticksInGround" : "field_70252_j";
+			Field f = ReflectionHelper.findField(arrowClass, "ticksInGround","field_70252_j","j");
 			//Field f = arrowClass.getDeclaredField("ticksInGround");
-			f.setAccessible(true);
+
 			return f.getInt(arrow);
 		} catch (SecurityException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		} catch (IllegalArgumentException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		} catch (IllegalAccessException e) {
-			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
 		}
 		return 0;
@@ -147,7 +180,7 @@ public class HSLibs {
 	
 	@Deprecated
 	public static void langSet(String par1,String par3,Object par2){
-		//System.out.println(par1+":"+par3+":"+par2);
+
 		LanguageRegistry.addName(par2, par1);
 		LanguageRegistry.instance().addNameForObject(par2, "ja_JP", par3);
 		return;
@@ -314,8 +347,6 @@ public class HSLibs {
 
 	public static EntityLiving getLMMFromAvatar(EntityLivingBase entity){
 		if(entity==null)return null;
-		//avatarが渡される
-		if(isEntityLittleMaidAvatar(entity)){
 			Class avatarcls = entity.getClass();
 			try {
 				Field lmmfield = avatarcls.getDeclaredField("avatar");
@@ -336,7 +367,7 @@ public class HSLibs {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
+		
 		return null;
 	}
 	public static boolean isSide(int side){
@@ -346,10 +377,7 @@ public class HSLibs {
 		}
 		return false;
 	}
-	//	public void registerTools(Block block){
-	//		GameRegistry.addRecipe(new ItemStack(), new Object[]{" S "," S "," W ",
-	//			Character.valueOf('S'),new ItemStack(Block.oreIron,1),Character.valueOf('W'),new ItemStack(Item.stick,1)});
-	//	}
+
 
 	public static int exceptZero(int par1){
 
@@ -598,7 +626,7 @@ public class HSLibs {
 
 	//    public static Optional<Integer> getHeightFromPoint(World world,XYZPos pos,int maxheight,boolean onlyopaquecube){
 	//    
-	//    	//起点より下にいけるなら下を探す、そうでなければ上へ
+	//    	//襍ｷ轤ｹ繧医ｊ荳九↓縺�￠繧九↑繧我ｸ九ｒ謗｢縺吶�縺昴≧縺ｧ縺ｪ縺代ｌ縺ｰ荳翫∈
 	//    	if(world.isAirBlock(pos.x, pos.y-1, pos.z)){
 	//        	for(int i=0;i<maxheight;i++){
 	//        		if(pos.y-i>0){
@@ -626,7 +654,7 @@ public class HSLibs {
 	//    	return Optional.absent();
 	//    }
 
-	//バニラからのコピー、修正
+	//繝舌ル繝ｩ縺九ｉ縺ｮ繧ｳ繝斐�縲∽ｿｮ豁｣
 	//    public static float getItemStackStrVsBlock(EntityPlayer ep,ItemStack is,Block par1Block, boolean par2, int meta)
 	//    {
 	//        ItemStack stack = is;

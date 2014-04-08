@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.core.event;
 
-import hinasch.lib.HSLibs;
+import com.hinasch.lib.HSLibs;
+
 import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.ability.skill.HelperSkill;
 import net.minecraft.entity.player.EntityPlayer;

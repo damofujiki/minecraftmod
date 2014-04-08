@@ -1,9 +1,10 @@
 package hinasch.mods.unlsaga.entity.projectile;
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.RangeDamageHelper;
-import hinasch.lib.WorldHelper;
-import hinasch.lib.XYZPos;
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.RangeDamageHelper;
+import com.hinasch.lib.WorldHelper;
+import com.hinasch.lib.XYZPos;
+
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.util.DamageHelper;
 import hinasch.mods.unlsaga.misc.util.DamageSourceUnsaga;

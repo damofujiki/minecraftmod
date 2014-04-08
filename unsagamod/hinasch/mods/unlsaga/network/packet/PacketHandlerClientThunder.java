@@ -1,7 +1,8 @@
 package hinasch.mods.unlsaga.network.packet;
 
-import hinasch.lib.AbstractPacket;
-import hinasch.lib.XYZPos;
+import com.hinasch.lib.AbstractPacket;
+import com.hinasch.lib.XYZPos;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.entity.effect.EntityLightningBolt;

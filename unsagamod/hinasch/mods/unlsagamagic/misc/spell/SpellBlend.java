@@ -1,7 +1,6 @@
 package hinasch.mods.unlsagamagic.misc.spell;
 
 import hinasch.mods.unlsaga.core.FiveElements;
-import hinasch.mods.unlsaga.core.FiveElements.EnumElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,6 +15,7 @@ public class SpellBlend extends Spell{
 			String nameJp, int damageItem, int baseProb) {
 		super(element, num, nameEn, nameJp, 10, damageItem, baseProb);
 		this.baseAndRequireMap = new HashMap();
+		Spells.blendSet.add(this);
 	}
 
 	

@@ -1,4 +1,4 @@
-package hinasch.lib;
+package com.hinasch.lib;
 
 public class BWrapper {
 

@@ -26,20 +26,20 @@ public abstract class SpellHealing extends SpellBase{
 			this.hookHealing(parent,target);
 			String mesbase = Translation.localize("msg.heal");
 			String formatted = String.format(mesbase, target.getCommandSenderName(),Math.round(heal));
-			ChatUtil.addMessageNoLocalized(parent.invoker, formatted);
+			ChatUtil.addMessageNoLocalized(parent.getInvoker(), formatted);
 			PacketParticle pp = new PacketParticle(3,target.getEntityId(),10);
 
 			Unsaga.packetPipeline.sendToAllAround(pp, PacketUtil.getTargetPointNear(target));
 			
 			
 		}else{
-			parent.invoker.heal(heal);
-			this.hookHealing(parent,parent.invoker);
+			parent.getInvoker().heal(heal);
+			this.hookHealing(parent,parent.getInvoker());
 			String mesbase = Translation.localize("msg.heal");
-			String formatted = String.format(mesbase, parent.invoker.getCommandSenderName(),Math.round(heal));
-			ChatUtil.addMessageNoLocalized(parent.invoker, formatted);
-			PacketParticle pp = new PacketParticle(3,parent.invoker.getEntityId(),3);
-			Unsaga.packetPipeline.sendToAllAround(pp, PacketUtil.getTargetPointNear(parent.invoker));
+			String formatted = String.format(mesbase, parent.getInvoker().getCommandSenderName(),Math.round(heal));
+			ChatUtil.addMessageNoLocalized(parent.getInvoker(), formatted);
+			PacketParticle pp = new PacketParticle(3,parent.getInvoker().getEntityId(),3);
+			Unsaga.packetPipeline.sendToAllAround(pp, PacketUtil.getTargetPointNear(parent.getInvoker()));
 			
 		}
 	}

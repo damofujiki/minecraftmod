@@ -12,7 +12,7 @@ import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillMelee;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillSword;
 import hinasch.mods.unlsaga.misc.ability.skill.effect.SkillSword.SkillGust;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -29,7 +29,7 @@ public class ItemSwordUnsaga extends ItemSwordBase{
 	
 	public ItemSwordUnsaga(UnsagaMaterial mat) {
 		super(mat);
-		Unsaga.proxy.registerSpecialRenderer(this);
+		//Unsaga.proxy.registerSpecialRenderer(this);
 		UnsagaItems.putItemMap(this,EnumUnsagaTools.SWORD.toString()+"."+mat.name);
 
 	}
@@ -38,7 +38,7 @@ public class ItemSwordUnsaga extends ItemSwordBase{
 	public void onPlayerStoppedUsing(ItemStack is, World world, EntityPlayer ep, int par4)
 	{
 		int j = this.getMaxItemUseDuration(is) - par4;
-		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.STOPPED_USING, is, ep, world, null);
+		SkillMelee pickedSkillEffect = HelperUnsagaItem.getSkillMelee(SkillMelee.Type.STOPPED_USING, is, ep, world, null);
 		if(pickedSkillEffect!=null){
 			InvokeSkill helper = new InvokeSkill(world, ep, pickedSkillEffect.getSkill(), is);
 			if(helper!=null){
@@ -69,7 +69,7 @@ public class ItemSwordUnsaga extends ItemSwordBase{
 	@Override
     public boolean onLeftClickEntity(ItemStack stack, EntityPlayer player, Entity entity)
     {
-		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.ENTITY_LEFTCLICK, stack, player, player.worldObj, null);
+		SkillMelee pickedSkillEffect = HelperUnsagaItem.getSkillMelee(SkillMelee.Type.ENTITY_LEFTCLICK, stack, player, player.worldObj, null);
 		if(pickedSkillEffect!=null){
 			InvokeSkill helper = new InvokeSkill(player.worldObj, player, pickedSkillEffect.getSkill(), stack);
 			if(helper!=null){
@@ -101,7 +101,7 @@ public class ItemSwordUnsaga extends ItemSwordBase{
 	public ItemStack onItemRightClick(ItemStack par1ItemStack, World par2World, EntityPlayer par3EntityPlayer)
 	{
 		super.onItemRightClick(par1ItemStack, par2World, par3EntityPlayer);
-		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.RIGHTCLICK, par1ItemStack, par3EntityPlayer, par2World, null);
+		SkillMelee pickedSkillEffect = HelperUnsagaItem.getSkillMelee(SkillMelee.Type.RIGHTCLICK, par1ItemStack, par3EntityPlayer, par2World, null);
 		if(pickedSkillEffect!=null){
 			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer, pickedSkillEffect.getSkill(), par1ItemStack);
 			if(helper!=null){

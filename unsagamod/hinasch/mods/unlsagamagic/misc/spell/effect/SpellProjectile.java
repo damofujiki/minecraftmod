@@ -8,8 +8,8 @@ import net.minecraft.entity.Entity;
 public class SpellProjectile extends SpellBase{
 
 	public void hookStart(InvokeSpell parent){
-		PacketSound ps = new PacketSound(1008,parent.invoker.getEntityId(),PacketSound.MODE.AUX);
-		Unsaga.packetPipeline.sendToAllAround(ps, PacketUtil.getTargetPointNear(parent.invoker));
+		PacketSound ps = new PacketSound(1008,parent.getInvoker().getEntityId(),PacketSound.MODE.AUX);
+		Unsaga.packetPipeline.sendToAllAround(ps, PacketUtil.getTargetPointNear(parent.getInvoker()));
 	}
 	
 	public void hookEnd(InvokeSpell parent){

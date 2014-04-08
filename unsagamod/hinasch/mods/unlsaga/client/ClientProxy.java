@@ -1,7 +1,6 @@
 package hinasch.mods.unlsaga.client;
 
 
-import hinasch.lib.HSLibs;
 import hinasch.mods.unlsaga.DebugUnsaga;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.render.RenderGolemUnsaga;
@@ -32,6 +31,7 @@ import net.minecraft.item.Item;
 import net.minecraftforge.client.MinecraftForgeClient;
 
 import com.google.common.base.Optional;
+import com.hinasch.lib.HSLibs;
 
 import cpw.mods.fml.client.registry.RenderingRegistry;
 import cpw.mods.fml.common.FMLCommonHandler;

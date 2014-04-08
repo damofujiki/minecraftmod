@@ -1,6 +1,5 @@
 package hinasch.mods.unlsaga.core.init;
 
-import hinasch.lib.FileObject;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.item.armor.ItemAccessory;
@@ -15,7 +14,7 @@ import hinasch.mods.unlsaga.item.weapon.ItemSpearUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemStaffUnsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemSwordUnsaga;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,6 +32,7 @@ import net.minecraftforge.common.config.Configuration;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.hinasch.lib.FileObject;
 
 import cpw.mods.fml.common.registry.GameRegistry;
 
@@ -90,7 +90,7 @@ public class UnsagaItems {
 	protected static ArrayList<String> keyExcept;
 
 
-	public static enum EnumSelecterItem {BOWONLY,WEAPONONLY,MERCHANDISE};
+	public static enum EnumSelecterItem {BOWONLY,WEAPONONLY,MERCHANDISE,ALL};
 	public static void loadConfig(Configuration config){
 //		PropertyCustom prop = new PropertyCustom(new String[]{"itemIDs.Swords","itemIDs.Axes","itemIDs.Staffs"
 //				,"itemIDs.Spears","itemIDs.Bows","itemIDs.Accessories","itemIDs.Armors","itemID.Ingots","itemID.Barrett"
@@ -249,7 +249,7 @@ public class UnsagaItems {
 
 	}
 	
-	public static boolean isValidItemForMaterial(EnumUnsagaTools category,UnsagaMaterial material){
+	public static boolean isValidItemAsMaterial(EnumUnsagaTools category,UnsagaMaterial material){
 		String key = category.toString() + "." + material.name;
 		if(itemMap.containsKey(key)){
 			return true;
@@ -268,7 +268,7 @@ public class UnsagaItems {
 		ItemStack failed = getItemStack(category,UnsagaMaterials.failed,1,0);
 		UnsagaMaterial uns = getRandomUnsuitedMaterial(getUnsuitedMaterial(category), rand);
 
-		HelperUnsagaWeapon.initWeapon(failed, uns.name, uns.weight);
+		HelperUnsagaItem.initWeapon(failed, uns.name, uns.weight);
 		return failed;
 		
 	}
@@ -326,7 +326,7 @@ public class UnsagaItems {
 				EnumUnsagaTools cate = iu.getCategory();
 				return getFailedWeapon(rand,cate);
 			}
-			HelperUnsagaWeapon.initWeapon(is, mate.name, mate.weight);
+			HelperUnsagaItem.initWeapon(is, mate.name, mate.weight);
 			return is;
 		}
 		return new ItemStack(Items.stone_sword,1,0);

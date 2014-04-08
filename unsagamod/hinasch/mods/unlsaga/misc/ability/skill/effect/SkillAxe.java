@@ -1,11 +1,5 @@
 package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.PairID;
-import hinasch.lib.RangeDamageHelper;
-import hinasch.lib.ScanHelper;
-import hinasch.lib.WorldHelper;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaBlocks;
 import hinasch.mods.unlsaga.entity.projectile.EntityFlyingAxeNew;
@@ -37,6 +31,12 @@ import net.minecraft.world.World;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.google.common.collect.Sets;
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.PairID;
+import com.hinasch.lib.RangeDamageHelper;
+import com.hinasch.lib.ScanHelper;
+import com.hinasch.lib.WorldHelper;
+import com.hinasch.lib.XYZPos;
 
 public class SkillAxe extends SkillEffect{
 
@@ -69,7 +69,7 @@ public class SkillAxe extends SkillEffect{
 		@Override
 		public void invokeSkill(InvokeSkill parent) {
 			parent.owner.swingItem();
-			EntityPlayer ep = parent.owner;
+			EntityPlayer ep = parent.getOwnerEP();
 			XYZPos po = parent.usepoint;
 			int amount = 0;
 			int fortune = EnchantmentHelper.getFortuneModifier(ep);
@@ -113,7 +113,7 @@ public class SkillAxe extends SkillEffect{
 		public void invokeSkill(InvokeSkill parent) {
 			World world = parent.world;
 			EntityLivingBase entity = parent.target;
-			EntityPlayer ep = parent.owner;
+			EntityPlayer ep = parent.getOwnerEP();
 			parent.attack(entity, null);
 			world.createExplosion(ep, entity.posX, entity.posY, entity.posZ, 1.5F,false);
 			
@@ -286,7 +286,7 @@ public class SkillAxe extends SkillEffect{
 		public void prepareSkill(InvokeSkill parent){
 
 			if(!LivingDebuff.hasDebuff(parent.owner, Debuffs.flyingAxe)){
-				this.setReadyToSkyDrive(parent.owner);
+				this.setReadyToSkyDrive(parent.getOwnerEP());
 			}
 		}
 		

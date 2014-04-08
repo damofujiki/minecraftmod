@@ -36,7 +36,7 @@ public class UnsagaParticles {
 	public void registerIcons(IIconRegister par1IconRegister) {
 		iicons = new IIcon[iiconNames.length];
 		for(int i = 0; i < iicons.length; ++i) {
-			iicons[i] = par1IconRegister.registerIcon(Unsaga.domain+":/particles/"+iiconNames[i]);
+			iicons[i] = par1IconRegister.registerIcon(Unsaga.domain+":particles/"+iiconNames[i]);
 			Unsaga.debug("アイコン登録しました："+iicons[i]);
 		}
 	}

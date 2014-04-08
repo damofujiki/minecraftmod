@@ -1,13 +1,10 @@
 package hinasch.mods.unlsaga.misc.bartering;
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.RecipeUtil;
-import hinasch.lib.UtilNBT;
 import hinasch.mods.unlsaga.Unsaga;
-import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaItems.EnumSelecterItem;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.misc.smith.MaterialInfo;
 import hinasch.mods.unlsaga.misc.util.UtilItem;
 import hinasch.mods.unlsaga.misc.util.WeightedRandomNumber;
@@ -32,6 +29,9 @@ import net.minecraft.util.MathHelper;
 import net.minecraft.util.WeightedRandom;
 
 import com.google.common.base.Optional;
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.RecipeUtil;
+import com.hinasch.lib.UtilNBT;
 
 public class MerchandiseInfo {
 
@@ -75,9 +75,11 @@ public class MerchandiseInfo {
 		}
 		return ms;
 	}
+	
+	
 	public static int getPrice(ItemStack is){
 		int price = 0;
-		price = Unsaga.merchandiseFactory.getPriceFromUnsagaMaterialItem(is);
+		price = Unsaga.merchandiseLibrary.getPriceFromUnsagaMaterialItem(is);
 		
 		
 		
@@ -89,16 +91,7 @@ public class MerchandiseInfo {
 		classMap.put(ItemArmor.class, 2.0F);
 		classMap.put(ItemHoe.class, 2.0F);
 		
-		for(Class cl:classMap.keySet()){
-			if(UtilItem.isItemInstance(is, cl)){
-				price = (int)((float)price * classMap.get(cl));
-				per = (is.getMaxDamage()-is.getItemDamage())/HSLibs.exceptZero(is.getMaxDamage());
-				price = (int)((float)price*per);
-				if(price<10){
-					price = 10;
-				}
-			}
-		}
+
 		
 //		if(classMap.containsKey(is.getItem().getClass())){
 //			price = (int)((float)price * classMap.get(is.getItem().getClass()));
@@ -126,8 +119,8 @@ public class MerchandiseInfo {
 		}
 
 		boolean flag  = false;
-		if(Unsaga.merchandiseFactory.find(is).isPresent() && !flag){
-			MerchandiseLibraryBook book = (MerchandiseLibraryBook) Unsaga.merchandiseFactory.find(is).get();
+		if(Unsaga.merchandiseLibrary.find(is).isPresent() && !flag){
+			MerchandiseLibraryBook book = (MerchandiseLibraryBook) Unsaga.merchandiseLibrary.find(is).get();
 			price = book.price;
 			flag = true;
 		}
@@ -139,8 +132,9 @@ public class MerchandiseInfo {
 //			}
 //		}
 		
-		Unsaga.debug("きてます");
+		
 		if(!flag && supposeFromRecipe(is).isPresent()){
+			
 			price = supposeFromRecipe(is).get();
 		}
 		
@@ -150,6 +144,24 @@ public class MerchandiseInfo {
 //				price = Unsaga.merchandiseFactory.findPrice(str).get();
 //			}
 //		}
+		
+		for(Class cl:classMap.keySet()){
+			Unsaga.debug("クラスを調べます");
+			if(UtilItem.isSameClass(is, cl)){
+				Unsaga.debug("クラスが一致しました");
+				price = (int)((float)price * classMap.get(cl));
+
+				if(price<10){
+					price = 10;
+				}
+			}
+		}
+		
+		if(is.getItem().isRepairable() && is.getItem().isDamageable()){
+			per = (float)(is.getMaxDamage()-is.getItemDamage())/HSLibs.exceptZero(is.getMaxDamage());
+			Unsaga.debug(price+":"+per);
+			price = (int)((float)price*per);
+		}
 		if(is.stackSize>1){
 			price *= is.stackSize;
 		}
@@ -172,7 +184,8 @@ public class MerchandiseInfo {
 	public static boolean isPossibleToSell(ItemStack is){
 		MaterialInfo info = new MaterialInfo(is);
 		if(info.getMaterial().isPresent())return true;
-		if(Unsaga.merchandiseFactory.find(is).isPresent())return true;
+		if(Unsaga.merchandiseLibrary.find(is).isPresent())return true;
+		if(supposeFromRecipe(is).isPresent())return true;
 		return false;
 	}
 	
@@ -186,14 +199,38 @@ public class MerchandiseInfo {
 		List list = CraftingManager.getInstance().getRecipeList();
 		int price = 0;
 		boolean flag = false;
+		Unsaga.debug("レシピから推測します");
 		for(Object obj:list){
 			IRecipe recipe = (IRecipe)obj;
 			if(recipe.getRecipeOutput()!=null && is.isItemEqual(recipe.getRecipeOutput()) && !flag){
+				
+				Unsaga.debug(recipe.getRecipeOutput());
+				Unsaga.debug(is);
 				Unsaga.debug("レシピが一致するのがありました");
 				//クラフト前レシピに必要なアイテム一覧を取得
-				List<ItemStack> itemsList = RecipeUtil.getRequireItemStacksFromRecipe(recipe);
+				List<Object> itemsList = RecipeUtil.getRequireItemStacksFromRecipe(recipe);
+				for(Object ob:itemsList){
+					if(ob!=null){
+						if(ob instanceof ArrayList){
+							Unsaga.debug(((ArrayList) ob).get(0));
+						}
+						if(ob instanceof ItemStack){
+							Unsaga.debug(ob);
+						}
+						//Unsaga.debug(ob.getClass().getSimpleName());
+					}
+					
+				}
+				//Unsaga.debug(itemsList);
+				
 				if(itemsList!=null && !itemsList.isEmpty()){
-					getPriceFromRecipe(itemsList);
+					Unsaga.debug("レシピ解析できました");
+					//CraftingManager
+					int stack = recipe.getRecipeOutput().stackSize;
+					if(stack!=0){
+						price = getPriceFromRecipe(itemsList)/stack;
+					}
+					
 				}
 				flag = true;
 			}
@@ -204,13 +241,27 @@ public class MerchandiseInfo {
 		return Optional.of(price);
 	}
 	
-	protected static int getPriceFromRecipe(List<ItemStack> itemList){
+
+	protected static int getPriceFromRecipe(List<Object> itemList){
 		int price = 0;
-		for(ItemStack is:itemList){
-			if(Unsaga.materialFactory.find(is).isPresent()){
-				MerchandiseLibraryBook book = (MerchandiseLibraryBook) Unsaga.materialFactory.find(is).get();
-				price += book.price;
+		for(Object obj:itemList){
+			if(obj instanceof ArrayList){
+				List list = (ArrayList)obj;
+				for(Object elm:list){
+					if(elm!=null && Unsaga.merchandiseLibrary.find(elm).isPresent()){
+						MerchandiseLibraryBook book = (MerchandiseLibraryBook) Unsaga.merchandiseLibrary.find(elm).get();
+						price += book.price;
+					}
+				}
+
+			}else{
+				if(obj!=null && Unsaga.merchandiseLibrary.find(obj).isPresent()){
+					MerchandiseLibraryBook book = (MerchandiseLibraryBook) Unsaga.merchandiseLibrary.find(obj).get();
+					price += book.price;
+				}
 			}
+
+
 		}
 		return price;
 		

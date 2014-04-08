@@ -1,7 +1,5 @@
 package hinasch.mods.unlsagamagic.misc.element;
 
-import hinasch.lib.ScanHelper;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.FiveElements;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
@@ -21,6 +19,8 @@ import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.google.common.collect.Sets;
+import com.hinasch.lib.ScanHelper;
+import com.hinasch.lib.XYZPos;
 
 public class UnsagaElement {
 	protected SpellMixTable worldElementTable;

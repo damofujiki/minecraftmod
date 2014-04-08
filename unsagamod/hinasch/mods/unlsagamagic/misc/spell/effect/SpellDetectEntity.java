@@ -24,7 +24,7 @@ public abstract class SpellDetectEntity extends SpellBase{
 		double range = 50.0D;
 		this.isAmplified = spell.getAmp()>1.5F;
 		
-		AxisAlignedBB bb = spell.invoker.boundingBox.expand(range, range,range);
+		AxisAlignedBB bb = spell.getInvoker().boundingBox.expand(range, range,range);
 		List<EntityLivingBase> entlist = spell.world.getEntitiesWithinAABB(EntityLivingBase.class, bb);
 		StringBuilder strbuilder = new StringBuilder();
 		Multimap<String,Object> entityList =  ArrayListMultimap.create();
@@ -39,7 +39,7 @@ public abstract class SpellDetectEntity extends SpellBase{
 		}
 		String stri = new String(strbuilder);
 		if(!spell.world.isRemote && !stri.equals("")){
-			ChatUtil.addMessageNoLocalized(spell.invoker, new String(strbuilder));
+			ChatUtil.addMessageNoLocalized(spell.getInvoker(), new String(strbuilder));
 			//spell.invoker.addChatMessage(new String(strbuilder));
 		}
 	}

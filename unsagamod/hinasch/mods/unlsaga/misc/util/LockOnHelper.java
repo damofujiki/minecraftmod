@@ -7,6 +7,8 @@ import hinasch.mods.unlsaga.misc.debuff.state.State;
 
 import java.util.List;
 
+import com.hinasch.lib.HSLibs;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.AxisAlignedBB;
@@ -39,7 +41,7 @@ public class LockOnHelper {
 		List<EntityLivingBase> entitynearlist = attacker.worldObj.getEntitiesWithinAABB(EntityLivingBase.class, bb);
 		if(!entitynearlist.isEmpty()){
 			for(EntityLivingBase entity:entitynearlist){
-				if(entity!=attacker && !sameTeam(attacker,entity)){
+				if(entity!=attacker && !HSLibs.isSameTeam(attacker, entity)){
 					setTarget(attacker,entity,state);
 					return entity;
 				}
@@ -49,10 +51,6 @@ public class LockOnHelper {
 		return null;
 	}
 
-	public static boolean sameTeam(EntityLivingBase attacker,EntityLivingBase living){
-		if(living instanceof EntityPlayer && attacker instanceof EntityPlayer){
-			return ((EntityPlayer) living).canAttackPlayer((EntityPlayer) attacker);
-		}
-		return false;
-	}
+
+
 }

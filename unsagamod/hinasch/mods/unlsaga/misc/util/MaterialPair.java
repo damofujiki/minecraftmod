@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.misc.util;
 
-import hinasch.lib.PairObject;
+import com.hinasch.lib.PairObject;
+
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 
 public class MaterialPair extends PairObject<UnsagaMaterial,Integer>{

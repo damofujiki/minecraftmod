@@ -103,12 +103,17 @@ public class EventSpellBuff {
 			if(e.source.getEntity() instanceof EntityFireball){
 				return true;
 			}
+			if(e.source.isFireDamage()){
+				return true;
+			}
+
 			if(e.source instanceof DamageSourceUnsaga){
 				DamageSourceUnsaga ds = (DamageSourceUnsaga)e.source;
 				if(ds.getSubDamageType().contains(DamageHelper.SubType.FIRE)){
 					return true;
 				}
 			}
+
 			return false;
 		}
 		

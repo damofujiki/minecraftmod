@@ -6,7 +6,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 
 import java.util.List;
 
@@ -29,14 +29,14 @@ public class ItemBowBase extends ItemBow implements IUnsagaMaterial,IGainAbility
     @SideOnly(Side.CLIENT)
     private IIcon[] iconArray;
     protected UnsagaMaterial material;
-	protected final HelperUnsagaWeapon helper;
+	protected final HelperUnsagaItem helper;
 
     public ItemBowBase(UnsagaMaterial material)
     {
         super();
         this.maxStackSize = 1;
         this.material = material;
-        this.helper = new HelperUnsagaWeapon(this.material, this.itemIcon, EnumUnsagaTools.BOW);
+        this.helper = new HelperUnsagaItem(this.material, this.itemIcon, EnumUnsagaTools.BOW);
     }
     
 	@Override
@@ -89,7 +89,7 @@ public class ItemBowBase extends ItemBow implements IUnsagaMaterial,IGainAbility
 //    }
     
     public int getStrengthModifier(ItemStack is){
-    	UnsagaMaterial material = HelperUnsagaWeapon.getMaterial(is);
+    	UnsagaMaterial material = HelperUnsagaItem.getMaterial(is);
     	if(material==UnsagaMaterials.dummy){
     		return 0;
     	}

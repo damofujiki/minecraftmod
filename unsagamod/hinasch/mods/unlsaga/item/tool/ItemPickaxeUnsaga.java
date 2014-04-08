@@ -5,7 +5,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 
 import java.util.List;
 
@@ -22,14 +22,14 @@ import com.google.common.collect.Multimap;
 
 public class ItemPickaxeUnsaga extends ItemPickaxe implements IUnsagaMaterial{
 	
-	protected final HelperUnsagaWeapon helper;
+	protected final HelperUnsagaItem helper;
 	protected final float weaponDamage;
 	protected IIcon[] icons;
 	protected UnsagaMaterial unsagaMaterial;
 	
 	public ItemPickaxeUnsaga(UnsagaMaterial us) {
 		super(us.getToolMaterial());
-		this.helper = new HelperUnsagaWeapon(us,this.itemIcon,EnumUnsagaTools.PICKAXE);
+		this.helper = new HelperUnsagaItem(us,this.itemIcon,EnumUnsagaTools.PICKAXE);
 		this.icons = new IIcon[2];
 		this.unsagaMaterial = us;
 		this.weaponDamage = 2.0F + us.getToolMaterial().getDamageVsEntity();

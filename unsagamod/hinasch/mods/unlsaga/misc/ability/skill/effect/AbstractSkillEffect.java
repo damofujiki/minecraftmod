@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
-import hinasch.lib.WorldHelper;
+import com.hinasch.lib.WorldHelper;
+
 import net.minecraft.world.World;
 
 public abstract class AbstractSkillEffect {

@@ -1,6 +1,5 @@
 package hinasch.mods.unlsagamagic.misc.spell.effect;
 
-import hinasch.lib.HSLibs;
 import hinasch.mods.unlsaga.misc.debuff.Buff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingBuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
@@ -9,6 +8,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.hinasch.lib.HSLibs;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -57,7 +58,7 @@ public class SpellAddBuff extends SpellBase{
 
 			
 		}else{
-			this.doActiveBuffs(parent, parent.invoker, remain, lv);
+			this.doActiveBuffs(parent, parent.getInvoker(), remain, lv);
 
 
 		}
@@ -72,7 +73,7 @@ public class SpellAddBuff extends SpellBase{
 		}
 		if(potions!=null && !potions.isEmpty()){
 			for(Potion potion:potions){
-				if(!(parent.invoker instanceof EntityPlayer)){
+				if(!(parent.getInvoker() instanceof EntityPlayer)){
 					Potion potionMob = potion;
 					if(this.mobPotionMap.containsKey(potion)){
 						potionMob = this.mobPotionMap.get(potion);

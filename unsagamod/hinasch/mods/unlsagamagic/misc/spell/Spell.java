@@ -1,6 +1,7 @@
 package hinasch.mods.unlsagamagic.misc.spell;
 
-import hinasch.lib.HSLibs;
+import com.hinasch.lib.HSLibs;
+
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.FiveElements;
 import hinasch.mods.unlsagamagic.misc.spell.effect.SpellBase;

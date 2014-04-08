@@ -1,4 +1,4 @@
-package hinasch.lib;
+package com.hinasch.lib;
 
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;

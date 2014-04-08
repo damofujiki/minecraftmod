@@ -1,10 +1,7 @@
 package hinasch.mods.unlsaga;
 
-import hinasch.lib.BWrapper;
-import hinasch.lib.HSLibs;
 import hinasch.mods.unlsaga.block.BlockDataUnsaga;
 import hinasch.mods.unlsaga.core.event.EventGainSkillOnAttack;
-import hinasch.mods.unlsaga.core.event.EventInitEnemyWeapon;
 import hinasch.mods.unlsaga.core.event.EventInteractEntity;
 import hinasch.mods.unlsaga.core.event.EventLivingDeath;
 import hinasch.mods.unlsaga.core.event.EventLivingHurt;
@@ -14,7 +11,7 @@ import hinasch.mods.unlsaga.core.event.ExtendedEntityLivingData;
 import hinasch.mods.unlsaga.core.event.ExtendedEntityTag;
 import hinasch.mods.unlsaga.core.event.ExtendedMerchantData;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
-import hinasch.mods.unlsaga.core.init.NoFuncItemList;
+import hinasch.mods.unlsaga.core.init.NoFunctionItems;
 import hinasch.mods.unlsaga.core.init.UnsagaBlocks;
 import hinasch.mods.unlsaga.core.init.UnsagaConfigs;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
@@ -29,11 +26,20 @@ import hinasch.mods.unlsaga.misc.module.UnsagaMagicHandler;
 import hinasch.mods.unlsaga.misc.smith.MaterialLibrary;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.network.CommonProxy;
+import hinasch.mods.unlsaga.network.packet.PacketGuiButton;
+import hinasch.mods.unlsaga.network.packet.PacketGuiOpen;
+import hinasch.mods.unlsaga.network.packet.PacketHandlerClientThunder;
+import hinasch.mods.unlsaga.network.packet.PacketParticle;
 import hinasch.mods.unlsaga.network.packet.PacketPipeline;
+import hinasch.mods.unlsaga.network.packet.PacketSkill;
+import hinasch.mods.unlsaga.network.packet.PacketSound;
+import hinasch.mods.unlsaga.network.packet.PacketSyncDebuff;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraftforge.common.config.Configuration;
 
 import com.google.common.base.Optional;
+import com.hinasch.lib.BWrapper;
+import com.hinasch.lib.HSLibs;
 
 import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.Mod.EventHandler;
@@ -45,13 +51,12 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 import cpw.mods.fml.common.network.NetworkRegistry;
 
 @Mod(modid = Unsaga.modid, name = Unsaga.name, version=Unsaga.version)
-//@NetworkMod(channels = { "unsagamod","unsagamod_gui" }, versionBounds = "[5.2,)", clientSideRequired = true, serverSideRequired = false, packetHandler = PacketHandler.class)
 public class Unsaga {
-	@SidedProxy(clientSide = "hinasch.mods.unlsaga.client.ClientProxy", serverSide = "hinasch.mods.unlsaga.core.CommonProxy")
+	@SidedProxy(modId= Unsaga.modid,clientSide = "hinasch.mods.unlsaga.client.ClientProxy", serverSide = "hinasch.mods.unlsaga.network.CommonProxy")
 	public static CommonProxy proxy;
-	@Instance("Unsaga")
+	@Instance(Unsaga.modid)
 	public static Unsaga instance;
-	public static final String modid = "Unsaga";
+	public static final String modid = "hinasch.unsaga";
 	public static final String name = "Unsaga Mod";
 	public static final String version = "1.0 MC1.7.2";
 	public static final String domain = "hinasch.unlsaga";
@@ -75,8 +80,8 @@ public class Unsaga {
 	public static AbilityRegistry abilityRegistry;
 	public static CreativeTabs tabUnsaga;
 	
-	public static MaterialLibrary materialFactory = new MaterialLibrary();
-	public static MerchandiseLibrary merchandiseFactory = new MerchandiseLibrary();
+	public static MaterialLibrary materialLibrary = new MaterialLibrary();
+	public static MerchandiseLibrary merchandiseLibrary = new MerchandiseLibrary();
 	
 	protected static Optional<UnsagaMagicHandler> module = Optional.absent();
 	public static LPHandlerEmpty lpHandler = new LPHandlerEmpty();
@@ -109,7 +114,7 @@ public class Unsaga {
 			this.getModuleMagicHandler().initItem(config);
 		}
 		
-		NoFuncItemList.load();
+		NoFunctionItems.load();
 		
 		config.save();
 		
@@ -120,7 +125,7 @@ public class Unsaga {
 
 		
 		
-		HSLibs.registerEvent(new EventInitEnemyWeapon()); //敵に武器を持たせる関連
+		//HSLibs.registerEvent(new EventInitEnemyWeapon()); //敵に武器を持たせる関連
 		HSLibs.registerEvent(new EventInteractEntity()); //エンティティにライトクリックした時
 		HSLibs.registerEvent(new ExtendedPlayerData()); //プレイヤーの拡張インベントリ
 		HSLibs.registerEvent(new ExtendedMerchantData()); //物々交換関連
@@ -141,10 +146,12 @@ public class Unsaga {
 		//(new ForgeEventRegistry()).registerEvent();
 		
 		//NetworkRegistry.instance().registerGuiHandler(instance, proxy);
-		NetworkRegistry.INSTANCE.registerGuiHandler(instance, proxy);
+		NetworkRegistry.INSTANCE.registerGuiHandler(this, proxy);
 		if(this.debug.get()){
 			
 		}
+		
+
 		//GameRegistry.registerWorldGenerator(new DwarvenWorldGenerator());
 		//GameRegistry.registerCraftingHandler(new DwarvenCraftingHandler());
 	}
@@ -154,10 +161,9 @@ public class Unsaga {
 	public void init(FMLInitializationEvent event)
 	{
 		//MaterialLibrary.init();
-		packetPipeline.initialise();
 		proxy.registerKeyHandler();
 
-		NoFuncItemList.setLocalizeAndOreDict();
+		NoFunctionItems.setLocalizeAndOreDict();
 		BlockDataUnsaga.registerSmeltingAndAssociation();
 		UnsagaRecipes.register();
 
@@ -166,6 +172,15 @@ public class Unsaga {
 		//(new ForgeChestHooks()).addLoot();
 		//(new LocalizationRegistry()).addLocalization();
 		//(new RecipeRegistry()).addRecipe();
+		packetPipeline.init("hinasch.unsagamod");
+        packetPipeline.registerPacket(PacketGuiOpen.class);
+        packetPipeline.registerPacket(PacketParticle.class);
+        packetPipeline.registerPacket(PacketGuiButton.class);
+        packetPipeline.registerPacket(PacketSkill.class);
+        packetPipeline.registerPacket(PacketSound.class);
+        packetPipeline.registerPacket(PacketHandlerClientThunder.class);
+        packetPipeline.registerPacket(PacketSyncDebuff.class);
+
 	}
 	
 	@EventHandler

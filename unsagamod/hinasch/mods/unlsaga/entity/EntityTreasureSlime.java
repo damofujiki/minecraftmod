@@ -4,7 +4,7 @@ import hinasch.mods.unlsaga.entity.ai.AIFireStorm;
 import hinasch.mods.unlsaga.entity.ai.AIStore;
 import hinasch.mods.unlsaga.entity.ai.AIThrowProjectile;
 import hinasch.mods.unlsaga.entity.ai.IThrowableAttack;
-import hinasch.mods.unlsaga.entity.projectile.EntityFireArrow;
+import hinasch.mods.unlsaga.entity.projectile.EntityFireArrowNew;
 import hinasch.mods.unlsaga.entity.projectile.EntitySolutionLiquid;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
@@ -13,6 +13,7 @@ import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IRangedAttackMob;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIArrowAttack;
 import net.minecraft.entity.ai.EntityAIHurtByTarget;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
@@ -79,6 +80,13 @@ public class EntityTreasureSlime extends EntityMob implements IRangedAttackMob,I
         this.dataWatcher.addObject(16, new Byte((byte)1));
     }
 
+    protected void applyEntityAttributes()
+    {
+        super.applyEntityAttributes();
+        this.getEntityAttribute(SharedMonsterAttributes.maxHealth).setBaseValue(7.0F + (this.slimeLevel / 3) + 1.0D);
+        this.getEntityAttribute(SharedMonsterAttributes.attackDamage).setBaseValue(1 + (this.slimeLevel /5));
+       }
+    
     @Override
     protected boolean isAIEnabled()
     {
@@ -427,19 +435,19 @@ public class EntityTreasureSlime extends EntityMob implements IRangedAttackMob,I
 	@Override
 	public void attackEntityWithRangedAttack(EntityLivingBase entitylivingbase,
 			float f) {
-        EntityFireArrow entityFireArrow = new EntityFireArrow(this.worldObj, this, entitylivingbase, 1.5F,1.0F);
+        EntityFireArrowNew entityFireArrow = new EntityFireArrowNew(this.worldObj, this, entitylivingbase, 1.5F,1.0F);
         int i = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, this.getHeldItem());
         int j = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, this.getHeldItem());
-        entityFireArrow.setDamage((double)(f * 2.0F) + this.rand.nextGaussian() * 0.25D + (double)((float)this.worldObj.difficultySetting.getDifficultyId() * 0.11F));
+        entityFireArrow.setDamage((float) ((f * 2.0F) + this.rand.nextGaussian() * 0.25D + (double)((float)this.worldObj.difficultySetting.getDifficultyId() * 0.11F)));
 
         if (i > 0)
         {
-        	entityFireArrow.setDamage(entityFireArrow.getDamage() + (double)i * 0.5D + 0.5D);
+        	entityFireArrow.setDamage((float) (entityFireArrow.getDamage() + (double)i * 0.5D + 0.5D));
         }
 
         if (j > 0)
         {
-        	entityFireArrow.setKnockbackStrength(j);
+        	entityFireArrow.setKnockBackModifier((int) f);
         }
 
 
@@ -456,19 +464,19 @@ public class EntityTreasureSlime extends EntityMob implements IRangedAttackMob,I
 
 		Entity throwable = null;
 		if(parent.getName().equals("firearrow")){
-	        EntityFireArrow entityFireArrow = new EntityFireArrow(this.worldObj, this, target, 1.5F,1.0F);
+	        EntityFireArrowNew entityFireArrow = new EntityFireArrowNew(this.worldObj, this, target, 1.5F,1.0F);
 	        int i = EnchantmentHelper.getEnchantmentLevel(Enchantment.power.effectId, this.getHeldItem());
 	        int j = EnchantmentHelper.getEnchantmentLevel(Enchantment.punch.effectId, this.getHeldItem());
-	        entityFireArrow.setDamage((double)(f * 2.0F) + this.rand.nextGaussian() * 0.25D + (double)((float)this.worldObj.difficultySetting.getDifficultyId() * 0.11F));
+	        entityFireArrow.setDamage((float) ((f * 2.0F) + this.rand.nextGaussian() * 0.25D + (double)((float)this.worldObj.difficultySetting.getDifficultyId() * 0.11F)));
 
 	        if (i > 0)
 	        {
-	        	entityFireArrow.setDamage(entityFireArrow.getDamage() + (double)i * 0.5D + 0.5D);
+	        	entityFireArrow.setDamage((float) (entityFireArrow.getDamage() + (double)i * 0.5D + 0.5D));
 	        }
 
 	        if (j > 0)
 	        {
-	        	entityFireArrow.setKnockbackStrength(j);
+	        	entityFireArrow.setKnockBackModifier((int) f);
 	        }
 	        throwable = entityFireArrow;
 	        this.playSound("mob.ghast.fireball", 1.0F, 1.0F / (this.getRNG().nextFloat() * 0.4F + 0.8F));

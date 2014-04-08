@@ -34,7 +34,7 @@ public class ItemBowUnsaga extends ItemBowBase
     public ItemBowUnsaga(UnsagaMaterial material)
     {
         super(material);
-		Unsaga.proxy.registerSpecialRenderer(this);
+		//Unsaga.proxy.registerSpecialRenderer(this);
         UnsagaItems.putItemMap(this,EnumUnsagaTools.BOW.toString()+"."+material.name);
     }
 

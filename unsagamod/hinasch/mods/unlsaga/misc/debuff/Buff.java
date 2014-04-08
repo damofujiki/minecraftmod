@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.misc.debuff;
 
-import hinasch.lib.StaticWords;
+import com.hinasch.lib.StaticWords;
+
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingBuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 

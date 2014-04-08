@@ -3,7 +3,7 @@ package hinasch.mods.unlsaga.client.render.projectile;
 
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
-import hinasch.mods.unlsaga.entity.projectile.EntityBoulder;
+import hinasch.mods.unlsaga.entity.projectile.EntityBoulderNew;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.texture.TextureMap;
@@ -33,7 +33,7 @@ public class RenderBoulder extends Render
     /**
      * The actual render method that is used in doRender
      */
-    public void doRenderBoulder(EntityBoulder entityBoulder, double par2, double par4, double par6, float par8, float par9)
+    public void doRenderBoulder(EntityBoulderNew entityBoulder, double par2, double par4, double par6, float par8, float par9)
     {
         GL11.glPushMatrix();
         IIcon icon = UnsagaItems.itemMaterials.getIconFromDamage(18);
@@ -74,15 +74,15 @@ public class RenderBoulder extends Render
      */
     public void doRender(Entity par1Entity, double par2, double par4, double par6, float par8, float par9)
     {
-        this.doRenderBoulder((EntityBoulder)par1Entity, par2, par4, par6, par8, par9);
+        this.doRenderBoulder((EntityBoulderNew)par1Entity, par2, par4, par6, par8, par9);
     }
 
-    protected ResourceLocation getBoulderTexture(EntityBoulder boulder){
+    protected ResourceLocation getBoulderTexture(EntityBoulderNew boulder){
     	return TextureMap.locationItemsTexture;
     }
 	@Override
 	protected ResourceLocation getEntityTexture(Entity entity) {
 		
-		return this.getBoulderTexture((EntityBoulder) entity);
+		return this.getBoulderTexture((EntityBoulderNew) entity);
 	}
 }

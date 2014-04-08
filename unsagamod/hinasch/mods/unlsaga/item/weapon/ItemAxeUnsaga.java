@@ -1,6 +1,5 @@
 package hinasch.mods.unlsaga.item.weapon;
 
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
@@ -16,7 +15,7 @@ import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingState;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingStateFlyingAxe;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -25,12 +24,14 @@ import net.minecraft.item.EnumAction;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
 
+import com.hinasch.lib.XYZPos;
+
 public class ItemAxeUnsaga extends ItemAxeBase{
 
 	
 	public ItemAxeUnsaga(UnsagaMaterial mat) {
 		super(mat);
-		Unsaga.proxy.registerSpecialRenderer(this);
+		//Unsaga.proxy.registerSpecialRenderer(this);
 		UnsagaItems.putItemMap(this,EnumUnsagaTools.AXE.toString()+"."+mat.name);
 	}
 
@@ -60,13 +61,13 @@ public class ItemAxeUnsaga extends ItemAxeBase{
 	{
 		if(this.unsMaterial==UnsagaMaterials.failed){
 			UnsagaMaterial unsuited = UnsagaItems.getRandomUnsuitedMaterial(UnsagaItems.getUnsuitedMaterial(this.getCategory()), this.itemRand);
-			HelperUnsagaWeapon.initWeapon(par1ItemStack, unsuited.name, unsuited.weight);
+			HelperUnsagaItem.initWeapon(par1ItemStack, unsuited.name, unsuited.weight);
 		}
 		if(HelperAbility.hasAbilityFromItemStack(AbilityRegistry.tomahawk, par1ItemStack)){
 			Unsaga.debug("トマホーク覚えてる");
 			par3EntityPlayer.setItemInUse(par1ItemStack, this.getMaxItemUseDuration(par1ItemStack));
 		}
-		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.RIGHTCLICK, par1ItemStack, par3EntityPlayer, par2World, XYZPos.entityPosToXYZ(par3EntityPlayer));
+		SkillMelee pickedSkillEffect = HelperUnsagaItem.getSkillMelee(SkillMelee.Type.RIGHTCLICK, par1ItemStack, par3EntityPlayer, par2World, XYZPos.entityPosToXYZ(par3EntityPlayer));
 		if(pickedSkillEffect!=null){
 			InvokeSkill helper = new InvokeSkill(par2World, par3EntityPlayer, pickedSkillEffect.getSkill(), par1ItemStack);
 			if(helper!=null){
@@ -127,7 +128,7 @@ public class ItemAxeUnsaga extends ItemAxeBase{
 //				}
 //			}
 //		}
-		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.USE, par1ItemStack, par2EntityPlayer, par3World, new XYZPos(par4,par5,par6));
+		SkillMelee pickedSkillEffect = HelperUnsagaItem.getSkillMelee(SkillMelee.Type.USE, par1ItemStack, par2EntityPlayer, par3World, new XYZPos(par4,par5,par6));
 		if(pickedSkillEffect!=null){
 			InvokeSkill helper = new InvokeSkill(par3World, par2EntityPlayer, pickedSkillEffect.getSkill(), par1ItemStack);
 			helper.setUsePoint(new XYZPos(par4,par5,par6));
@@ -199,7 +200,7 @@ public class ItemAxeUnsaga extends ItemAxeBase{
 //		}
 		
 		
-		SkillMelee pickedSkillEffect = HelperUnsagaWeapon.getSkillMelee(SkillMelee.Type.ENTITY_LEFTCLICK, stack, player, player.worldObj, XYZPos.entityPosToXYZ(player));
+		SkillMelee pickedSkillEffect = HelperUnsagaItem.getSkillMelee(SkillMelee.Type.ENTITY_LEFTCLICK, stack, player, player.worldObj, XYZPos.entityPosToXYZ(player));
 		if(pickedSkillEffect!=null && entity instanceof EntityLivingBase){
 			InvokeSkill helper = new InvokeSkill(player.worldObj, player, pickedSkillEffect.getSkill(), stack);
 			helper.setTarget((EntityLivingBase) entity);

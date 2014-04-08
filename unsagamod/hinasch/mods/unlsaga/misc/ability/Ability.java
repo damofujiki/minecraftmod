@@ -4,7 +4,7 @@ import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.item.IUnsagaMaterial;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -108,7 +108,7 @@ public class Ability {
 					if(is!=null){
 						if(is.getItem() instanceof IUnsagaMaterial){
 							IUnsagaMaterial im = (IUnsagaMaterial)is.getItem();
-							UnsagaMaterial material = HelperUnsagaWeapon.getMaterial(is);
+							UnsagaMaterial material = HelperUnsagaItem.getMaterial(is);
 							amountHeal += ar.getInheritHealAmount(im.getCategory(), material, AbilityRegistry.healUps);
 							amountHeal += ar.getInheritHealAmount(im.getCategory(), material, AbilityRegistry.healDowns);
 						}
@@ -127,7 +127,7 @@ public class Ability {
 			if(armor!=null){
 				if(armor.getItem() instanceof IUnsagaMaterial){
 					IUnsagaMaterial im = (IUnsagaMaterial)armor.getItem();
-					UnsagaMaterial material = HelperUnsagaWeapon.getMaterial(armor);
+					UnsagaMaterial material = HelperUnsagaItem.getMaterial(armor);
 					amountHeal += ar.getInheritHealAmount(im.getCategory(), material, AbilityRegistry.healUps);
 					amountHeal += ar.getInheritHealAmount(im.getCategory(), material, AbilityRegistry.healDowns);
 				}

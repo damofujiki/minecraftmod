@@ -1,6 +1,4 @@
-package hinasch.lib;
-
-import hinasch.lib.LibraryBook.EnumSelector;
+package com.hinasch.lib;
 
 import java.util.HashSet;
 
@@ -15,6 +13,7 @@ import net.minecraft.item.ItemTool;
 import net.minecraftforge.oredict.OreDictionary;
 
 import com.google.common.base.Optional;
+import com.hinasch.lib.LibraryBook.EnumSelector;
 
 public class LibraryShelf {
 
@@ -39,6 +38,9 @@ public class LibraryShelf {
 		if(object instanceof ItemStack){
 			is = (ItemStack)object;
 			_class = is.getItem().getClass();
+		}
+		if(object instanceof String){
+			returnBook = findAsOreKey((String)object);
 		}
 		if(is!=null){
 			returnBook = findAsItemStack(is);
@@ -84,17 +86,19 @@ public class LibraryShelf {
 	}
 	
 	protected LibraryBook findDetailedly(ItemStack is,Class _class){
+		//Unsaga.debug("詳細に調べます");
 		LibraryBook returnBook = null;
 		int oreid = OreDictionary.getOreID(is);
 		String orekey = OreDictionary.getOreName(oreid);
+		//Unsaga.debug(orekey);
 		if(!orekey.equals("Unknown")){
 			returnBook = this.findAsOreKey(orekey);
 		}
-		if(_class!=null){
+		if(_class!=null && returnBook==null){
 			returnBook = this.findAsClass(_class);
 		}
 		
-		return null;
+		return returnBook;
 	}
 
 
@@ -103,11 +107,11 @@ public class LibraryShelf {
 		for(LibraryBook book:libSet){
 			if(book.getKey()==EnumSelector.ITEMSTACK){
 				if(book.isAllMetadata){
-					if(book.idmeta.isPresent() && is.getItem()==book.idmeta.get().getItemObject()){
+					if(book.idAndMeta.isPresent() && is.getItem()==book.idAndMeta.get().getItemObject()){
 						return book;
 					}
 				}else{
-					PairID pair = book.idmeta.isPresent() ? book.idmeta.get() : null;
+					PairID pair = book.idAndMeta.isPresent() ? book.idAndMeta.get() : null;
 					if(pair!=null && is.getItem()==pair.getItemObject() && is.getItemDamage()==pair.getMeta()){
 						return book;
 					}
@@ -131,7 +135,9 @@ public class LibraryShelf {
 	protected LibraryBook findAsOreKey(String str){
 		for(LibraryBook book:libSet){
 			if(book.getKey()==EnumSelector.STRING){
+				//Unsaga.debug(book.orekey.get()+":"+str);
 				if(book.orekey.isPresent() && book.orekey.get().equals(str)){
+					
 					return book;
 				}
 			}

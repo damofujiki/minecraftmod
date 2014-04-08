@@ -7,7 +7,7 @@ import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,7 @@ import com.google.common.collect.Multimap;
 public class ItemAxeBase extends ItemAxe implements IUnsagaMaterial,IGainAbility{
 
 
-	protected final HelperUnsagaWeapon helper;
+	protected final HelperUnsagaItem helper;
 	protected final HashMap<String,Icon> iconMap = new HashMap();
 	protected IIcon[] icons;
 	public final UnsagaMaterial unsMaterial;
@@ -40,7 +40,7 @@ public class ItemAxeBase extends ItemAxe implements IUnsagaMaterial,IGainAbility
 		this.unsMaterial = mat;
 		this.icons = new IIcon[2];
 		this.weapondamage = 3.0F + mat.getToolMaterial().getDamageVsEntity();
-		this.helper = new HelperUnsagaWeapon(this.unsMaterial,this.itemIcon,EnumUnsagaTools.AXE);
+		this.helper = new HelperUnsagaItem(this.unsMaterial,this.itemIcon,EnumUnsagaTools.AXE);
 	}
 
 	@Override

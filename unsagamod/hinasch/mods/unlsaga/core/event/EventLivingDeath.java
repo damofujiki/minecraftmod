@@ -1,7 +1,5 @@
 package hinasch.mods.unlsaga.core.event;
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaBlocks;
 import hinasch.mods.unlsaga.core.init.UnsagaConfigs;
@@ -9,6 +7,10 @@ import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
 import hinasch.mods.unlsaga.misc.ability.Ability;
 
 import java.util.Random;
+
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.WorldHelper;
+import com.hinasch.lib.XYZPos;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.monster.EntityMob;
@@ -22,8 +24,11 @@ import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 
 public class EventLivingDeath {
 
+	protected WorldHelper worldHelper;
+	
 	@SubscribeEvent
 	public void onLivingDeath(LivingDeathEvent e){
+		this.worldHelper = new WorldHelper(e.entityLiving.worldObj);
 		if(UnsagaConfigs.module.isMagicEnabled() && !UnsagaConfigs.decipherAtSleep){
 			Unsaga.getModuleMagicHandler().progressDecipherOnLivingDeath(e);
 		}
@@ -70,10 +75,10 @@ public class EventLivingDeath {
 			}
 			
 		}
-		if(rand.nextInt(100)<15 && !isMiniSlime){
+		if(rand.nextInt(100)<20 && !isMiniSlime){
 			if(!world.isRemote){
-				if(world.isAirBlock(po.x, po.y, po.z)){
-					world.setBlock(po.x, po.y, po.z, UnsagaBlocks.blockChestUnsaga);
+				if(worldHelper.isAirBlock(po)){
+					worldHelper.setBlock(po, UnsagaBlocks.blockChestUnsaga);
 				}
 			}
 		}

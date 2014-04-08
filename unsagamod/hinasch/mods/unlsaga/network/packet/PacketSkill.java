@@ -1,7 +1,5 @@
 package hinasch.mods.unlsaga.network.packet;
 
-import hinasch.lib.AbstractPacket;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.entity.EntityDataUnsaga;
 import hinasch.mods.unlsaga.item.armor.ItemAccessory;
 import hinasch.mods.unlsaga.item.armor.ItemArmorUnsaga;
@@ -15,6 +13,9 @@ import io.netty.channel.ChannelHandlerContext;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+
+import com.hinasch.lib.AbstractPacket;
+import com.hinasch.lib.XYZPos;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;

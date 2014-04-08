@@ -1,9 +1,5 @@
 package hinasch.mods.unlsagamagic.item;
 
-import hinasch.lib.CSVText;
-import hinasch.lib.HSLibs;
-import hinasch.lib.UtilNBT;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.FiveElements;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
@@ -22,6 +18,11 @@ import hinasch.mods.unlsagamagic.misc.spell.effect.InvokeSpell;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.hinasch.lib.CSVText;
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.UtilNBT;
+import com.hinasch.lib.XYZPos;
 
 import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.creativetab.CreativeTabs;

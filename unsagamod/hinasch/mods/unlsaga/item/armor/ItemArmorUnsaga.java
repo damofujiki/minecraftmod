@@ -2,13 +2,13 @@ package hinasch.mods.unlsaga.item.armor;
 
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.model.ModelArmorColored;
-import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
+import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public class ItemArmorUnsaga extends ItemArmor implements IUnsagaMaterial,IGainA
 	
 	protected String[] armorTextureFiles;
 	protected EnumUnsagaTools armorType;
-	protected HelperUnsagaWeapon helper;
+	protected HelperUnsagaItem helper;
 	protected UnsagaMaterial material;
 	protected ModelArmorColored modelBiped;
 	protected int armorTypeInt;
@@ -55,7 +55,7 @@ public class ItemArmorUnsaga extends ItemArmor implements IUnsagaMaterial,IGainA
 		this.armorTextureFiles = new String[2];
 		this.armorTextureFiles[0] = path+getArmorTextureFilename(material)+".png";
 		this.armorTextureFiles[1] = path+getArmorTextureFilename(material)+"2.png";
-		this.helper = new HelperUnsagaWeapon(material, this.itemIcon, armorType);
+		this.helper = new HelperUnsagaItem(material, this.itemIcon, armorType);
 		if(this.material == UnsagaMaterials.crocodileLeather){
 			modelBiped = new ModelArmorColored(1.001F);
 		}else{
@@ -99,7 +99,7 @@ public class ItemArmorUnsaga extends ItemArmor implements IUnsagaMaterial,IGainA
     {
 		ItemArmorUnsaga armorunsaga = (ItemArmorUnsaga)stack.getItem();
 		EnumUnsagaTools unsagatype = armorunsaga.armorType;
-		UnsagaMaterial mate = HelperUnsagaWeapon.getMaterial(stack);
+		UnsagaMaterial mate = HelperUnsagaItem.getMaterial(stack);
 		for(int i=0;i<2;i++){
 			if(mate.getSpecialArmorTexture(unsagatype, 0).isPresent()){
 				this.armorTextureFiles[i] = path+mate.getSpecialArmorTexture(unsagatype, i).get()+".png";
@@ -204,7 +204,7 @@ public class ItemArmorUnsaga extends ItemArmor implements IUnsagaMaterial,IGainA
 			this.itemIcon = par1IconRegister.registerIcon(Unsaga.domain+":"+this.material.getSpecialIcon(armorType).get());
 			return;
 		}
-		this.itemIcon = par1IconRegister.registerIcon(Unsaga.domain+":"+this.armorType);
+		this.itemIcon = par1IconRegister.registerIcon(Unsaga.domain+":"+this.armorType.toString().toLowerCase());
 	}
 	
 	@Override

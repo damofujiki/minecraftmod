@@ -1,7 +1,8 @@
 package hinasch.mods.unlsaga.item.weapon;
 
 
-import hinasch.lib.UtilNBT;
+import com.hinasch.lib.UtilNBT;
+
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;

@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.network.packet;
 
-import hinasch.lib.XYZPos;
+import com.hinasch.lib.XYZPos;
+
 import io.netty.buffer.ByteBuf;
 import net.minecraft.entity.Entity;
 import net.minecraft.world.World;

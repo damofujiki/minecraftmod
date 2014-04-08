@@ -1,6 +1,5 @@
 package hinasch.mods.unlsaga.core.event;
 
-import hinasch.lib.CSVText;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.debuff.Debuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
@@ -17,6 +16,7 @@ import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 
 import com.google.common.base.Optional;
+import com.hinasch.lib.CSVText;
 
 import cpw.mods.fml.common.eventhandler.SubscribeEvent;
 

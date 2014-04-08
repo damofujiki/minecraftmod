@@ -1,8 +1,9 @@
 package hinasch.mods.unlsaga.network.packet;
 
-import hinasch.lib.AbstractPacket;
-import hinasch.lib.HSLibs;
-import hinasch.lib.XYZPos;
+import com.hinasch.lib.AbstractPacket;
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.XYZPos;
+
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
 import io.netty.buffer.ByteBuf;

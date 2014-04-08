@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.core.init;
 
-import hinasch.lib.RecipeUtil;
+import com.hinasch.lib.RecipeUtil;
+
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
 
 public class UnsagaRecipes {

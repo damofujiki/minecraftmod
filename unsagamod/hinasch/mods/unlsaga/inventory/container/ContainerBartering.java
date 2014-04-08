@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.inventory.container;
 
-import hinasch.lib.XYZPos;
+import com.hinasch.lib.XYZPos;
+
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.inventory.InventoryMerchantUnsaga;
 import hinasch.mods.unlsaga.inventory.SlotMerchandise;

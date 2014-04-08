@@ -2,7 +2,8 @@ package hinasch.mods.unlsagamagic.misc.element;
 
 
 
-import hinasch.lib.LibraryBook;
+import com.hinasch.lib.LibraryBook;
+
 import hinasch.mods.unlsagamagic.misc.spell.SpellMixTable;
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;

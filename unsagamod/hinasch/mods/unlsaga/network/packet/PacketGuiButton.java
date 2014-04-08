@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.network.packet;
 
-import hinasch.lib.AbstractPacket;
+import com.hinasch.lib.AbstractPacket;
+
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.client.gui.GuiSmithUnsaga;
 import hinasch.mods.unlsaga.inventory.container.ContainerBartering;

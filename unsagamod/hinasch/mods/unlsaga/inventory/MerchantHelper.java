@@ -1,11 +1,12 @@
 package hinasch.mods.unlsaga.inventory;
 
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.event.ExtendedMerchantData;
 import hinasch.mods.unlsaga.misc.bartering.MerchandiseInfo;
 
 import java.util.Random;
+
+import com.hinasch.lib.XYZPos;
 
 import net.minecraft.entity.IMerchant;
 import net.minecraft.entity.passive.EntityVillager;

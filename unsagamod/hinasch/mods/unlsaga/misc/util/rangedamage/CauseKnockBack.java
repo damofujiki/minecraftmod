@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.misc.util.rangedamage;
 
-import hinasch.lib.RangeDamageHelper;
+import com.hinasch.lib.RangeDamageHelper;
+
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.util.DamageSource;
 import net.minecraft.world.World;

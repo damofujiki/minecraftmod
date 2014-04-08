@@ -6,7 +6,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 import hinasch.mods.unlsaga.network.packet.PacketGuiOpen;
 
 import java.util.List;
@@ -23,7 +23,7 @@ public class ItemAccessory extends Item implements IGainAbility,IUnsagaMaterial{
 
 	protected UnsagaMaterial material;
 	protected String defaultIcon;
-	protected HelperUnsagaWeapon helper;
+	protected HelperUnsagaItem helper;
 	
 	public ItemAccessory(UnsagaMaterial par2) {
 		super();
@@ -31,7 +31,7 @@ public class ItemAccessory extends Item implements IGainAbility,IUnsagaMaterial{
         this.maxStackSize = 1;
 		this.setMaxDamage(par2.getToolMaterial().getMaxUses());
 		this.defaultIcon = "ring";
-		this.helper = new HelperUnsagaWeapon(this.material,this.itemIcon, EnumUnsagaTools.ACCESSORY);
+		this.helper = new HelperUnsagaItem(this.material,this.itemIcon, EnumUnsagaTools.ACCESSORY);
 		// TODO 自動生成されたコンストラクター・スタブ
 		UnsagaItems.putItemMap(this, EnumUnsagaTools.ACCESSORY.toString()+"."+material.name);
 	}

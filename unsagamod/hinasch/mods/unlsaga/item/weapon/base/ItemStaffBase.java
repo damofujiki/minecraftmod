@@ -5,7 +5,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 
 import java.util.List;
 import java.util.Set;
@@ -37,7 +37,7 @@ public class ItemStaffBase extends ItemSword implements IUnsagaMaterial,IGainAbi
 	public final UnsagaMaterial unsMaterial;
 	public final ToolMaterial toolMaterial;
     public float efficiencyOnProperMaterial = 4.0F;
-	protected final HelperUnsagaWeapon helper;
+	protected final HelperUnsagaItem helper;
 	//public static final Block[] blocksEffectiveAgainst;;
 	protected final float weaponDamage;
 	protected IIcon[] icons;
@@ -47,7 +47,7 @@ public class ItemStaffBase extends ItemSword implements IUnsagaMaterial,IGainAbi
 		this.unsMaterial = uns;
 		this.icons = new IIcon[2];
 		this.weaponDamage = 3.0F + uns.getToolMaterial().getDamageVsEntity();
-		this.helper = new HelperUnsagaWeapon(uns, itemIcon, EnumUnsagaTools.STAFF);
+		this.helper = new HelperUnsagaItem(uns, itemIcon, EnumUnsagaTools.STAFF);
 		this.toolMaterial = uns.getToolMaterial();
 		this.efficiencyOnProperMaterial = uns.getToolMaterial().getEfficiencyOnProperMaterial();
 		this.setMaxDamage((int)((float)uns.getToolMaterial().getMaxUses() * 0.7F));
@@ -112,7 +112,7 @@ public class ItemStaffBase extends ItemSword implements IUnsagaMaterial,IGainAbi
     @Override
     public EnumAction getItemUseAction(ItemStack par1ItemStack)
     {
-    	if(HelperUnsagaWeapon.getCurrentWeight(par1ItemStack)>5){
+    	if(HelperUnsagaItem.getCurrentWeight(par1ItemStack)>5){
     		return EnumAction.none;
     	}
         return EnumAction.block;

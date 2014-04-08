@@ -1,11 +1,12 @@
 package hinasch.mods.unlsaga.block;
 
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.network.packet.PacketGuiOpen;
 import hinasch.mods.unlsaga.tileentity.TileEntityChestUnsagaNew;
 
 import java.util.Random;
+
+import com.hinasch.lib.XYZPos;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
@@ -169,7 +170,7 @@ public class BlockChestUnsagaNew extends BlockContainer{
 		
 
 		Unsaga.debug("Chest Status>Level:"+tc.getChestLevel()+" Lock;"+!tc.isUnlocked()+" MagicLock:"+tc.isMagicLocked()+" Trap:"+tc.isTrapOccured()+" Trap Number:"+tc.getTrapNumber()+" Slime Trap:"+tc.hasOccuredSlimeTrap());
-		Packet pecketTE = te.getDescriptionPacket();
+		Packet pecketTE = tc.getDescriptionPacket();
 		((EntityPlayerMP)player).playerNetServerHandler.sendPacket(pecketTE);
 		//PacketSyncChest ps = new PacketSyncChest(new XYZPos(par2,par3,par4),chestlevel);
 		//Unsaga.packetPipeline.sendTo(ps, (EntityPlayerMP) par5EntityPlayer);

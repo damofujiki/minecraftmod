@@ -48,9 +48,9 @@ public class UnsagaBlocks {
 				.setBlockName("unsaga.stonefalling").setCreativeTab(Unsaga.tabUnsaga);
 		//blockAir = new BlockNothing(blockAirID,Material.air).setHardness(100.0F).setUnlocalizedName("unsaga.nothing");
 		blocksOreUnsaga = new Block[BlockDataUnsaga.unlocalizedNames.size()];
-		for(int i=0;i<blocksOreUnsaga.length;i++){
+		for(int i=0;i<BlockDataUnsaga.unlocalizedNames.size();i++){
 			blocksOreUnsaga[i] = new BlockOreUnsagaNew(i).setHardness(3.0F).setResistance(5.0F).setStepSound(Block.soundTypeStone)
-					.setBlockName(BlockDataUnsaga.unlocalizedNames.get(i)).setCreativeTab(Unsaga.tabUnsaga);
+					.setBlockName("unsaga."+BlockDataUnsaga.unlocalizedNames.get(i)).setCreativeTab(Unsaga.tabUnsaga);
 			GameRegistry.registerBlock(blocksOreUnsaga[i], ItemBlockOreUnsaga.class,BlockDataUnsaga.unlocalizedNames.get(i),Unsaga.modid);
 		}
 		//blockOreUnsaga = new BlockOreUnsaga().setHardness(3.0F).setResistance(5.0F).setStepSound(Block.soundTypeStone)

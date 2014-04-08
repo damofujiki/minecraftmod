@@ -1,6 +1,5 @@
 package hinasch.mods.unlsaga.core.init;
 
-import hinasch.lib.PairID;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
@@ -19,6 +18,7 @@ import net.minecraft.item.ItemArmor.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 
 import com.google.common.base.Optional;
+import com.hinasch.lib.PairID;
 
 public class UnsagaMaterial {
 

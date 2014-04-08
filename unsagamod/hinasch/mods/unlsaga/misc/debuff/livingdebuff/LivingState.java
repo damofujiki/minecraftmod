@@ -1,7 +1,5 @@
 package hinasch.mods.unlsaga.misc.debuff.livingdebuff;
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.item.weapon.ItemSwordUnsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
@@ -12,6 +10,9 @@ import hinasch.mods.unlsaga.misc.util.UtilItem;
 import hinasch.mods.unlsaga.misc.util.rangedamage.CauseKnockBack;
 
 import java.util.List;
+
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.XYZPos;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;

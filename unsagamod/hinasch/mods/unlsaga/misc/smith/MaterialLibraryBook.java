@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.misc.smith;
 
-import hinasch.lib.LibraryBook;
+import com.hinasch.lib.LibraryBook;
+
 import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 
 public class MaterialLibraryBook extends LibraryBook{

@@ -1,6 +1,5 @@
 package hinasch.mods.unlsaga.entity.projectile;
 
-import hinasch.lib.HSLibs;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.debuff.Debuffs;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
@@ -9,6 +8,8 @@ import hinasch.mods.unlsaga.network.packet.PacketParticle;
 import hinasch.mods.unlsaga.network.packet.PacketUtil;
 
 import java.util.List;
+
+import com.hinasch.lib.HSLibs;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.IProjectile;

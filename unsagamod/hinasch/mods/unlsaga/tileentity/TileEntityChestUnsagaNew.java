@@ -1,6 +1,5 @@
 package hinasch.mods.unlsaga.tileentity;
 
-import hinasch.lib.HSLibs;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.entity.EntityTreasureSlime;
 import hinasch.mods.unlsaga.misc.translation.Translation;
@@ -11,10 +10,10 @@ import java.util.Random;
 
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.network.NetworkManager;
 import net.minecraft.network.Packet;
 import net.minecraft.network.play.server.S35PacketUpdateTileEntity;
 import net.minecraft.potion.Potion;
@@ -23,6 +22,8 @@ import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
 import net.minecraft.world.World;
+
+import com.hinasch.lib.HSLibs;
 
 public class TileEntityChestUnsagaNew extends TileEntityChest{
 
@@ -36,6 +37,7 @@ public class TileEntityChestUnsagaNew extends TileEntityChest{
 	protected boolean magicLock = false;
 	protected boolean hasOpened = false;
 	protected boolean chestInitialized;
+	protected int count = 0;
 
 	public TileEntityChestUnsagaNew(){
 		//		if(!this.initialized){
@@ -182,7 +184,11 @@ public class TileEntityChestUnsagaNew extends TileEntityChest{
 		return new S35PacketUpdateTileEntity(this.xCoord, this.yCoord, this.zCoord, 0, nbttagcompound);
 	}
 
-
+	@Override
+    public void onDataPacket(NetworkManager net, S35PacketUpdateTileEntity pkt)
+    {
+		this.level = pkt.func_148857_g().getInteger("chestLevel");
+    }
 
 	public void activateChest(EntityPlayer ep){
 		if(!this.hasOpened){
@@ -261,11 +267,11 @@ public class TileEntityChestUnsagaNew extends TileEntityChest{
 	private void occurSlimeTrap(){
 		this.slimeTrapOccured = true;
 		Entity var13 = null;
-		if(doChance(this.worldObj.rand,40)){
+		//if(doChance(this.worldObj.rand,40)){
 			var13 = new EntityTreasureSlime(this.worldObj,this.level);
-		}else{
-			var13 = new EntitySlime(this.worldObj);
-		}
+		//}else{
+		//	var13 = new EntitySlime(this.worldObj);
+		//}
 
 		System.out.println(var13);
 		if(var13!=null){
@@ -341,7 +347,17 @@ public class TileEntityChestUnsagaNew extends TileEntityChest{
 
 
 	}
-
+	
+	@Override
+    public void updateEntity() {
+		super.updateEntity();
+    	if(this.hasOpened){
+    		this.count += 1;
+    		if(this.count>100 && !this.worldObj.isRemote){
+    			this.worldObj.setBlockToAir(xCoord, yCoord, zCoord);
+    		}
+    	}
+    }
 
 	public int getTrapNumber() {
 		// TODO 自動生成されたメソッド・スタブ

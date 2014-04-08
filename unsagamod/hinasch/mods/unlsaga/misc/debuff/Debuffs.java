@@ -1,13 +1,12 @@
 package hinasch.mods.unlsaga.misc.debuff;
 
-import hinasch.lib.StaticWords;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.init.UnsagaConfigs;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 import hinasch.mods.unlsaga.misc.debuff.state.State;
 import hinasch.mods.unlsaga.misc.debuff.state.StateBow;
-import hinasch.mods.unlsaga.misc.debuff.state.StateCrimsonFlare;
+import hinasch.mods.unlsaga.misc.debuff.state.StateFireStorm;
 import hinasch.mods.unlsaga.misc.debuff.state.StateFlyingAxe;
 import hinasch.mods.unlsaga.misc.debuff.state.StateRandomThrow;
 import hinasch.mods.unlsaga.misc.debuff.state.StateTarget;
@@ -21,9 +20,11 @@ import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.MathHelper;
+import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 
 import com.google.common.collect.Lists;
+import com.hinasch.lib.StaticWords;
 
 public class Debuffs {
 
@@ -73,13 +74,21 @@ public class Debuffs {
 	public static final State thunderCrap = new StateRandomThrow(111,"thunderCrap").setSoundString("random.bow").setInterval(4);
 	
 	public static final State gust = new State(112,"HeadWind");
-	public static final State crimsonFlare = new StateCrimsonFlare(113,"CrimsonFlare");
+	public static final State crimsonFlare = new StateFireStorm(113,"CrimsonFlare");
 	
 	public static Debuff getDebuff(int par1){
 		return debuffMap.get(par1);
 		
 	}
 	
+	public static void debuffEventOnLivingUpdate(LivingUpdateEvent e){
+		EntityLivingBase living = e.entityLiving;
+		if(LivingDebuff.hasDebuff(living, Debuffs.sleep)){
+			living.motionX = 0;
+			living.motionY = 0;
+			living.motionZ = 0;
+		}
+	}
 	public static void debuffEventOnLivingHurt(LivingHurtEvent e){
 		EntityLivingBase hurtEntity = e.entityLiving;
 		Entity attacker = e.source.getEntity();

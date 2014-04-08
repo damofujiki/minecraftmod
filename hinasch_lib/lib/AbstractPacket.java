@@ -1,4 +1,4 @@
-package hinasch.lib;
+package com.hinasch.lib;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

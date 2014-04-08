@@ -1,17 +1,18 @@
 package hinasch.mods.unlsaga.misc.ability.skill;
 
-import hinasch.lib.UtilList;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.ability.Ability;
 import hinasch.mods.unlsaga.misc.ability.HelperAbility;
 import hinasch.mods.unlsaga.misc.translation.Translation;
 import hinasch.mods.unlsaga.misc.util.ChatUtil;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 import hinasch.mods.unlsaga.network.packet.PacketSound;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import com.hinasch.lib.UtilList;
 
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,7 +25,7 @@ public class HelperSkill extends HelperAbility{
 	
 	public HelperSkill(ItemStack is, EntityLivingBase living) {
 		super(is, living);
-		if(HelperUnsagaWeapon.getCurrentWeight(is)>5){
+		if(HelperUnsagaItem.getCurrentWeight(is)>5){
 			this.isHeavy = true;
 		}else{
 			this.isHeavy = false;

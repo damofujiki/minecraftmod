@@ -1,6 +1,5 @@
 package hinasch.mods.unlsaga.network.packet;
 
-import hinasch.lib.AbstractPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
@@ -18,6 +17,10 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.network.INetHandler;
 import net.minecraft.network.NetHandlerPlayServer;
+
+import com.google.common.collect.Lists;
+import com.hinasch.lib.AbstractPacket;
+
 import cpw.mods.fml.common.FMLCommonHandler;
 import cpw.mods.fml.common.network.FMLEmbeddedChannel;
 import cpw.mods.fml.common.network.FMLOutboundHandler;
@@ -34,11 +37,8 @@ import cpw.mods.fml.relauncher.SideOnly;
 @ChannelHandler.Sharable
 public class PacketPipeline extends MessageToMessageCodec<FMLProxyPacket, AbstractPacket> {
 
-   //こちらで使わないので、知る必要はないが、登録するChannelの変数。基本的に１MOD（1 packetPipelineインスタンス）に１Channel
     private EnumMap<Side, FMLEmbeddedChannel>           channels;
-    //こちらも使わない。Packetクラスの保存先。１Channelに付き256種類のPacketが登録できる。
-    private LinkedList<Class<? extends AbstractPacket>> packets           = new LinkedList<Class<? extends AbstractPacket>>();
-    //使わない。PostInitされたかどうか。
+    private LinkedList<Class<? extends AbstractPacket>> packets           = Lists.newLinkedList();
     private boolean                                     isPostInitialised = false;
 
     /**
@@ -50,20 +50,14 @@ public class PacketPipeline extends MessageToMessageCodec<FMLProxyPacket, Abstra
      */
     public boolean registerPacket(Class<? extends AbstractPacket> clazz) {
         if (this.packets.size() > 256) {
-           //256個以上登録しようとした。
-            // You should log here!!（logを出力すべき。）
             return false;
         }
 
         if (this.packets.contains(clazz)) {
-           //同じクラスを登録しようとした。
-            // You should log here!!
             return false;
         }
 
         if (this.isPostInitialised) {
-           //postinit処理で登録しようとした。
-            // You should log here!!
             return false;
         }
 
@@ -71,7 +65,6 @@ public class PacketPipeline extends MessageToMessageCodec<FMLProxyPacket, Abstra
         return true;
     }
 
-    // packetのエンコード処理。ここで、識別子が設定されている。
     @Override
     protected void encode(ChannelHandlerContext ctx, AbstractPacket msg, List<Object> out) throws Exception {
         ByteBuf buffer = Unpooled.buffer();
@@ -87,7 +80,6 @@ public class PacketPipeline extends MessageToMessageCodec<FMLProxyPacket, Abstra
         out.add(proxyPacket);
     }
 
-    // packetのデコード処理。
     @Override
     protected void decode(ChannelHandlerContext ctx, FMLProxyPacket msg, List<Object> out) throws Exception {
         ByteBuf payload = msg.payload();
@@ -120,28 +112,19 @@ public class PacketPipeline extends MessageToMessageCodec<FMLProxyPacket, Abstra
     }
 
     // 初期化メソッド。FMLInitializationEventで呼び出す。
-    public void initialise() {
-        this.channels = NetworkRegistry.INSTANCE.newChannel("unsagamod", this);
-        this.registerPacket(PacketGuiOpen.class);
-        this.registerPacket(PacketParticle.class);
-        this.registerPacket(PacketGuiButton.class);
-        this.registerPacket(PacketSkill.class);
-        this.registerPacket(PacketSound.class);
-        this.registerPacket(PacketSyncChest.class);
-        this.registerPacket(PacketHandlerClientThunder.class);
-        this.registerPacket(PacketSyncDebuff.class);
-        //ここでパケットクラスの登録をする。
-        //this.registerPacket(KeyHandlingPacket.class);
+    public void init(String channel){
+    	this.channels = NetworkRegistry.INSTANCE.newChannel(channel, this);
     }
+    
 
-    // post初期化メソッド。FMLPostInitializationEventで呼び出す。
-    // packetの識別子がクライントとサーバーで同一なものか確認している。
     public void postInitialise() {
         if (this.isPostInitialised) {
             return;
         }
 
         this.isPostInitialised = true;
+
+        
         Collections.sort(this.packets, new Comparator<Class<? extends AbstractPacket>>() {
 
             @Override
@@ -154,6 +137,8 @@ public class PacketPipeline extends MessageToMessageCodec<FMLProxyPacket, Abstra
                 return com;
             }
         });
+        
+
     }
 
     @SideOnly(Side.CLIENT)

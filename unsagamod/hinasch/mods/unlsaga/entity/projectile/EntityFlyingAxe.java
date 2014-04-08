@@ -1,8 +1,5 @@
 package hinasch.mods.unlsaga.entity.projectile;
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.RangeDamageHelper;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.ability.AbilityRegistry;
 import hinasch.mods.unlsaga.misc.util.DamageHelper;
@@ -32,6 +29,10 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import org.apache.logging.log4j.Level;
+
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.RangeDamageHelper;
+import com.hinasch.lib.XYZPos;
 
 import cpw.mods.fml.common.FMLLog;
 import cpw.mods.fml.relauncher.Side;

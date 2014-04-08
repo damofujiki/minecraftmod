@@ -1,10 +1,12 @@
 package hinasch.mods.unlsagamagic.misc.spell;
 
-import hinasch.lib.HSLibs;
+import com.hinasch.lib.HSLibs;
+
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.FiveElements;
-import hinasch.mods.unlsaga.core.FiveElements.EnumElement;
 import hinasch.mods.unlsaga.core.event.ExtendedPlayerData;
+import hinasch.mods.unlsaga.misc.translation.Translation;
+import hinasch.mods.unlsaga.misc.util.ChatUtil;
 import hinasch.mods.unlsagamagic.UnsagaMagic;
 import hinasch.mods.unlsagamagic.item.ItemTablet;
 import net.minecraft.entity.player.EntityPlayer;
@@ -24,7 +26,12 @@ public class Deciphering {
 			int progressDecipher = (elementpoint*3) / HSLibs.exceptZero(difficultySpell/2);
 			if(progressDecipher<2)progressDecipher=2;
 			progressDecipher *= 2;
-			Unsaga.debug("解読度:"+progressDecipher);
+			if(!world.isRemote){
+				String mes = Translation.localize("msg.spell.deciphering.progress");
+				String formatted = String.format(mes, progressDecipher);
+				ChatUtil.addMessageNoLocalized(ep, formatted);
+			}
+			Unsaga.debug("解読度:"+progressDecipher+":"+is);
 			ItemTablet.progressDeciphering(ep, is, progressDecipher);
 		
 	}

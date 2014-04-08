@@ -1,6 +1,5 @@
 package hinasch.mods.unlsaga.entity.projectile;
 
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.misc.util.DamageHelper;
 import hinasch.mods.unlsaga.misc.util.DamageSourceUnsaga;
@@ -26,6 +25,8 @@ import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import org.apache.logging.log4j.Level;
+
+import com.hinasch.lib.XYZPos;
 
 import cpw.mods.fml.common.FMLLog;
 

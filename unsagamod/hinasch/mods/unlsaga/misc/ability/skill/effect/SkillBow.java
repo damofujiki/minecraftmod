@@ -1,9 +1,5 @@
 package hinasch.mods.unlsaga.misc.ability.skill.effect;
 
-import hinasch.lib.HSLibs;
-import hinasch.lib.StaticWords;
-import hinasch.lib.VecUtil;
-import hinasch.lib.XYZPos;
 import hinasch.mods.unlsaga.Unsaga;
 import hinasch.mods.unlsaga.core.event.ExtendedEntityTag;
 import hinasch.mods.unlsaga.item.weapon.ItemBowUnsaga;
@@ -34,6 +30,11 @@ import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.Vec3;
 import net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+
+import com.hinasch.lib.HSLibs;
+import com.hinasch.lib.StaticWords;
+import com.hinasch.lib.VecUtil;
+import com.hinasch.lib.XYZPos;
 
 
 public class SkillBow extends SkillEffect{
@@ -266,13 +267,13 @@ public class SkillBow extends SkillEffect{
 		@Override
 		public void invokeSkill(InvokeSkill parent) {
 			boolean flag = false;
-			if(parent.owner.inventory.hasItem(Items.arrow))flag = true;
-			if(parent.owner.capabilities.isCreativeMode)flag = true;
+			if(parent.getOwnerEP().inventory.hasItem(Items.arrow))flag = true;
+			if(parent.getOwnerEP().capabilities.isCreativeMode)flag = true;
 			if(!flag)return ;
 
 			Unsaga.debug("doubleショットmadekiter");
 			Unsaga.debug("remote:"+parent.owner.worldObj.isRemote);
-			parent.playBowSound();
+			parent.playBowSound(parent.charge);
 
 			LivingStateBow state = (LivingStateBow)parent.parent;
 
@@ -303,8 +304,8 @@ public class SkillBow extends SkillEffect{
 	//
 	//
 //				}
-				if(EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, parent.weapon)==0 && !parent.owner.capabilities.isCreativeMode){
-					parent.owner.inventory.consumeInventoryItem(Items.arrow);
+				if(EnchantmentHelper.getEnchantmentLevel(Enchantment.infinity.effectId, parent.weapon)==0 && !parent.getOwnerEP().capabilities.isCreativeMode){
+					parent.getOwnerEP().inventory.consumeInventoryItem(Items.arrow);
 				}
 				parent.world.spawnEntityInWorld(clone);
 				return ;
@@ -336,7 +337,7 @@ public class SkillBow extends SkillEffect{
 		List<EntityArrow> arrows = eventObj.entityLiving.worldObj.getEntitiesWithinAABB(EntityArrow.class, bb);
 		for(EntityArrow arrow:arrows){
 			for(String key:tagAssociatedMap.keySet()){
-				if(HSLibs.getArrowTickInGround(arrow)<10 && ExtendedEntityTag.hasTag(arrow, key)){
+				if(HSLibs.getArrowTickInGround(arrow,Unsaga.debug.get())<10 && ExtendedEntityTag.hasTag(arrow, key)){
 					SkillBowBase skillBow = getSkillAssociatedWithTag(key);
 					if(skillBow!=null){
 						skillBow.onArrowStopped(arrow);
@@ -360,7 +361,7 @@ public class SkillBow extends SkillEffect{
 				if(arrow.ticksExisted %2 == 0){
 					//Unsaga.debug("ぱーちくる前");
 					for(String key:tagAssociatedMap.keySet()){
-						if(!HSLibs.isArrowInGround(arrow) && ExtendedEntityTag.entityHasTag(arrow, key)){
+						if(!HSLibs.isArrowInGround(arrow,Unsaga.debug.get()) && ExtendedEntityTag.entityHasTag(arrow, key)){
 							//Unsaga.debug("ぱーちくるきてます");
 							SkillBowBase skillBow = SkillBow.getInstance().getSkillAssociatedWithTag(key);
 							if(skillBow!=null){

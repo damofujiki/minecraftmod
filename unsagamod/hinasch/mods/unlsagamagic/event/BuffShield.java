@@ -7,7 +7,6 @@ import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingBuff;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 import hinasch.mods.unlsaga.network.packet.PacketSound;
 import hinasch.mods.unlsaga.network.packet.PacketUtil;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import cpw.mods.fml.common.network.NetworkRegistry.TargetPoint;
 
@@ -34,7 +33,6 @@ public abstract class BuffShield {
 						e.ammount = 0;
 						ps = new PacketSound(1022,e.entityLiving.getEntityId(),PacketSound.MODE.AUX);
 
-						EntityPlayer ep = (EntityPlayer)e.source.getEntity();
 						TargetPoint tp = PacketUtil.getTargetPointNear(e.entityLiving);
 						Unsaga.packetPipeline.sendToAllAround(ps, tp);
 					}

@@ -1,4 +1,4 @@
-package hinasch.lib;
+package com.hinasch.lib;
 
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
@@ -17,7 +17,7 @@ public class LibraryBook {
 	protected Optional<String> orekey = Optional.absent();
 	protected Optional<Item.ToolMaterial> enumtool = Optional.absent();
 	protected Optional<ItemArmor.ArmorMaterial> enumarmor = Optional.absent();
-	protected Optional<PairID> idmeta = Optional.absent();
+	protected Optional<PairID> idAndMeta = Optional.absent();
 	protected Optional<Class> classstore = Optional.absent();
 	
 	public LibraryBook(Object par1){
@@ -26,7 +26,7 @@ public class LibraryBook {
 			this.key = EnumSelector.ITEMSTACK;
 			this.isAllMetadata = true;
 			ItemStack is = new ItemStack((Block)par1,1);
-			idmeta = Optional.of(new PairID(is.getItem(),is.getItemDamage()));
+			idAndMeta = Optional.of(new PairID(is.getItem(),is.getItemDamage()));
 			this.isAllMetadata = true;
 
 		}
@@ -39,13 +39,13 @@ public class LibraryBook {
 			this.key = EnumSelector.ITEMSTACK;
 			this.isAllMetadata = true;
 			ItemStack is = new ItemStack((Item)par1,1);
-			idmeta = Optional.of(new PairID(is.getItem(),is.getItemDamage()));
+			idAndMeta = Optional.of(new PairID(is.getItem(),is.getItemDamage()));
 
 		}
 		if(par1 instanceof ItemStack){
 			this.key = EnumSelector.ITEMSTACK;
 			ItemStack is = (ItemStack)par1;
-			idmeta = Optional.of(new PairID(is.getItem(),is.getItemDamage()));
+			idAndMeta = Optional.of(new PairID(is.getItem(),is.getItemDamage()));
 
 		}
 		if(par1 instanceof ToolMaterial){

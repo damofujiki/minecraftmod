@@ -1,6 +1,9 @@
 package hinasch.mods.unlsagamagic;
 
-import hinasch.lib.HSLibs;
+import com.hinasch.lib.HSLibs;
+
+import hinasch.mods.unlsaga.Unsaga;
+import hinasch.mods.unlsaga.misc.bartering.MerchandiseLibraryBook;
 import hinasch.mods.unlsagamagic.block.BlockFireWall;
 import hinasch.mods.unlsagamagic.event.EventDecipherAtSleep;
 import hinasch.mods.unlsagamagic.event.EventSpellBuff;
@@ -103,5 +106,8 @@ public class UnsagaMagic {
 		GameRegistry.registerTileEntity(TileEntityFireWall.class, "unsaga.firewall");
 		GameRegistry.registerBlock(blockFireWall,"blockFireWall");
 		
+		Unsaga.merchandiseLibrary.addShelf(new MerchandiseLibraryBook(itemMagicTablet,900));
+		Unsaga.merchandiseLibrary.addShelf(new MerchandiseLibraryBook(itemSpellBook,300));
+		Unsaga.merchandiseLibrary.addShelf(new MerchandiseLibraryBook(itemBlender,2000));
 	}
 }

@@ -1,6 +1,7 @@
 package hinasch.mods.unlsaga.misc.smith;
 
-import hinasch.lib.LibraryShelf;
+import com.hinasch.lib.LibraryShelf;
+
 import hinasch.mods.unlsaga.core.init.UnsagaMaterials;
 import hinasch.mods.unlsaga.core.init.UnsagaItems;
 import net.minecraft.init.Blocks;

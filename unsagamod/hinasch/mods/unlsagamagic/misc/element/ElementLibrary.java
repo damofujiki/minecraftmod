@@ -1,7 +1,5 @@
 package hinasch.mods.unlsagamagic.misc.element;
 
-import hinasch.lib.LibraryBook;
-import hinasch.lib.LibraryShelf;
 import hinasch.mods.unlsaga.core.FiveElements;
 import hinasch.mods.unlsaga.core.FiveElements.EnumElement;
 import hinasch.mods.unlsagamagic.misc.spell.SpellMixTable;
@@ -14,6 +12,8 @@ import net.minecraft.block.material.Material;
 import net.minecraft.init.Blocks;
 
 import com.google.common.base.Optional;
+import com.hinasch.lib.LibraryBook;
+import com.hinasch.lib.LibraryShelf;
 
 public class ElementLibrary extends LibraryShelf{
 

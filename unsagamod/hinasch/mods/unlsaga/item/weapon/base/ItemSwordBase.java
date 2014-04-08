@@ -6,7 +6,7 @@ import hinasch.mods.unlsaga.core.init.UnsagaMaterial;
 import hinasch.mods.unlsaga.item.IUnsagaMaterial;
 import hinasch.mods.unlsaga.misc.ability.IGainAbility;
 import hinasch.mods.unlsaga.misc.util.EnumUnsagaTools;
-import hinasch.mods.unlsaga.misc.util.HelperUnsagaWeapon;
+import hinasch.mods.unlsaga.misc.util.HelperUnsagaItem;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,7 +29,7 @@ public class ItemSwordBase extends ItemSword implements IUnsagaMaterial,IGainAbi
 
 
 			
-	protected final HelperUnsagaWeapon helper;
+	protected final HelperUnsagaItem helper;
 	protected final HashMap<String,Icon> iconMap = new HashMap();
 	protected final IIcon[] icons;
 	public final UnsagaMaterial unsMaterial;
@@ -40,7 +40,7 @@ public class ItemSwordBase extends ItemSword implements IUnsagaMaterial,IGainAbi
 		this.weapondamage = 4.0F + mat.getToolMaterial().getDamageVsEntity();
 		this.icons = new IIcon[2];
 		this.unsMaterial = mat;
-		this.helper = new HelperUnsagaWeapon(this.unsMaterial,this.itemIcon,EnumUnsagaTools.SWORD);
+		this.helper = new HelperUnsagaItem(this.unsMaterial,this.itemIcon,EnumUnsagaTools.SWORD);
 	}
 
         
@@ -91,7 +91,7 @@ public class ItemSwordBase extends ItemSword implements IUnsagaMaterial,IGainAbi
     @Override
     public EnumAction getItemUseAction(ItemStack par1ItemStack)
     {
-    	if(HelperUnsagaWeapon.getCurrentWeight(par1ItemStack)>5){
+    	if(HelperUnsagaItem.getCurrentWeight(par1ItemStack)>5){
     		return EnumAction.none;
     	}
         return EnumAction.block;

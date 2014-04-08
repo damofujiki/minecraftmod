@@ -24,7 +24,7 @@ public class UtilItem {
 	
 	public static boolean hasItemInstance(EntityLivingBase player,Class _class){
 		if(player.getHeldItem()!=null){
-			if(player.getHeldItem().getItem().getClass().isInstance(_class)){
+			if(_class.isInstance(player.getHeldItem().getItem())){
 				return true;
 			}
 			if(player.getHeldItem().getItem().getClass()==_class){
@@ -35,9 +35,9 @@ public class UtilItem {
 		
 	}
 	
-	public static boolean isItemInstance(ItemStack is,Class _class){
+	public static boolean isSameClass(ItemStack is,Class _class){
 
-			if(is.getItem().getClass().isInstance(_class)){
+			if(_class.isInstance(is.getItem())){
 				return true;
 			}
 			if(is.getItem().getClass()==_class){

@@ -1,12 +1,13 @@
 package hinasch.mods.unlsaga.misc.debuff;
 
-import hinasch.lib.PairObject;
-import hinasch.lib.StaticWords;
 import hinasch.mods.unlsaga.misc.ability.Ability;
 import hinasch.mods.unlsaga.misc.debuff.livingdebuff.LivingDebuff;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.hinasch.lib.PairObject;
+import com.hinasch.lib.StaticWords;
 
 import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.IAttribute;
